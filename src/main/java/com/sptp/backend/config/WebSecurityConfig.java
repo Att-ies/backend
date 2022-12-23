@@ -38,6 +38,7 @@ public class WebSecurityConfig extends WebMvcConfigurationSupport {
 
                 .authorizeRequests()
                 .antMatchers("/api/**/login/**").permitAll()
+                .antMatchers("/api/members/save").permitAll()
                 .mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated();
 
