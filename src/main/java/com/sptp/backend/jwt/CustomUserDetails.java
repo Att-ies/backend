@@ -1,19 +1,20 @@
-package com.sptp.backend.security;
+package com.sptp.backend.jwt;
 
 import com.sptp.backend.domain.member.entity.Member;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.stream.Collectors;
 
 @Getter
-public class UserDetailsImpl implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
     private final Member member;
 
-    public UserDetailsImpl(Member member) {
+    public CustomUserDetails(Member member) {
         this.member = member;
     }
 
@@ -23,7 +24,9 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return member.getRoles().stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -56,4 +59,3 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 }
-

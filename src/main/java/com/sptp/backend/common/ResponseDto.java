@@ -8,13 +8,13 @@ import lombok.Getter;
 public class ResponseDto<T> {
     private boolean success;
     private T data;
-    private ErrorCode error;
+    private String errorMessage;
 
     public static <T> ResponseDto<T> success(T data) {
         return new ResponseDto<>(true, data, null);
     }
 
-    public static <T> ResponseDto<T> fail(ErrorCode errorcode) {
-        return new ResponseDto<>(false, null, errorcode);
+    public static <T> ResponseDto<T> fail(String errorMessage) {
+        return new ResponseDto<>(false, null, errorMessage);
     }
 }
