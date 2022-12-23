@@ -38,6 +38,8 @@ public class WebSecurityConfig extends WebMvcConfigurationSupport {
 
                 .authorizeRequests()
                 .antMatchers("/api/**/login/**").permitAll()
+                .antMatchers("/emailConfirm").permitAll()
+                .antMatchers("/emailConfirmCheck").permitAll()
                 .mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated();
 
