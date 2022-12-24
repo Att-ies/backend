@@ -4,6 +4,8 @@ import com.sptp.backend.controller.member.dto.request.MemberLoginRequestDto;
 import com.sptp.backend.controller.member.dto.request.MemberSaveRequestDto;
 import com.sptp.backend.domain.member.entity.Member;
 import com.sptp.backend.domain.member.repository.MemberRepository;
+import com.sptp.backend.exception.CustomException;
+import com.sptp.backend.exception.ErrorCode;
 import com.sptp.backend.jwt.JwtTokenProvider;
 import com.sptp.backend.jwt.dto.TokenDto;
 import com.sptp.backend.jwt.repository.RefreshTokenRepository;
@@ -46,9 +48,9 @@ public class MemberService {
 
         // 이메일 및 비밀번호 유효성 체크
         Member findMember = memberRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER, "가입되지 않은 E-MAIL 입니다."));
         if (!passwordEncoder.matches(dto.getPassword(), findMember.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+            throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD, "잘못된 비밀번호입니다.");
         }
 
 
@@ -65,4 +67,6 @@ public class MemberService {
         }
         return null;
     }
+
+
 }

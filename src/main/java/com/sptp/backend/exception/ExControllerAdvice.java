@@ -1,6 +1,5 @@
 package com.sptp.backend.exception;
 
-import com.sptp.backend.common.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,18 +11,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExControllerAdvice {
 
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<?> UserExHandle(UsernameNotFoundException e) {
-        log.info("[exceptionHandle] {}", e.getMessage());
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDto.fail(e.getMessage()));
+    //일반 에러
+    @ExceptionHandler
+    protected ResponseEntity<Object> handleCustomException(CustomException e) {
+        return ErrorResponse.toResponseEntity(e);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> ArgsExHandle(IllegalArgumentException e) {
-        log.info("[exceptionHandle] {}", e.getMessage());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDto.fail(e.getMessage()));
-    }
 
 }

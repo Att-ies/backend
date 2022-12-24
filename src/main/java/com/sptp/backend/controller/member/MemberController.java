@@ -1,6 +1,5 @@
 package com.sptp.backend.controller.member;
 
-import com.sptp.backend.common.ResponseDto;
 import com.sptp.backend.controller.member.dto.request.MemberLoginRequestDto;
 import com.sptp.backend.controller.member.dto.request.MemberSaveRequestDto;
 import com.sptp.backend.controller.member.dto.response.MemberSaveResponseDto;
@@ -30,13 +29,13 @@ public class MemberController {
 
     // 회원가입
     @PostMapping("/members/join")
-    public ResponseEntity<?> join(@RequestBody MemberSaveRequestDto memberSaveRequestDto) {
+    public ResponseEntity<MemberSaveResponseDto> join(@RequestBody MemberSaveRequestDto memberSaveRequestDto) {
 
         Member member = memberService.saveUser(memberSaveRequestDto);
 
         MemberSaveResponseDto memberSaveResponseDto = new MemberSaveResponseDto(member.getUsername(), member.getEmail(), member.getAddress(), member.getTel());
 
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(memberSaveResponseDto));
+        return ResponseEntity.status(HttpStatus.OK).body(memberSaveResponseDto);
     }
 
     // 로그인
@@ -47,7 +46,7 @@ public class MemberController {
 
         TokenResponseDto tokenResponseDto = new TokenResponseDto(token.getAccessToken(), token.getRefreshToken());
 
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(tokenResponseDto));
+        return ResponseEntity.status(HttpStatus.OK).body(tokenResponseDto);
 
     }
 
