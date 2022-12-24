@@ -33,6 +33,9 @@ public class MemberService {
 
     @Transactional
     public Member saveUser(MemberSaveRequestDto dto) {
+
+        checkDuplicateMember(dto.getEmail());
+
         Member member = new Member(dto.getUsername(),
                 dto.getEmail(),
                 passwordEncoder.encode(dto.getPassword()),
@@ -68,5 +71,10 @@ public class MemberService {
         return null;
     }
 
+    public void checkDuplicateMember(String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new CustomException(ErrorCode.EXIST_MEMBER, "이미 이메일이 존재합니다.");
+        }
+    }
 
 }
