@@ -35,6 +35,9 @@ dependencies {
 
 	//email 송신 라이브러리
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//oauth2
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 tasks.named('test') {

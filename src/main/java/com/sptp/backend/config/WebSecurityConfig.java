@@ -2,6 +2,8 @@ package com.sptp.backend.config;
 
 import com.sptp.backend.jwt.JwtAuthenticationFilter;
 import com.sptp.backend.jwt.JwtTokenProvider;
+import com.sptp.backend.oauth.CustomOAuth2UserService;
+import com.sptp.backend.oauth.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +26,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final OAuth2SuccessHandler successHandler;
+    private final CustomOAuth2UserService oAuth2UserService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -35,9 +39,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/test/**").hasRole("USER")
                 .anyRequest().permitAll() // 그외 나머지 요청은 누구나 접근 가능
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                        UsernamePasswordAuthenticationFilter.class);
+                .oauth2Login()
+                .successHandler(successHandler)
+                .userInfoEndpoint().userService(oAuth2UserService);
 
+        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 실행
     }
 

@@ -77,4 +77,12 @@ public class MemberService {
         }
     }
 
+    public boolean checkDuplicateMemberBoolean(String email) {
+        if (memberRepository.existsByEmail(email)) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 }

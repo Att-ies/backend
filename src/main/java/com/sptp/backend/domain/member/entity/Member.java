@@ -39,4 +39,6 @@ public class Member {
         this.tel = tel;
         this.roles = roles;
     }
+
+
 }
