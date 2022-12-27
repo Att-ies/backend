@@ -1,5 +1,7 @@
 package com.sptp.backend.jwt.service;
 
+import com.sptp.backend.common.exception.CustomException;
+import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.repository.RefreshToken;
@@ -39,32 +41,24 @@ public class JwtService {
         return refreshTokenRepository.findByRefreshToken(refreshToken);
     }
 
-    public Map<String, String> validateRefreshToken(String refreshToken){
-        RefreshToken refreshToken1 = getRefreshToken(refreshToken).get();
-        String createdAccessToken = jwtTokenProvider.validateRefreshToken(refreshToken1);
+    public String validateRefreshToken(String refreshToken){
 
-        return createRefreshJson(createdAccessToken);
-    }
+        //DB에서 Refresh Token 조회
+        Optional<RefreshToken> refreshToken1 = getRefreshToken(refreshToken);
 
-    public Map<String, String> createRefreshJson(String createdAccessToken){
+        String createdAccessToken = "";
 
-        Map<String, String> map = new HashMap<>();
-        if(createdAccessToken == null){
-
-            map.put("errortype", "Forbidden");
-            map.put("status", "402");
-            map.put("message", "Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.");
-
-
-            return map;
+        if (refreshToken1.isPresent()) {
+            createdAccessToken = jwtTokenProvider.validateRefreshToken(refreshToken1.get());
+        }else {
+            throw new CustomException(ErrorCode.TOKEN_INVALID, "Refresh Token 이 유효하지 않습니다.");
         }
-        //기존에 존재하는 accessToken 제거
-        map.put("status", "200");
-        map.put("message", "Refresh 토큰을 통한 Access Token 생성이 완료되었습니다.");
-        map.put("accessToken", createdAccessToken);
 
-        return map;
+        if (createdAccessToken == null) {
+            throw new CustomException(ErrorCode.TOKEN_EXPIRED, "Refresh Token 만료, 재 로그인이 필요합니다.");
+        }
 
-
+        return createdAccessToken;
     }
+
 }
