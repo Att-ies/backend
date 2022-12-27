@@ -35,7 +35,7 @@ public class MemberController {
                 .userId(member.getUserId())
                 .email(member.getEmail())
                 .address(member.getAddress())
-                .tel(member.getTel())
+                .telephone(member.getTelephone())
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(memberSaveResponseDto);

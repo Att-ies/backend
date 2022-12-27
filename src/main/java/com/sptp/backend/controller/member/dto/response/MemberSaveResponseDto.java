@@ -13,6 +13,6 @@ public class MemberSaveResponseDto {
     private String userId;
     private String email;
     private String address;
-    private String tel;
+    private String telephone;
 
 }

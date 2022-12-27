@@ -25,19 +25,19 @@ public class Member {
     private String email;
     private String password;
     private String address;
-    private String tel;
+    private String telephone;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-    public Member(String username, String userId, String email, String password, String address, String tel, List<String> roles) {
+    public Member(String username, String userId, String email, String password, String address, String telephone, List<String> roles) {
         this.username = username;
         this.userId = userId;
         this.email = email;
         this.password = password;
         this.address = address;
-        this.tel = tel;
+        this.telephone = telephone;
         this.roles = roles;
     }
 

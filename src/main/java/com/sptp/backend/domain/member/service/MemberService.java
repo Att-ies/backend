@@ -42,7 +42,7 @@ public class MemberService {
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .address(dto.getAddress())
-                .tel(dto.getTel())
+                .telephone(dto.getTelephone())
                 .roles(Collections.singletonList("ROLE_USER"))
                 .build();
 
