@@ -34,7 +34,7 @@ public class MemberService {
     @Transactional
     public Member saveUser(MemberSaveRequestDto dto) {
 
-        checkDuplicateMember(dto.getEmail());
+        checkDuplicateMember(dto.getUserId());
 
         Member member = new Member(dto.getUsername(),
                 dto.getUserId(),
