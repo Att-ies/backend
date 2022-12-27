@@ -11,10 +11,7 @@ import com.sptp.backend.jwt.dto.TokenDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +30,7 @@ public class MemberController {
 
         Member member = memberService.saveUser(memberSaveRequestDto);
 
-        MemberSaveResponseDto memberSaveResponseDto = new MemberSaveResponseDto(member.getUsername(), member.getEmail(), member.getAddress(), member.getTel());
+        MemberSaveResponseDto memberSaveResponseDto = new MemberSaveResponseDto(member.getUsername(), member.getUserId(), member.getEmail(), member.getAddress(), member.getTel());
 
         return ResponseEntity.status(HttpStatus.OK).body(memberSaveResponseDto);
     }

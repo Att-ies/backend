@@ -21,6 +21,7 @@ public class Member {
     private Long id;
 
     private String username;
+    private String userId;
     private String email;
     private String password;
     private String address;
@@ -30,9 +31,9 @@ public class Member {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-
-    public Member(String username, String email, String password, String address, String tel, List<String> roles) {
+    public Member(String username, String userId, String email, String password, String address, String tel, List<String> roles) {
         this.username = username;
+        this.userId = userId;
         this.email = email;
         this.password = password;
         this.address = address;

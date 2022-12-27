@@ -12,6 +12,7 @@ import lombok.Setter;
 public class MemberSaveResponseDto {
 
     private String username;
+    private String userId;
     private String email;
     private String address;
     private String tel;
