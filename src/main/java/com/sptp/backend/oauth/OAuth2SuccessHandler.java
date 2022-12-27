@@ -1,25 +1,19 @@
 package com.sptp.backend.oauth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sptp.backend.controller.member.dto.response.TokenResponseDto;
-import com.sptp.backend.domain.member.entity.Member;
-import com.sptp.backend.domain.member.repository.MemberRepository;
-import com.sptp.backend.domain.member.service.MemberService;
-import com.sptp.backend.jwt.JwtTokenProvider;
-import com.sptp.backend.jwt.dto.TokenDto;
+import com.sptp.backend.member.web.dto.response.TokenResponseDto;
+import com.sptp.backend.member.repository.Member;
+import com.sptp.backend.member.repository.MemberRepository;
+import com.sptp.backend.jwt.web.JwtTokenProvider;
+import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.service.JwtService;
-import com.sptp.backend.oauth.dto.OAuth2UserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
