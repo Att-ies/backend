@@ -36,13 +36,16 @@ public class MemberService {
 
         checkDuplicateMember(dto.getUserId());
 
-        Member member = new Member(dto.getUsername(),
-                dto.getUserId(),
-                dto.getEmail(),
-                passwordEncoder.encode(dto.getPassword()),
-                dto.getAddress(),
-                dto.getTel(),
-                Collections.singletonList("ROLE_USER"));
+        Member member = Member.builder()
+                .username(dto.getUsername())
+                .userId(dto.getUserId())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .address(dto.getAddress())
+                .tel(dto.getTel())
+                .roles(Collections.singletonList("ROLE_USER"))
+                .build();
+
 
         memberRepository.save(member);
         return member;

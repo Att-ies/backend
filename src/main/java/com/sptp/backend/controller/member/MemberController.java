@@ -30,7 +30,13 @@ public class MemberController {
 
         Member member = memberService.saveUser(memberSaveRequestDto);
 
-        MemberSaveResponseDto memberSaveResponseDto = new MemberSaveResponseDto(member.getUsername(), member.getUserId(), member.getEmail(), member.getAddress(), member.getTel());
+        MemberSaveResponseDto memberSaveResponseDto = MemberSaveResponseDto.builder()
+                .username(member.getUsername())
+                .userId(member.getUserId())
+                .email(member.getEmail())
+                .address(member.getAddress())
+                .tel(member.getTel())
+                .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(memberSaveResponseDto);
     }
@@ -41,7 +47,10 @@ public class MemberController {
 
         TokenDto token = memberService.login(memberLoginRequestDto);
 
-        TokenResponseDto tokenResponseDto = new TokenResponseDto(token.getAccessToken(), token.getRefreshToken());
+        TokenResponseDto tokenResponseDto = TokenResponseDto.builder()
+                .accessToken(token.getAccessToken())
+                .refreshToken(token.getRefreshToken())
+                .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(tokenResponseDto);
 
