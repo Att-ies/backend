@@ -21,5 +21,5 @@ public class RefreshToken {
 
     private String refreshToken;
 
-    private String keyEmail;
+    private String keyUserId;
 }

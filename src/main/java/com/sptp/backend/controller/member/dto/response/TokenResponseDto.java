@@ -1,14 +1,12 @@
 package com.sptp.backend.controller.member.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class TokenResponseDto {
 
     private String accessToken;

@@ -34,14 +34,18 @@ public class MemberService {
     @Transactional
     public Member saveUser(MemberSaveRequestDto dto) {
 
-        checkDuplicateMember(dto.getEmail());
+        checkDuplicateMember(dto.getUserId());
 
-        Member member = new Member(dto.getUsername(),
-                dto.getEmail(),
-                passwordEncoder.encode(dto.getPassword()),
-                dto.getAddress(),
-                dto.getTel(),
-                Collections.singletonList("ROLE_USER"));
+        Member member = Member.builder()
+                .username(dto.getUsername())
+                .userId(dto.getUserId())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .address(dto.getAddress())
+                .telephone(dto.getTelephone())
+                .roles(Collections.singletonList("ROLE_USER"))
+                .build();
+
 
         memberRepository.save(member);
         return member;
@@ -50,14 +54,14 @@ public class MemberService {
     public TokenDto login(MemberLoginRequestDto dto) {
 
         // 이메일 및 비밀번호 유효성 체크
-        Member findMember = memberRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER, "가입되지 않은 E-MAIL 입니다."));
+        Member findMember = memberRepository.findByUserId(dto.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER, "가입되지 않은 아이디 입니다."));
         if (!passwordEncoder.matches(dto.getPassword(), findMember.getPassword())) {
             throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD, "잘못된 비밀번호입니다.");
         }
 
 
-        TokenDto tokenDto = jwtTokenProvider.createToken(findMember.getEmail(), findMember.getRoles());
+        TokenDto tokenDto = jwtTokenProvider.createToken(findMember.getUserId(), findMember.getRoles());
         jwtService.saveRefreshToken(tokenDto);
 
         return tokenDto;
@@ -71,9 +75,9 @@ public class MemberService {
         return null;
     }
 
-    public void checkDuplicateMember(String email) {
-        if (memberRepository.existsByEmail(email)) {
-            throw new CustomException(ErrorCode.EXIST_MEMBER, "이미 이메일이 존재합니다.");
+    public void checkDuplicateMember(String userId) {
+        if (memberRepository.existsByUserId(userId)) {
+            throw new CustomException(ErrorCode.EXIST_MEMBER, "이미 해당 아이디가 존재합니다.");
         }
     }
 
