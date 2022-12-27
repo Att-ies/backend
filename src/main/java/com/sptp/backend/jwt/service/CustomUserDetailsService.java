@@ -1,8 +1,8 @@
 package com.sptp.backend.jwt.service;
 
-import com.sptp.backend.domain.member.entity.Member;
-import com.sptp.backend.domain.member.repository.MemberRepository;
-import com.sptp.backend.jwt.CustomUserDetails;
+import com.sptp.backend.member.repository.Member;
+import com.sptp.backend.member.repository.MemberRepository;
+import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;

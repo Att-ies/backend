@@ -38,3 +38,5 @@ out/
 
 #####
 application.properties
+email.properties
+application.yml

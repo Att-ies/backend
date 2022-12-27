@@ -1,6 +1,5 @@
 package com.sptp.backend.jwt.repository;
 
-import com.sptp.backend.jwt.entitiy.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

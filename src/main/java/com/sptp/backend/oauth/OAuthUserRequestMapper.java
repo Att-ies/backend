@@ -1,6 +1,5 @@
 package com.sptp.backend.oauth;
 
-import com.sptp.backend.oauth.dto.OAuth2UserDto;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 

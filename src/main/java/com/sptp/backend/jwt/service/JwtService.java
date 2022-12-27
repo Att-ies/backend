@@ -1,8 +1,8 @@
 package com.sptp.backend.jwt.service;
 
-import com.sptp.backend.jwt.JwtTokenProvider;
-import com.sptp.backend.jwt.dto.TokenDto;
-import com.sptp.backend.jwt.entitiy.RefreshToken;
+import com.sptp.backend.jwt.web.JwtTokenProvider;
+import com.sptp.backend.jwt.web.dto.TokenDto;
+import com.sptp.backend.jwt.repository.RefreshToken;
 import com.sptp.backend.jwt.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
