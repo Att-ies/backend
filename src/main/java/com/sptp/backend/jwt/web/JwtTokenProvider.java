@@ -1,11 +1,14 @@
 package com.sptp.backend.jwt.web;
 
+import com.sptp.backend.common.exception.CustomException;
+import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.repository.RefreshToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -134,6 +137,23 @@ public class JwtTokenProvider {
         }
 
         return null;
+    }
+
+    public Long getExpiration(String accessToken) {
+
+        try {
+            // accessToken 남은 유효시간
+            Date expiration = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(accessToken).getBody().getExpiration();
+            Long now = new Date().getTime();
+
+            // accessToken 의 현재 남은시간 반환
+            return (expiration.getTime() - now);
+
+        } catch (SignatureException e) {
+            throw new CustomException(ErrorCode.TOKEN_INVALID, "토큰이 유효하지 않습니다.");
+        }
+
+
     }
 
 }

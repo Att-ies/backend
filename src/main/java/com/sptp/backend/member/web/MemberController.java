@@ -1,6 +1,7 @@
 package com.sptp.backend.member.web;
 
 import com.sptp.backend.jwt.service.JwtService;
+import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
 import com.sptp.backend.member.web.dto.response.MemberSaveResponseDto;
@@ -11,12 +12,14 @@ import com.sptp.backend.email.service.EmailService;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class MemberController {
     private final MemberService memberService;
     private final EmailService emailService;
     private final JwtService jwtService;
+
     HashMap<String, String> emailMap = new HashMap<>();
 
     // 회원가입
@@ -75,6 +79,13 @@ public class MemberController {
 
     }
 
+    @PostMapping("/members/logout")
+    public String logout(@RequestHeader("accessToken") String accessToken) {
+
+        memberService.logout(accessToken);
+
+        return "ok";
+    }
 
     @PostMapping("/emailConfirm")
     public String emailConfirm(@RequestParam String email) throws Exception {

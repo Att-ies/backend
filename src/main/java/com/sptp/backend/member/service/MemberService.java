@@ -12,12 +12,14 @@ import com.sptp.backend.jwt.repository.RefreshTokenRepository;
 import com.sptp.backend.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -29,6 +31,7 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
+    private final RedisTemplate redisTemplate;
 
     @Transactional
     public Member saveUser(MemberSaveRequestDto dto) {
@@ -64,6 +67,13 @@ public class MemberService {
         jwtService.saveRefreshToken(tokenDto);
 
         return tokenDto;
+    }
+
+    public void logout(String accessToken) {
+        Long expiration = jwtTokenProvider.getExpiration(accessToken);
+
+        redisTemplate.opsForValue()
+                .set(accessToken, "blackList", expiration, TimeUnit.MILLISECONDS);
     }
 
     public Optional<Member> findByEmail(String email) {
