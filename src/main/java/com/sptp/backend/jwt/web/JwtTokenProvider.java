@@ -150,7 +150,7 @@ public class JwtTokenProvider {
             return (expiration.getTime() - now);
 
         } catch (SignatureException e) {
-            throw new CustomException(ErrorCode.TOKEN_INVALID, "토큰이 유효하지 않습니다.");
+            throw new CustomException(ErrorCode.TOKEN_INVALID);
         }
 
 

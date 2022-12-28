@@ -15,7 +15,8 @@ public enum ErrorCode {
     //회원 예외
     UNAUTHORIZED_MEMBER(HttpStatus.UNAUTHORIZED, "해당 요청은 로그인이 필요합니다."),
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
-    EXIST_MEMBER(HttpStatus.BAD_REQUEST, "이미 등록된 유저입니다."),
+    EXIST_USER_ID(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디입니다."),
+    EXIST_USER_EMAIL(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
     NOT_MATCH_PASSWORD(HttpStatus.BAD_REQUEST, "패스워드가 일치하지 않습니다."),
 
     //토큰 예외

@@ -36,7 +36,8 @@ public class MemberService {
     @Transactional
     public Member saveUser(MemberSaveRequestDto dto) {
 
-        checkDuplicateMember(dto.getUserId());
+        checkDuplicateMemberID(dto.getUserId());
+        checkDuplicateMemberEmail(dto.getEmail());
 
         Member member = Member.builder()
                 .username(dto.getUsername())
@@ -57,9 +58,9 @@ public class MemberService {
 
         // 이메일 및 비밀번호 유효성 체크
         Member findMember = memberRepository.findByUserId(dto.getUserId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER, "가입되지 않은 아이디 입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         if (!passwordEncoder.matches(dto.getPassword(), findMember.getPassword())) {
-            throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD, "잘못된 비밀번호입니다.");
+            throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
 
 
@@ -84,9 +85,15 @@ public class MemberService {
         return null;
     }
 
-    public void checkDuplicateMember(String userId) {
+    public void checkDuplicateMemberID(String userId) {
         if (memberRepository.existsByUserId(userId)) {
-            throw new CustomException(ErrorCode.EXIST_MEMBER, "이미 해당 아이디가 존재합니다.");
+            throw new CustomException(ErrorCode.EXIST_USER_ID);
+        }
+    }
+
+    public void checkDuplicateMemberEmail(String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new CustomException(ErrorCode.EXIST_USER_EMAIL);
         }
     }
 
