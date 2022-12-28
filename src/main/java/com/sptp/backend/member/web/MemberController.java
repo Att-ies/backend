@@ -69,7 +69,6 @@ public class MemberController {
         //Access Token 재발급
         TokenResponseDto tokenResponseDto = TokenResponseDto.builder()
                 .accessToken(recreatedAccessToken)
-                .refreshToken(null)
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(tokenResponseDto);

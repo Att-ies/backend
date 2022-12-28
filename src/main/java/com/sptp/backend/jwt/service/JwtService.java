@@ -36,23 +36,18 @@ public class JwtService {
 
     }
 
-    public Optional<RefreshToken> getRefreshToken(String refreshToken){
+    public RefreshToken getRefreshToken(String refreshToken){
 
-        return refreshTokenRepository.findByRefreshToken(refreshToken);
+        return refreshTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new CustomException(ErrorCode.TOKEN_INVALID, "Refresh Token 이 유효하지 않습니다."));
     }
 
     public String validateRefreshToken(String refreshToken){
 
         //DB에서 Refresh Token 조회
-        Optional<RefreshToken> refreshToken1 = getRefreshToken(refreshToken);
+        RefreshToken getRefreshToken = getRefreshToken(refreshToken);
 
-        String createdAccessToken = "";
-
-        if (refreshToken1.isPresent()) {
-            createdAccessToken = jwtTokenProvider.validateRefreshToken(refreshToken1.get());
-        }else {
-            throw new CustomException(ErrorCode.TOKEN_INVALID, "Refresh Token 이 유효하지 않습니다.");
-        }
+        String createdAccessToken = jwtTokenProvider.validateRefreshToken(getRefreshToken);
 
         if (createdAccessToken == null) {
             throw new CustomException(ErrorCode.TOKEN_EXPIRED, "Refresh Token 만료, 재 로그인이 필요합니다.");
