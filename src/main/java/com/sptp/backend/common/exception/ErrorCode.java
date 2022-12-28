@@ -17,6 +17,8 @@ public enum ErrorCode {
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
     EXIST_MEMBER(HttpStatus.BAD_REQUEST, "이미 등록된 유저입니다."),
     NOT_MATCH_PASSWORD(HttpStatus.BAD_REQUEST, "패스워드가 일치하지 않습니다."),
+    NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND, "가입되지 않은 이메일 입니다."),
+    NOT_MATCH_USERNAME(HttpStatus.BAD_REQUEST, "잘못된 이름입니다."),
 
     //토큰 예외
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),

@@ -1,5 +1,6 @@
 package com.sptp.backend.member.service;
 
+import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
 import com.sptp.backend.member.repository.Member;
@@ -15,8 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -59,19 +63,22 @@ public class MemberService {
             throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD, "잘못된 비밀번호입니다.");
         }
 
-
         TokenDto tokenDto = jwtTokenProvider.createToken(findMember.getUserId(), findMember.getRoles());
         jwtService.saveRefreshToken(tokenDto);
 
         return tokenDto;
     }
 
-    public Optional<Member> findByEmail(String email) {
-        Optional<Member> findUser = memberRepository.findByEmail(email);
-        if (findUser.isPresent()) {
-            return findUser;
+    public Member findByEmail(MemberFindIdRequestDto dto) {
+
+        // 이메일 및 유저이름 유효성 체크
+        Member findMember = memberRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_EMAIL));
+        if (!dto.getUsername().equals(findMember.getUsername())) {
+            throw new CustomException(ErrorCode.NOT_MATCH_USERNAME);
         }
-        return null;
+
+        return findMember;
     }
 
     public void checkDuplicateMember(String userId) {
@@ -87,5 +94,4 @@ public class MemberService {
             return false;
         }
     }
-
 }
