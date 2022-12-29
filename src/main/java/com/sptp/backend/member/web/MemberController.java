@@ -1,6 +1,8 @@
 package com.sptp.backend.member.web;
 
+import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
 import com.sptp.backend.jwt.service.JwtService;
+import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
 import com.sptp.backend.member.web.dto.response.MemberSaveResponseDto;
@@ -10,13 +12,20 @@ import com.sptp.backend.member.service.MemberService;
 import com.sptp.backend.email.service.EmailService;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.URI;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +35,7 @@ public class MemberController {
     private final MemberService memberService;
     private final EmailService emailService;
     private final JwtService jwtService;
+
     HashMap<String, String> emailMap = new HashMap<>();
 
     // 회원가입
@@ -72,28 +82,34 @@ public class MemberController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(tokenResponseDto);
-
     }
 
+    // 로그아웃
+    @PostMapping("/members/logout")
+    public ResponseEntity logout(@RequestHeader("accessToken") String accessToken) {
 
-    @PostMapping("/emailConfirm")
-    public String emailConfirm(@RequestParam String email) throws Exception {
+        memberService.logout(accessToken);
 
-        String confirm = emailService.sendMessage(email);
-        emailMap.put(email, confirm);
-        return confirm;
+        return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PostMapping("/emailConfirmCheck")
-    public String emailCheck(@RequestParam String email, @RequestParam String code) {
-        if (emailMap.get(email).equals(code)) {
-            emailMap.remove(email);
-            return "OK";
-        }else{
-            return "NO";
-        }
+    // 아이디 찾기
+    @PostMapping("/members/id")
+    public ResponseEntity<?> findId(@RequestBody MemberFindIdRequestDto memberFindIdRequestDto) {
+
+        Member member = memberService.findByEmail(memberFindIdRequestDto);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("/emailId?email=" + member.getEmail()));
+
+        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
 
+    // 이메일로 아이디 발송
+    @PostMapping("/emailId")
+    public ResponseEntity emailConfirm(@RequestParam String email) throws Exception {
 
-
+        emailService.sendMessage(email);
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }
