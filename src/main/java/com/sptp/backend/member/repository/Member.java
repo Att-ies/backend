@@ -45,6 +45,6 @@ public class Member {
     public void resetPassword() {
 
         final int PASSWORD_LENGTH = 8;
-        this.password = UUID.randomUUID().toString().substring(PASSWORD_LENGTH);
+        this.password = UUID.randomUUID().toString().substring(0, PASSWORD_LENGTH);
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.Email;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -108,8 +109,9 @@ public class MemberController {
     }
 
     @PostMapping("/members/new-password")
-    public ResponseEntity<?> sendNewPassword(@Email String email) throws Exception {
+    public ResponseEntity<?> sendNewPassword(@RequestBody Map<String, String> paramMap) throws Exception {
 
+        String email = paramMap.get("email");
         String newPassword = memberService.changePassword(email);
         emailService.sendNewPasswordMessage(email, newPassword);
 
