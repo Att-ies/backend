@@ -12,12 +12,14 @@ import com.sptp.backend.jwt.repository.RefreshTokenRepository;
 import com.sptp.backend.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -29,11 +31,13 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
+    private final RedisTemplate redisTemplate;
 
     @Transactional
     public Member saveUser(MemberSaveRequestDto dto) {
 
-        checkDuplicateMember(dto.getUserId());
+        checkDuplicateMemberID(dto.getUserId());
+        checkDuplicateMemberEmail(dto.getEmail());
 
         Member member = Member.builder()
                 .username(dto.getUsername())
@@ -54,9 +58,9 @@ public class MemberService {
 
         // 이메일 및 비밀번호 유효성 체크
         Member findMember = memberRepository.findByUserId(dto.getUserId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER, "가입되지 않은 아이디 입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
         if (!passwordEncoder.matches(dto.getPassword(), findMember.getPassword())) {
-            throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD, "잘못된 비밀번호입니다.");
+            throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
 
 
@@ -64,6 +68,13 @@ public class MemberService {
         jwtService.saveRefreshToken(tokenDto);
 
         return tokenDto;
+    }
+
+    public void logout(String accessToken) {
+        Long expiration = jwtTokenProvider.getExpiration(accessToken);
+
+        redisTemplate.opsForValue()
+                .set(accessToken, "blackList", expiration, TimeUnit.MILLISECONDS);
     }
 
     public Optional<Member> findByEmail(String email) {
@@ -74,9 +85,15 @@ public class MemberService {
         return null;
     }
 
-    public void checkDuplicateMember(String userId) {
+    public void checkDuplicateMemberID(String userId) {
         if (memberRepository.existsByUserId(userId)) {
-            throw new CustomException(ErrorCode.EXIST_MEMBER, "이미 해당 아이디가 존재합니다.");
+            throw new CustomException(ErrorCode.EXIST_USER_ID);
+        }
+    }
+
+    public void checkDuplicateMemberEmail(String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new CustomException(ErrorCode.EXIST_USER_EMAIL);
         }
     }
 
