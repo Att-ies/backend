@@ -39,7 +39,7 @@ public class EmailServiceImpl implements EmailService {
         msgg+= UserId+"</strong><div><br/> ";
         msgg+= "</div>";
         message.setText(msgg, "utf-8", "html");//내용
-        message.setFrom(new InternetAddress("sgb8154@gmail.com","limjunho"));//보내는 사람
+        message.setFrom(new InternetAddress("sgb8154@gmail.com","Atties"));//보내는 사람
 
         return message;
     }
