@@ -2,7 +2,6 @@ package com.sptp.backend.member.web;
 
 import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
 import com.sptp.backend.jwt.service.JwtService;
-import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
 import com.sptp.backend.member.web.dto.response.MemberSaveResponseDto;
@@ -14,18 +13,14 @@ import com.sptp.backend.jwt.web.dto.TokenDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.constraints.Email;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequiredArgsConstructor
@@ -109,7 +104,17 @@ public class MemberController {
     @PostMapping("/emailId")
     public ResponseEntity emailConfirm(@RequestParam String email) throws Exception {
 
-        emailService.sendMessage(email);
+        emailService.sendIdMessage(email);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("/members/new-password")
+    public ResponseEntity<?> sendNewPassword(@RequestBody Map<String, String> paramMap) throws Exception {
+
+        String email = paramMap.get("email");
+        String newPassword = memberService.changePassword(email);
+        emailService.sendNewPasswordMessage(email, newPassword);
+
+        return ResponseEntity.ok().build();
     }
 }
