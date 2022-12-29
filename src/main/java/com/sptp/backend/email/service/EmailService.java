@@ -1,5 +1,5 @@
 package com.sptp.backend.email.service;
 
 public interface EmailService {
-    String sendMessage(String to)throws Exception;
+    void sendMessage(String to)throws Exception;
 }
