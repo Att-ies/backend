@@ -65,10 +65,10 @@ public class MemberController {
     }
 
     @PostMapping("/members/token")
-    public ResponseEntity<?> refresh(@RequestHeader("refreshToken") String refreshToken){
+    public ResponseEntity<?> refresh(@RequestBody Map<String, String> refreshToken){
 
         //Refresh Token 검증
-        String recreatedAccessToken = jwtService.validateRefreshToken(refreshToken);
+        String recreatedAccessToken = jwtService.validateRefreshToken(refreshToken.get("refreshToken"));
 
         //Access Token 재발급
         TokenResponseDto tokenResponseDto = TokenResponseDto.builder()

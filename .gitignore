@@ -37,6 +37,4 @@ out/
 .vscode/
 
 #####
-application.properties
-email.properties
-application.yml
+env.properties
