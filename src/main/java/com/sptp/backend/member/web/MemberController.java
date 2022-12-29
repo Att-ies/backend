@@ -80,11 +80,11 @@ public class MemberController {
     }
 
     @PostMapping("/members/logout")
-    public String logout(@RequestHeader("accessToken") String accessToken) {
+    public ResponseEntity logout(@RequestHeader("accessToken") String accessToken) {
 
         memberService.logout(accessToken);
 
-        return "ok";
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @PostMapping("/emailConfirm")
