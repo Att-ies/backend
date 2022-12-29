@@ -15,7 +15,6 @@ public class ErrorResponse {
     private final String error;
     private final String code;
     private final String detail;
-    private final String message;
 
     public static ResponseEntity<Object> toResponseEntity(CustomException e) {
         ErrorCode errorCode = e.getErrorCode();
@@ -28,7 +27,6 @@ public class ErrorResponse {
                                 .error(errorCode.getHttpStatus().name())//httpStatus 이름
                                 .code(errorCode.name())//errorCode 의 이름
                                 .detail(errorCode.getDetail())//errorCode 상세
-                                .message(e.getMessage())//에러 메시지
                                 .build()
                 );
     }

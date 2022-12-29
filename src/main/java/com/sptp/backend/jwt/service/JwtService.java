@@ -39,7 +39,7 @@ public class JwtService {
     public RefreshToken getRefreshToken(String refreshToken){
 
         return refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new CustomException(ErrorCode.TOKEN_INVALID, "Refresh Token 이 유효하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.TOKEN_INVALID));
     }
 
     public String validateRefreshToken(String refreshToken){
@@ -50,7 +50,7 @@ public class JwtService {
         String createdAccessToken = jwtTokenProvider.validateRefreshToken(getRefreshToken);
 
         if (createdAccessToken == null) {
-            throw new CustomException(ErrorCode.TOKEN_EXPIRED, "Refresh Token 만료, 재 로그인이 필요합니다.");
+            throw new CustomException(ErrorCode.TOKEN_EXPIRED);
         }
 
         return createdAccessToken;

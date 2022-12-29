@@ -2,6 +2,7 @@ package com.sptp.backend.member.web;
 
 import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
 import com.sptp.backend.jwt.service.JwtService;
+import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
 import com.sptp.backend.member.web.dto.response.MemberSaveResponseDto;
@@ -13,6 +14,7 @@ import com.sptp.backend.jwt.web.dto.TokenDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -23,6 +25,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,6 +35,7 @@ public class MemberController {
     private final MemberService memberService;
     private final EmailService emailService;
     private final JwtService jwtService;
+
     HashMap<String, String> emailMap = new HashMap<>();
 
     // 회원가입
@@ -63,6 +67,7 @@ public class MemberController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(tokenResponseDto);
+
     }
 
     @PostMapping("/members/token")
@@ -77,6 +82,15 @@ public class MemberController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(tokenResponseDto);
+    }
+
+    // 로그아웃
+    @PostMapping("/members/logout")
+    public ResponseEntity logout(@RequestHeader("accessToken") String accessToken) {
+
+        memberService.logout(accessToken);
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     // 아이디 찾기
