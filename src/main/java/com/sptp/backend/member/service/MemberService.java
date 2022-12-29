@@ -86,6 +86,17 @@ public class MemberService {
         return findMember;
     }
 
+    @Transactional
+    public String changePassword(String email) {
+
+        Member findMember = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_EMAIL));
+
+        findMember.resetPassword();
+
+        return findMember.getPassword();
+    }
+
     public void logout(String accessToken) {
         Long expiration = jwtTokenProvider.getExpiration(accessToken);
 

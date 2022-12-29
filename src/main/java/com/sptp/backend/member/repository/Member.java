@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -41,5 +42,9 @@ public class Member {
         this.roles = roles;
     }
 
+    public void resetPassword() {
 
+        final int PASSWORD_LENGTH = 8;
+        this.password = UUID.randomUUID().toString().substring(PASSWORD_LENGTH);
+    }
 }
