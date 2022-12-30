@@ -117,4 +117,20 @@ public class MemberController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/members/check-id")
+    public ResponseEntity<?> checkUserId(@RequestBody Map<String, String> paramMap) {
+
+        memberService.checkDuplicateMemberID(paramMap.get("userId"));
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/members/check-email")
+    public ResponseEntity<?> checkUserEmail(@RequestBody Map<String, String> paramMap) {
+
+        memberService.checkDuplicateMemberEmail(paramMap.get("email"));
+
+        return ResponseEntity.ok().build();
+    }
 }
