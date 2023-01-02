@@ -48,15 +48,14 @@ public class MemberService {
                 .userId(dto.getUserId())
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .address(dto.getAddress())
                 .telephone(dto.getTelephone())
                 .roles(Collections.singletonList("ROLE_USER"))
                 .build();
 
-
         memberRepository.save(member);
         return member;
     }
+
 
     public TokenDto login(MemberLoginRequestDto dto) {
 

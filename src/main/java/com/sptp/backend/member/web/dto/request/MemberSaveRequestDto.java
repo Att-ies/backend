@@ -13,7 +13,6 @@ public class MemberSaveRequestDto {
     private String userId;
     private String email;
     private String password;
-    private String address;
     private String telephone;
 
 }

@@ -43,7 +43,6 @@ public class MemberController {
                 .username(member.getUsername())
                 .userId(member.getUserId())
                 .email(member.getEmail())
-                .address(member.getAddress())
                 .telephone(member.getTelephone())
                 .build();
 
