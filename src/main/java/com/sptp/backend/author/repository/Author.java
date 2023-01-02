@@ -1,14 +1,12 @@
-package com.sptp.backend.member.repository;
+package com.sptp.backend.author.repository;
 
-import com.sptp.backend.keyword.repository.Keyword;
+import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -16,11 +14,17 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Member {
+@Table(uniqueConstraints={@UniqueConstraint(columnNames={"userId", "email"})})
+public class Author {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "author_id")
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     private String username;
     private String userId;
@@ -28,7 +32,13 @@ public class Member {
     private String password;
     private String address;
     private String telephone;
+    private String image;
     private String role;
+    private String education;
+    private String history;
+    private String description;
+    private String instagram;
+    private String behance;
 
     public void resetPassword() {
 
@@ -36,3 +46,4 @@ public class Member {
         this.password = UUID.randomUUID().toString().substring(0, PASSWORD_LENGTH);
     }
 }
+
