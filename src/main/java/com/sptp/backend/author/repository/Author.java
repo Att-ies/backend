@@ -33,7 +33,8 @@ public class Author {
     private String address;
     private String telephone;
     private String image;
-    private String role;
+    @Builder.Default
+    private String roles = "ROLE_AUTHOR";
     private String education;
     private String history;
     private String description;

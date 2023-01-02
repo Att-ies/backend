@@ -28,7 +28,8 @@ public class Member {
     private String password;
     private String address;
     private String telephone;
-    private String role;
+    @Builder.Default
+    private String roles = "ROLE_USER";
 
     public void resetPassword() {
 

@@ -46,7 +46,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         // 처음 로그인일 경우 회원가입 로직 실행
         if (memberRepository.existsByEmail(email) == false) {
-            Member member = Member.builder().email(email).username(username).roles(Collections.singletonList("ROLE_USER")).build();
+            Member member = Member.builder().email(email).username(username).build();
+            
             memberRepository.save(member);
 
             TokenDto tokenDto = jwtTokenProvider.createToken(email, member.getRoles());

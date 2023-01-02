@@ -50,7 +50,6 @@ public class MemberService {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .address(dto.getAddress())
                 .telephone(dto.getTelephone())
-                .roles(Collections.singletonList("ROLE_USER"))
                 .build();
 
 
