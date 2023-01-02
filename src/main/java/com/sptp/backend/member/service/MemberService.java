@@ -1,5 +1,6 @@
 package com.sptp.backend.member.service;
 
+import com.sptp.backend.member.web.dto.request.AuthorSaveRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
@@ -54,6 +55,31 @@ public class MemberService {
 
         memberRepository.save(member);
         return member;
+    }
+
+    @Transactional
+    public Member saveAuthor(AuthorSaveRequestDto dto) {
+
+        checkDuplicateMemberID(dto.getUserId());
+        checkDuplicateMemberEmail(dto.getEmail());
+
+        Member member = Member.builder()
+                .username(dto.getUsername())
+                .userId(dto.getUserId())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .telephone(dto.getTelephone())
+                .roles(Collections.singletonList("ROLE_AUTHOR"))
+                .education(dto.getEducation())
+                .history(dto.getHistory())
+                .description(dto.getDescription())
+                .instagram(dto.getInstagram())
+                .behance(dto.getBehance())
+                .build();
+
+        memberRepository.save(member);
+        return member;
+
     }
 
 
