@@ -22,14 +22,24 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
+    // 공통 컬럼
     private String username;
     private String userId;
     private String email;
     private String password;
     private String address;
     private String telephone;
+
+    // 작가 컬럼
+    private String education;
+    private String history;
+    private String description;
+    private String instagram;
+    private String behance;
+
+    @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
-    private String roles = "ROLE_USER";
+    private List<String> roles = new ArrayList<>();
 
     public void resetPassword() {
 
