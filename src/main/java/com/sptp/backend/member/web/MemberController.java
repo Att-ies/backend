@@ -6,6 +6,7 @@ import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
 import com.sptp.backend.member.web.dto.response.AuthorSaveResponseDto;
+import com.sptp.backend.member.web.dto.response.CheckDuplicateResponse;
 import com.sptp.backend.member.web.dto.response.MemberSaveResponseDto;
 import com.sptp.backend.member.web.dto.response.TokenResponseDto;
 import com.sptp.backend.member.repository.Member;
@@ -116,23 +117,24 @@ public class MemberController {
         String newPassword = memberService.changePassword(email);
         emailService.sendNewPasswordMessage(email, newPassword);
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PostMapping("/members/check-id")
-    public ResponseEntity<?> checkUserId(@RequestBody Map<String, String> paramMap) {
+    @GetMapping("/members/check-id")
+    public ResponseEntity<?> checkUserId(@RequestParam("userId") String userId) {
 
-        memberService.checkDuplicateMemberID(paramMap.get("userId"));
-
-        return ResponseEntity.ok().build();
+        boolean isDuplicated = memberService.isDuplicateUserId(userId);
+        CheckDuplicateResponse checkDuplicateResponse = CheckDuplicateResponse.builder().duplicate(isDuplicated).build();
+        return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
     }
 
-    @PostMapping("/members/check-email")
-    public ResponseEntity<?> checkUserEmail(@RequestBody Map<String, String> paramMap) {
+    @GetMapping("/members/check-email")
+    public ResponseEntity<?> checkUserEmail(@RequestParam("email") String email) {
 
-        memberService.checkDuplicateMemberEmail(paramMap.get("email"));
+        boolean isDuplicated = memberService.isDuplicateEmail(email);
+        CheckDuplicateResponse checkDuplicateResponse = CheckDuplicateResponse.builder().duplicate(isDuplicated).build();
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
     }
 
     @PostMapping("authors/join")
