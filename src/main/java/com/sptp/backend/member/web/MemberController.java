@@ -116,23 +116,23 @@ public class MemberController {
         String newPassword = memberService.changePassword(email);
         emailService.sendNewPasswordMessage(email, newPassword);
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PostMapping("/members/check-id")
-    public ResponseEntity<?> checkUserId(@RequestBody Map<String, String> paramMap) {
+    @GetMapping("/members/check-id")
+    public ResponseEntity checkUserId(@RequestParam("userId") String userId) {
 
-        memberService.checkDuplicateMemberID(paramMap.get("userId"));
+        memberService.checkDuplicateMemberID(userId);
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PostMapping("/members/check-email")
-    public ResponseEntity<?> checkUserEmail(@RequestBody Map<String, String> paramMap) {
+    @GetMapping("/members/check-email")
+    public ResponseEntity checkUserEmail(@RequestParam("email") String email) {
 
-        memberService.checkDuplicateMemberEmail(paramMap.get("email"));
+        memberService.checkDuplicateMemberEmail(email);
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @PostMapping("authors/join")
