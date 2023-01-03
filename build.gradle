@@ -43,6 +43,9 @@ dependencies {
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	//gson
+	implementation 'com.google.code.gson:gson:2.9.0'
+
 }
 
 tasks.named('test') {
