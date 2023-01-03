@@ -39,7 +39,7 @@ public class MemberService {
     @Transactional
     public Member saveUser(MemberSaveRequestDto dto) {
 
-        checkDuplicateMemberID(dto.getUserId());
+        checkDuplicateMemberUserID(dto.getUserId());
         checkDuplicateMemberEmail(dto.getEmail());
 
         Member member = Member.builder()
@@ -58,7 +58,7 @@ public class MemberService {
     @Transactional
     public Member saveAuthor(AuthorSaveRequestDto dto) {
 
-        checkDuplicateMemberID(dto.getUserId());
+        checkDuplicateMemberUserID(dto.getUserId());
         checkDuplicateMemberEmail(dto.getEmail());
 
         Member member = Member.builder()
@@ -127,7 +127,7 @@ public class MemberService {
                 .set(accessToken, "blackList", expiration, TimeUnit.MILLISECONDS);
     }
 
-    public void checkDuplicateMemberID(String userId) {
+    public void checkDuplicateMemberUserID(String userId) {
         if (memberRepository.existsByUserId(userId)) {
             throw new CustomException(ErrorCode.EXIST_USER_ID);
         }
@@ -139,12 +139,12 @@ public class MemberService {
         }
     }
 
-    public boolean checkDuplicateMemberBoolean(String email) {
-        if (memberRepository.existsByEmail(email)) {
-            return true;
-        }else{
-            return false;
-        }
+    public boolean isDuplicateUserId(String userId) {
+        return memberRepository.existsByUserId(userId);
+    }
+
+    public boolean isDuplicateEmail(String email) {
+        return memberRepository.existsByEmail(email);
     }
 
     @Transactional
