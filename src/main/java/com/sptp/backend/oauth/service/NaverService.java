@@ -92,6 +92,7 @@ public class NaverService {
 
             br.close();
             bw.close();
+            conn.disconnect();
 
         }catch (Exception e){
             e.printStackTrace();

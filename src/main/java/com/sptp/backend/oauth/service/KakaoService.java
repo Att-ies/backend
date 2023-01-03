@@ -92,6 +92,7 @@ public class KakaoService {
 
             br.close();
             bw.close();
+            conn.disconnect();
 
         } catch (Exception e) {
             e.printStackTrace();

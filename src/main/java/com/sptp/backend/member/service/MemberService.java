@@ -144,17 +144,15 @@ public class MemberService {
     public boolean isDuplicateUserId(String userId) {
         if (memberRepository.existsByUserId(userId)) {
             return true;
-        }else{
-            return false;
         }
+        return false;
     }
 
     public boolean isDuplicateEmail(String email) {
         if (memberRepository.existsByEmail(email)) {
             return true;
-        }else{
-            return false;
         }
+        return false;
     }
 
 }

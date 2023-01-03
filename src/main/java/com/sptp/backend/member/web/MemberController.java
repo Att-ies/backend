@@ -123,7 +123,7 @@ public class MemberController {
     @GetMapping("/members/check-id")
     public ResponseEntity<?> checkUserId(@RequestParam("userId") String userId) {
 
-        boolean isDuplicated = memberService.checkDuplicateMemberUserIdBoolean(userId);
+        boolean isDuplicated = memberService.isDuplicateUserId(userId);
         CheckDuplicateResponse checkDuplicateResponse = CheckDuplicateResponse.builder().duplicate(isDuplicated).build();
         return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
     }
@@ -131,7 +131,7 @@ public class MemberController {
     @GetMapping("/members/check-email")
     public ResponseEntity<?> checkUserEmail(@RequestParam("email") String email) {
 
-        boolean isDuplicated = memberService.checkDuplicateMemberEmailBoolean(email);
+        boolean isDuplicated = memberService.isDuplicateEmail(email);
         CheckDuplicateResponse checkDuplicateResponse = CheckDuplicateResponse.builder().duplicate(isDuplicated).build();
 
         return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
