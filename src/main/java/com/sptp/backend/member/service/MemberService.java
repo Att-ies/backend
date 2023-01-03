@@ -144,10 +144,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateUser(Long id, MemberUpdateRequest dto) {
-
-        Member member = memberRepository.findById(id)
-            .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+    public void updateUser(Member member, MemberUpdateRequest dto) {
 
         if(StringUtils.isNotBlank(dto.getEmail()) && !dto.getEmail().equals(member.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
