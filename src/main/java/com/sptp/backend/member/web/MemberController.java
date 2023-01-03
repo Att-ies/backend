@@ -1,9 +1,11 @@
 package com.sptp.backend.member.web;
 
+import com.sptp.backend.member.web.dto.request.AuthorSaveRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
 import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
+import com.sptp.backend.member.web.dto.response.AuthorSaveResponseDto;
 import com.sptp.backend.member.web.dto.response.MemberSaveResponseDto;
 import com.sptp.backend.member.web.dto.response.TokenResponseDto;
 import com.sptp.backend.member.repository.Member;
@@ -43,7 +45,6 @@ public class MemberController {
                 .username(member.getUsername())
                 .userId(member.getUserId())
                 .email(member.getEmail())
-                .address(member.getAddress())
                 .telephone(member.getTelephone())
                 .build();
 
@@ -133,4 +134,25 @@ public class MemberController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("authors/join")
+    public ResponseEntity<AuthorSaveResponseDto> joinAuthor(@RequestBody AuthorSaveRequestDto authorSaveRequestDto) {
+
+        Member member = memberService.saveAuthor(authorSaveRequestDto);
+
+        AuthorSaveResponseDto authorSaveResponseDto = AuthorSaveResponseDto.builder()
+                .username(member.getUsername())
+                .userId(member.getUserId())
+                .email(member.getEmail())
+                .telephone(member.getTelephone())
+                .education(member.getEducation())
+                .history(member.getHistory())
+                .description(member.getDescription())
+                .instagram(member.getInstagram())
+                .behance(member.getBehance())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(authorSaveResponseDto);
+    }
+
 }
