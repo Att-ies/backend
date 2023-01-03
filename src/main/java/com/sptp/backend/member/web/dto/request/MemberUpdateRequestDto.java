@@ -11,4 +11,5 @@ public class MemberUpdateRequestDto {
 
     private String username;
     private String email;
+    private String image;
 }

@@ -27,6 +27,7 @@ public class Member {
     private String password;
     private String address;
     private String telephone;
+    private String image;
 
     // 작가 컬럼
     private String education;

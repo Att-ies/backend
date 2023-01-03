@@ -157,6 +157,8 @@ public class MemberService {
             member.setEmail(dto.getEmail());
         if(StringUtils.isNotBlank(dto.getUsername()))
             member.setUsername(dto.getUsername());
+        if(StringUtils.isNotBlank(dto.getImage()))
+            member.setImage(dto.getImage());
 
         memberRepository.save(member);
     }
