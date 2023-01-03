@@ -25,7 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         log.info("User ID = {}", userId);
         Optional<Member> member = memberRepository.findByUserId(userId);
-        if(member.isEmpty()){
+        if (member.isEmpty()) {
             member = memberRepository.findByEmail(userId);
         }
         if (member.isEmpty()) {

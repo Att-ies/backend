@@ -141,7 +141,7 @@ public class MemberService {
         }
     }
 
-    public boolean checkDuplicateMemberUserIdBoolean(String userId) {
+    public boolean isDuplicateUserId(String userId) {
         if (memberRepository.existsByUserId(userId)) {
             return true;
         }else{
@@ -149,7 +149,7 @@ public class MemberService {
         }
     }
 
-    public boolean checkDuplicateMemberEmailBoolean(String email) {
+    public boolean isDuplicateEmail(String email) {
         if (memberRepository.existsByEmail(email)) {
             return true;
         }else{
