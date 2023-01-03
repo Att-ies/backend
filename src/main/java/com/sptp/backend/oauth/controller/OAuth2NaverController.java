@@ -21,8 +21,6 @@ public class OAuth2NaverController {
 
     @GetMapping("/oauth2/naver")
     public ResponseEntity<?> naverCallback(@RequestParam("code") String code, @RequestParam("state") String state) throws IOException {
-        System.out.println("code = " + code);
-        System.out.println("state = " + state);
 
         NaverTokenDto naverTokenDto = naverService.getNaverToken(code, state);
         TokenDto tokenDto = naverService.loginWithNaver(naverTokenDto);
