@@ -153,7 +153,7 @@ public class MemberService {
         Member member = memberRepository.findById(id)
             .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        if(StringUtils.isNotBlank(dto.getEmail())) {
+        if(StringUtils.isNotBlank(dto.getEmail()))
             member.setEmail(dto.getEmail());
         if(StringUtils.isNotBlank(dto.getUsername()))
             member.setUsername(dto.getUsername());
