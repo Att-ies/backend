@@ -166,6 +166,6 @@ public class MemberController {
 
         memberService.updateUser(member_id, memberUpdateRequestDto);
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity(HttpStatus.OK);
     }
 }
