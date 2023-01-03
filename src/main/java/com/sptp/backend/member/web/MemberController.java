@@ -1,10 +1,8 @@
 package com.sptp.backend.member.web;
 
-import com.sptp.backend.member.web.dto.request.AuthorSaveRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
+import com.sptp.backend.jwt.service.dto.CustomUserDetails;
+import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
-import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
 import com.sptp.backend.member.web.dto.response.AuthorSaveResponseDto;
 import com.sptp.backend.member.web.dto.response.MemberSaveResponseDto;
 import com.sptp.backend.member.web.dto.response.TokenResponseDto;
@@ -17,6 +15,9 @@ import org.springframework.http.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Email;
@@ -155,4 +156,14 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(authorSaveResponseDto);
     }
 
+    // 회원 정보 수정
+    @PatchMapping("/members")
+    public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody MemberUpdateRequestDto memberUpdateRequestDto) {
+
+        Long member_id  = customUserDetails.getMember().getId();
+
+        memberService.updateUser(member_id, memberUpdateRequestDto);
+
+        return ResponseEntity.ok().build();
+    }
 }

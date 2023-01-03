@@ -1,9 +1,7 @@
 package com.sptp.backend.member.service;
 
-import com.sptp.backend.member.web.dto.request.AuthorSaveRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
+import com.nimbusds.oauth2.sdk.util.StringUtils;
+import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.common.exception.CustomException;
@@ -147,6 +145,22 @@ public class MemberService {
         }else{
             return false;
         }
+    }
+
+    @Transactional
+    public void updateUser(Long id, MemberUpdateRequestDto dto) {
+
+        Member member = memberRepository.findById(id)
+            .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        if(StringUtils.isNotBlank(dto.getEmail())) {
+            checkDuplicateMemberEmail(dto.getEmail());
+            member.setEmail(dto.getEmail());
+        }
+        if(StringUtils.isNotBlank(dto.getUsername()))
+            member.setUsername(dto.getUsername());
+
+        memberRepository.save(member);
     }
 
 }
