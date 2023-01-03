@@ -6,6 +6,7 @@ import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
 import com.sptp.backend.member.web.dto.response.AuthorSaveResponseDto;
+import com.sptp.backend.member.web.dto.response.CheckDuplicateResponse;
 import com.sptp.backend.member.web.dto.response.MemberSaveResponseDto;
 import com.sptp.backend.member.web.dto.response.TokenResponseDto;
 import com.sptp.backend.member.repository.Member;
@@ -120,19 +121,20 @@ public class MemberController {
     }
 
     @GetMapping("/members/check-id")
-    public ResponseEntity checkUserId(@RequestParam("userId") String userId) {
+    public ResponseEntity<?> checkUserId(@RequestParam("userId") String userId) {
 
-        memberService.checkDuplicateMemberID(userId);
-
-        return new ResponseEntity(HttpStatus.OK);
+        boolean isDuplicated = memberService.checkDuplicateMemberUserIdBoolean(userId);
+        CheckDuplicateResponse checkDuplicateResponse = CheckDuplicateResponse.builder().duplicate(isDuplicated).build();
+        return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
     }
 
     @GetMapping("/members/check-email")
-    public ResponseEntity checkUserEmail(@RequestParam("email") String email) {
+    public ResponseEntity<?> checkUserEmail(@RequestParam("email") String email) {
 
-        memberService.checkDuplicateMemberEmail(email);
+        boolean isDuplicated = memberService.checkDuplicateMemberEmailBoolean(email);
+        CheckDuplicateResponse checkDuplicateResponse = CheckDuplicateResponse.builder().duplicate(isDuplicated).build();
 
-        return new ResponseEntity(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
     }
 
     @PostMapping("authors/join")
