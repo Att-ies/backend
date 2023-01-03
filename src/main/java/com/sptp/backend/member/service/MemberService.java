@@ -1,9 +1,7 @@
 package com.sptp.backend.member.service;
 
-import com.sptp.backend.member.web.dto.request.AuthorSaveRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
+import com.nimbusds.oauth2.sdk.util.StringUtils;
+import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.common.exception.CustomException;
@@ -149,4 +147,29 @@ public class MemberService {
         return memberRepository.existsByEmail(email);
     }
 
+
+    @Transactional
+    public void updateArtist(Member member, ArtistUpdateRequest dto) {
+
+        if(StringUtils.isNotBlank(dto.getEmail()) && !dto.getEmail().equals(member.getEmail())) {
+            checkDuplicateMemberEmail(dto.getEmail());
+            member.setEmail(dto.getEmail());
+        }
+        if(StringUtils.isNotBlank(dto.getUsername()))
+            member.setUsername(dto.getUsername());
+        if(StringUtils.isNotBlank(dto.getImage()))
+            member.setImage(dto.getImage());
+        if(StringUtils.isNotBlank(dto.getEducation()))
+            member.setEducation(dto.getEducation());
+        if(StringUtils.isNotBlank(dto.getHistory()))
+            member.setHistory(dto.getHistory());
+        if(StringUtils.isNotBlank(dto.getDescription()))
+            member.setDescription(dto.getDescription());
+        if(StringUtils.isNotBlank(dto.getInstagram()))
+            member.setInstagram(dto.getInstagram());
+        if(StringUtils.isNotBlank(dto.getBehance()))
+            member.setBehance(dto.getBehance());
+
+        memberRepository.save(member);
+    }
 }

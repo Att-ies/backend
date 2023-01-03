@@ -4,6 +4,7 @@ import com.sptp.backend.keyword.repository.Keyword;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -29,6 +31,7 @@ public class Member {
     private String password;
     private String address;
     private String telephone;
+    private String image;
 
     // 작가 컬럼
     private String education;
