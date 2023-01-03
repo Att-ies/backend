@@ -18,12 +18,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -122,6 +119,15 @@ public class MemberService {
         findMember.changePassword(passwordEncoder.encode(password));
 
         return findMember.getPassword();
+    }
+
+    @Transactional
+    public void changePassword(Long loginMemberId, String password) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_EMAIL));
+
+        findMember.changePassword(passwordEncoder.encode(password));
     }
 
     public void logout(String accessToken) {

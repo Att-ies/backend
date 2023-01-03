@@ -1,10 +1,9 @@
 package com.sptp.backend.member.web;
 
-import com.sptp.backend.member.web.dto.request.AuthorSaveRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
+import com.nimbusds.jwt.JWT;
+import com.sptp.backend.jwt.service.dto.CustomUserDetails;
+import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
-import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
 import com.sptp.backend.member.web.dto.response.AuthorSaveResponseDto;
 import com.sptp.backend.member.web.dto.response.MemberSaveResponseDto;
 import com.sptp.backend.member.web.dto.response.TokenResponseDto;
@@ -17,9 +16,11 @@ import org.springframework.http.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Email;
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class MemberController {
     }
 
     @PostMapping("/members/token")
-    public ResponseEntity<?> refresh(@RequestBody Map<String, String> refreshToken){
+    public ResponseEntity<?> refresh(@RequestBody Map<String, String> refreshToken) {
 
         //Refresh Token 검증
         String recreatedAccessToken = jwtService.validateRefreshToken(refreshToken.get("refreshToken"));
@@ -155,4 +156,13 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(authorSaveResponseDto);
     }
 
+    @PatchMapping("/members/password")
+    public ResponseEntity<PasswordChangeRequestDto> changePassword(
+            @RequestBody @Valid PasswordChangeRequestDto passwordChangeRequestDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        
+        memberService.changePassword(userDetails.getMember().getId(), passwordChangeRequestDto.getPassword());
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }
