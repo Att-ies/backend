@@ -16,12 +16,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -148,7 +144,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateUser(Long id, MemberUpdateRequestDto dto) {
+    public void updateUser(Long id, MemberUpdateRequest dto) {
 
         Member member = memberRepository.findById(id)
             .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
@@ -164,5 +160,4 @@ public class MemberService {
 
         memberRepository.save(member);
     }
-
 }

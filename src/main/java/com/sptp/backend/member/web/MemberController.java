@@ -17,12 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Email;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -162,11 +159,11 @@ public class MemberController {
     // 회원 정보 수정
     @Secured("ROLE_USER")
     @PatchMapping("/members")
-    public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody MemberUpdateRequestDto memberUpdateRequestDto) {
+    public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody MemberUpdateRequest memberUpdateRequest) {
 
         Long member_id  = customUserDetails.getMember().getId();
 
-        memberService.updateUser(member_id, memberUpdateRequestDto);
+        memberService.updateUser(member_id, memberUpdateRequest);
 
         return new ResponseEntity(HttpStatus.OK);
     }
