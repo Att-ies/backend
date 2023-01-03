@@ -112,12 +112,14 @@ public class MemberService {
     }
 
     @Transactional
-    public String changePassword(String email) {
+    public String resetPassword(String email) {
+        final int PASSWORD_LENGTH = 8;
 
         Member findMember = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_EMAIL));
 
-        findMember.resetPassword();
+        String password = UUID.randomUUID().toString().substring(0, PASSWORD_LENGTH);
+        findMember.changePassword(passwordEncoder.encode(password));
 
         return findMember.getPassword();
     }

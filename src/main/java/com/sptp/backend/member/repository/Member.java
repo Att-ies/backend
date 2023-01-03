@@ -1,10 +1,7 @@
 package com.sptp.backend.member.repository;
 
 import com.sptp.backend.keyword.repository.Keyword;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -41,9 +38,8 @@ public class Member {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-    public void resetPassword() {
+    public void changePassword(String password) {
 
-        final int PASSWORD_LENGTH = 8;
-        this.password = UUID.randomUUID().toString().substring(0, PASSWORD_LENGTH);
+        this.password = password;
     }
 }

@@ -113,7 +113,7 @@ public class MemberController {
     public ResponseEntity<?> sendNewPassword(@RequestBody Map<String, String> paramMap) throws Exception {
 
         String email = paramMap.get("email");
-        String newPassword = memberService.changePassword(email);
+        String newPassword = memberService.resetPassword(email);
         emailService.sendNewPasswordMessage(email, newPassword);
 
         return ResponseEntity.ok().build();
