@@ -161,9 +161,9 @@ public class MemberController {
     @PatchMapping("/members")
     public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody MemberUpdateRequest memberUpdateRequest) {
 
-        Long member_id  = customUserDetails.getMember().getId();
+        Long memberId  = customUserDetails.getMember().getId();
 
-        memberService.updateUser(member_id, memberUpdateRequest);
+        memberService.updateUser(memberId, memberUpdateRequest);
 
         return new ResponseEntity(HttpStatus.OK);
     }
