@@ -169,6 +169,7 @@ public class MemberService {
     @Transactional
     public void withdrawUser(Long loginMemberId) {
 
+        // TODO 키워드 제거 기능 추가
         memberRepository.deleteById(loginMemberId);
     }
 }
