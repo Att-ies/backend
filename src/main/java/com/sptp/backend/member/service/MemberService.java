@@ -1,7 +1,5 @@
 package com.sptp.backend.member.service;
 
-import com.sptp.backend.keyword.repository.Keyword;
-import com.sptp.backend.keyword.repository.KeywordRepository;
 import com.sptp.backend.member.web.dto.request.AuthorSaveRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
@@ -14,6 +12,7 @@ import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.repository.RefreshTokenRepository;
 import com.sptp.backend.jwt.service.JwtService;
+import com.sptp.backend.memberkeyword.MemberKeywordMap;
 import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -41,7 +37,6 @@ public class MemberService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
     private final RedisTemplate redisTemplate;
-    private final KeywordRepository keywordRepository;
     private final MemberKeywordRepository memberKeywordRepository;
 
     @Transactional
@@ -63,11 +58,11 @@ public class MemberService {
 
         for (String keywordName : dto.getKeywords()) {
 
-            Keyword keyword = keywordRepository.findByName(keywordName);
+            checkExistsKeyword(keywordName);
 
             MemberKeyword memberKeyword = MemberKeyword.builder()
                     .member(member)
-                    .keyword(keyword)
+                    .keywordId(MemberKeywordMap.map.get(keywordName))
                     .build();
 
             memberKeywordRepository.save(memberKeyword);
@@ -161,6 +156,12 @@ public class MemberService {
     public void checkDuplicateMemberEmail(String email) {
         if (memberRepository.existsByEmail(email)) {
             throw new CustomException(ErrorCode.EXIST_USER_EMAIL);
+        }
+    }
+
+    public void checkExistsKeyword(String key) {
+        if (!MemberKeywordMap.map.containsKey(key)) {
+            throw new CustomException(ErrorCode.NOT_FOUND_KEYWORD);
         }
     }
 

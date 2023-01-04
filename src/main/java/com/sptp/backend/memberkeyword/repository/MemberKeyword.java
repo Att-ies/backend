@@ -1,6 +1,5 @@
 package com.sptp.backend.memberkeyword.repository;
 
-import com.sptp.backend.keyword.repository.Keyword;
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,8 +23,6 @@ public class MemberKeyword {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "keyword_id")
-    private Keyword keyword;
+    private Integer keywordId;
 }
 
