@@ -1,16 +1,13 @@
 package com.sptp.backend.member.service;
 
-import com.sptp.backend.member.web.dto.request.AuthorSaveRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
+import com.nimbusds.oauth2.sdk.util.StringUtils;
+import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
-import com.sptp.backend.jwt.repository.RefreshTokenRepository;
 import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.memberkeyword.MemberKeywordMap;
 import com.sptp.backend.memberkeyword.repository.MemberKeyword;
@@ -21,9 +18,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.Collections;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -34,7 +32,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
     private final RedisTemplate redisTemplate;
     private final MemberKeywordRepository memberKeywordRepository;
@@ -115,14 +112,25 @@ public class MemberService {
     }
 
     @Transactional
-    public String changePassword(String email) {
+    public String resetPassword(String email) {
+        final int PASSWORD_LENGTH = 8;
 
         Member findMember = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_EMAIL));
 
-        findMember.resetPassword();
+        String password = UUID.randomUUID().toString().substring(0, PASSWORD_LENGTH);
+        findMember.changePassword(passwordEncoder.encode(password));
 
         return findMember.getPassword();
+    }
+
+    @Transactional
+    public void changePassword(Long loginMemberId, String password) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        findMember.changePassword(passwordEncoder.encode(password));
     }
 
     @Transactional
@@ -177,5 +185,19 @@ public class MemberService {
             memberKeywordRepository.save(memberKeyword);
         }
     }
-
 }
+
+    @Transactional
+    public void updateUser(Long loginMemberId, MemberUpdateRequest dto) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        if (StringUtils.isNotBlank(dto.getEmail()) && !dto.getEmail().equals(findMember.getEmail())) {
+            checkDuplicateMemberEmail(dto.getEmail());
+        }
+
+        findMember.updateUser(dto);
+    }
+}
+

@@ -2,7 +2,9 @@ package com.sptp.backend.common.exception;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +18,7 @@ public class ErrorResponse {
     private final String code;
     private final String detail;
 
-    public static ResponseEntity<Object> toResponseEntity(CustomException e) {
+    public static ResponseEntity<ErrorResponse> toResponseEntity(CustomException e) {
         ErrorCode errorCode = e.getErrorCode();
 
         return ResponseEntity
@@ -31,4 +33,27 @@ public class ErrorResponse {
                 );
     }
 
+    public static ResponseEntity<ErrorResponse> toResponseEntity(HttpStatus httpStatus) {
+        return ResponseEntity
+                .status(httpStatus)
+                .body(
+                        ErrorResponse.builder()
+                                .status(httpStatus.value())//httpStatus 코드
+                                .error(httpStatus.name())//httpStatus 이름
+                                .build()
+                );
+    }
+
+    public static ResponseEntity<ErrorResponse> toResponseEntity(HttpStatus httpStatus, FieldError fieldError) {
+        return ResponseEntity
+                .status(httpStatus)
+                .body(
+                        ErrorResponse.builder()
+                                .status(httpStatus.value())//httpStatus 코드
+                                .error(httpStatus.name())//httpStatus 이름
+                                .code(fieldError.getCode())//errorCode 의 이름
+                                .detail(fieldError.getDefaultMessage())//errorCode 상세
+                                .build()
+                );
+    }
 }
