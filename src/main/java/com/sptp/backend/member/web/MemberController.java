@@ -1,5 +1,7 @@
 package com.sptp.backend.member.web;
 
+import com.sptp.backend.common.exception.CustomException;
+import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
@@ -16,9 +18,10 @@ import org.springframework.http.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -32,8 +35,6 @@ public class MemberController {
     private final MemberService memberService;
     private final EmailService emailService;
     private final JwtService jwtService;
-
-    HashMap<String, String> emailMap = new HashMap<>();
 
     // 회원가입
     @PostMapping("/members/join")
@@ -67,7 +68,7 @@ public class MemberController {
     }
 
     @PostMapping("/members/token")
-    public ResponseEntity<?> refresh(@RequestBody Map<String, String> refreshToken){
+    public ResponseEntity<?> refresh(@RequestBody Map<String, String> refreshToken) {
 
         //Refresh Token 검증
         String recreatedAccessToken = jwtService.validateRefreshToken(refreshToken.get("refreshToken"));
@@ -113,7 +114,7 @@ public class MemberController {
     public ResponseEntity<?> sendNewPassword(@RequestBody Map<String, String> paramMap) throws Exception {
 
         String email = paramMap.get("email");
-        String newPassword = memberService.changePassword(email);
+        String newPassword = memberService.resetPassword(email);
         emailService.sendNewPasswordMessage(email, newPassword);
 
         return new ResponseEntity(HttpStatus.OK);
@@ -154,6 +155,26 @@ public class MemberController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(authorSaveResponseDto);
+    }
+
+    @PatchMapping("/members/password")
+    public ResponseEntity<PasswordChangeRequest> changePassword(
+            @RequestBody @Valid PasswordChangeRequest passwordChangeRequest,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        validatePasswordMatching(passwordChangeRequest);
+        memberService.changePassword(userDetails.getMember().getId(), passwordChangeRequest.getPassword());
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    private void validatePasswordMatching(PasswordChangeRequest dto) {
+        String checkPassword = dto.getCheckPassword();
+        String password = dto.getPassword();
+
+        if (!checkPassword.equals(password)) {
+            throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD);
+        }
     }
 
     // 회원 정보 수정

@@ -8,7 +8,6 @@ import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
-import com.sptp.backend.jwt.repository.RefreshTokenRepository;
 import com.sptp.backend.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -28,7 +28,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
     private final RedisTemplate redisTemplate;
 
@@ -106,14 +105,25 @@ public class MemberService {
     }
 
     @Transactional
-    public String changePassword(String email) {
+    public String resetPassword(String email) {
+        final int PASSWORD_LENGTH = 8;
 
         Member findMember = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_EMAIL));
 
-        findMember.resetPassword();
+        String password = UUID.randomUUID().toString().substring(0, PASSWORD_LENGTH);
+        findMember.changePassword(passwordEncoder.encode(password));
 
         return findMember.getPassword();
+    }
+
+    @Transactional
+    public void changePassword(Long loginMemberId, String password) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        findMember.changePassword(passwordEncoder.encode(password));
     }
 
     public void logout(String accessToken) {
