@@ -1,6 +1,7 @@
 package com.sptp.backend.member.repository;
 
 import com.nimbusds.oauth2.sdk.util.StringUtils;
+import com.sptp.backend.member.web.dto.request.ArtistUpdateRequest;
 import com.sptp.backend.member.web.dto.request.MemberUpdateRequest;
 import lombok.*;
 
@@ -52,5 +53,33 @@ public class Member {
             this.username = dto.getUsername();
         if (StringUtils.isNotBlank(dto.getImage()))
             this.image = dto.getImage();
+    }
+
+    public void updateArtist(ArtistUpdateRequest dto) {
+
+        if(StringUtils.isNotBlank(dto.getEmail())) {
+            this.email = dto.getEmail();
+        }
+        if(StringUtils.isNotBlank(dto.getUsername())) {
+            this.username = dto.getUsername();
+        }
+        if(StringUtils.isNotBlank(dto.getImage())) {
+            this.image = dto.getImage();
+        }
+        if(StringUtils.isNotBlank(dto.getEducation())) {
+            this.education = dto.getEducation();
+        }
+        if(StringUtils.isNotBlank(dto.getHistory())) {
+            this.history = dto.getHistory();
+        }
+        if(StringUtils.isNotBlank(dto.getDescription())) {
+            this.description = dto.getDescription();
+        }
+        if(StringUtils.isNotBlank(dto.getInstagram())) {
+            this.instagram = dto.getInstagram();
+        }
+        if(StringUtils.isNotBlank(dto.getBehance())) {
+            this.behance = dto.getBehance();
+        }
     }
 }

@@ -188,11 +188,9 @@ public class MemberController {
 
     // 작가 정보 수정
     @PatchMapping("/artists")
-    public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody ArtistUpdateRequest artistUpdateRequest) {
+    public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ArtistUpdateRequest artistUpdateRequest) {
 
-        Member member  = customUserDetails.getMember();
-
-        memberService.updateArtist(member, artistUpdateRequest);
+        memberService.updateArtist(userDetails.getMember().getId(), artistUpdateRequest);
 
         return new ResponseEntity(HttpStatus.OK);
     }

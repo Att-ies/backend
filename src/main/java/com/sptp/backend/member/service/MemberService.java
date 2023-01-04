@@ -167,27 +167,15 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateArtist(Member member, ArtistUpdateRequest dto) {
+    public void updateArtist(Long loginMemberId, ArtistUpdateRequest dto) {
 
-        if(StringUtils.isNotBlank(dto.getEmail()) && !dto.getEmail().equals(member.getEmail())) {
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        if (StringUtils.isNotBlank(dto.getEmail()) && !dto.getEmail().equals(findMember.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
-            member.setEmail(dto.getEmail());
         }
-        if(StringUtils.isNotBlank(dto.getUsername()))
-            member.setUsername(dto.getUsername());
-        if(StringUtils.isNotBlank(dto.getImage()))
-            member.setImage(dto.getImage());
-        if(StringUtils.isNotBlank(dto.getEducation()))
-            member.setEducation(dto.getEducation());
-        if(StringUtils.isNotBlank(dto.getHistory()))
-            member.setHistory(dto.getHistory());
-        if(StringUtils.isNotBlank(dto.getDescription()))
-            member.setDescription(dto.getDescription());
-        if(StringUtils.isNotBlank(dto.getInstagram()))
-            member.setInstagram(dto.getInstagram());
-        if(StringUtils.isNotBlank(dto.getBehance()))
-            member.setBehance(dto.getBehance());
 
-        memberRepository.save(member);
+        findMember.updateArtist(dto);
     }
 }
