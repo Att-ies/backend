@@ -1,9 +1,12 @@
 package com.sptp.backend.member.web;
 
-import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
+import com.sptp.backend.common.exception.CustomException;
+import com.sptp.backend.common.exception.ErrorCode;
+import com.sptp.backend.jwt.service.dto.CustomUserDetails;
+import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
-import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
+import com.sptp.backend.member.web.dto.response.AuthorSaveResponseDto;
+import com.sptp.backend.member.web.dto.response.CheckDuplicateResponse;
 import com.sptp.backend.member.web.dto.response.MemberSaveResponseDto;
 import com.sptp.backend.member.web.dto.response.TokenResponseDto;
 import com.sptp.backend.member.repository.Member;
@@ -15,9 +18,11 @@ import org.springframework.http.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Email;
+import javax.validation.Valid;
+
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +36,6 @@ public class MemberController {
     private final EmailService emailService;
     private final JwtService jwtService;
 
-    HashMap<String, String> emailMap = new HashMap<>();
-
     // 회원가입
     @PostMapping("/members/join")
     public ResponseEntity<MemberSaveResponseDto> join(@RequestBody MemberSaveRequestDto memberSaveRequestDto) {
@@ -43,7 +46,6 @@ public class MemberController {
                 .username(member.getUsername())
                 .userId(member.getUserId())
                 .email(member.getEmail())
-                .address(member.getAddress())
                 .telephone(member.getTelephone())
                 .build();
 
@@ -66,7 +68,7 @@ public class MemberController {
     }
 
     @PostMapping("/members/token")
-    public ResponseEntity<?> refresh(@RequestBody Map<String, String> refreshToken){
+    public ResponseEntity<?> refresh(@RequestBody Map<String, String> refreshToken) {
 
         //Refresh Token 검증
         String recreatedAccessToken = jwtService.validateRefreshToken(refreshToken.get("refreshToken"));
@@ -112,25 +114,84 @@ public class MemberController {
     public ResponseEntity<?> sendNewPassword(@RequestBody Map<String, String> paramMap) throws Exception {
 
         String email = paramMap.get("email");
-        String newPassword = memberService.changePassword(email);
+        String newPassword = memberService.resetPassword(email);
         emailService.sendNewPasswordMessage(email, newPassword);
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PostMapping("/members/check-id")
-    public ResponseEntity<?> checkUserId(@RequestBody Map<String, String> paramMap) {
+    @GetMapping("/members/check-id")
+    public ResponseEntity<?> checkUserId(@RequestParam("userId") String userId) {
 
-        memberService.checkDuplicateMemberID(paramMap.get("userId"));
-
-        return ResponseEntity.ok().build();
+        boolean isDuplicated = memberService.isDuplicateUserId(userId);
+        CheckDuplicateResponse checkDuplicateResponse = CheckDuplicateResponse.builder().duplicate(isDuplicated).build();
+        return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
     }
 
-    @PostMapping("/members/check-email")
-    public ResponseEntity<?> checkUserEmail(@RequestBody Map<String, String> paramMap) {
+    @GetMapping("/members/check-email")
+    public ResponseEntity<?> checkUserEmail(@RequestParam("email") String email) {
 
-        memberService.checkDuplicateMemberEmail(paramMap.get("email"));
+        boolean isDuplicated = memberService.isDuplicateEmail(email);
+        CheckDuplicateResponse checkDuplicateResponse = CheckDuplicateResponse.builder().duplicate(isDuplicated).build();
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
+    }
+
+    @PostMapping("artists/join")
+    public ResponseEntity<AuthorSaveResponseDto> joinAuthor(@RequestBody AuthorSaveRequestDto authorSaveRequestDto) {
+
+        Member member = memberService.saveAuthor(authorSaveRequestDto);
+
+        AuthorSaveResponseDto authorSaveResponseDto = AuthorSaveResponseDto.builder()
+                .username(member.getUsername())
+                .userId(member.getUserId())
+                .email(member.getEmail())
+                .telephone(member.getTelephone())
+                .education(member.getEducation())
+                .history(member.getHistory())
+                .description(member.getDescription())
+                .instagram(member.getInstagram())
+                .behance(member.getBehance())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(authorSaveResponseDto);
+    }
+
+    @PatchMapping("/members/password")
+    public ResponseEntity<PasswordChangeRequest> changePassword(
+            @RequestBody @Valid PasswordChangeRequest passwordChangeRequest,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        validatePasswordMatching(passwordChangeRequest);
+        memberService.changePassword(userDetails.getMember().getId(), passwordChangeRequest.getPassword());
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    private void validatePasswordMatching(PasswordChangeRequest dto) {
+        String checkPassword = dto.getCheckPassword();
+        String password = dto.getPassword();
+
+        if (!checkPassword.equals(password)) {
+            throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD);
+        }
+    }
+
+    // 회원 정보 수정
+    @PatchMapping("/members")
+    public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MemberUpdateRequest memberUpdateRequest) {
+
+        memberService.updateUser(userDetails.getMember().getId(), memberUpdateRequest);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    // 작가 정보 수정
+    @PatchMapping("/artists")
+    public ResponseEntity<?> updateArtist(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ArtistUpdateRequest artistUpdateRequest) {
+
+        memberService.updateArtist(userDetails.getMember().getId(), artistUpdateRequest);
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

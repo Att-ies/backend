@@ -7,11 +7,16 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberSaveResponseDto {
+public class AuthorSaveResponseDto {
 
     private String username;
     private String userId;
     private String email;
     private String telephone;
 
+    private String education;
+    private String history;
+    private String description;
+    private String instagram;
+    private String behance;
 }

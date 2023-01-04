@@ -1,15 +1,17 @@
 package com.sptp.backend.member.repository;
 
-import com.sptp.backend.keyword.repository.Keyword;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import com.nimbusds.oauth2.sdk.util.StringUtils;
+import com.sptp.backend.member.web.dto.request.ArtistUpdateRequest;
+import com.sptp.backend.member.web.dto.request.MemberUpdateRequest;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -29,6 +31,7 @@ public class Member {
     private String password;
     private String address;
     private String telephone;
+    private String image;
 
     // 작가 컬럼
     private String education;
@@ -41,9 +44,57 @@ public class Member {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-    public void resetPassword() {
+    public void changePassword(String password) {
 
-        final int PASSWORD_LENGTH = 8;
-        this.password = UUID.randomUUID().toString().substring(0, PASSWORD_LENGTH);
+        this.password = password;
+    }
+
+    public void updateUser(MemberUpdateRequest dto) {
+
+        if (StringUtils.isNotBlank(dto.getEmail())) {
+            this.email = dto.getEmail();
+        }
+        if (StringUtils.isNotBlank(dto.getUsername())) {
+            this.username = dto.getUsername();
+        }
+        if (StringUtils.isNotBlank(dto.getImage())) {
+            this.image = dto.getImage();
+        }
+    }
+
+    public void updateArtist(ArtistUpdateRequest dto) {
+
+        if(StringUtils.isNotBlank(dto.getEmail())) {
+            this.email = dto.getEmail();
+        }
+        if(StringUtils.isNotBlank(dto.getUsername())) {
+            this.username = dto.getUsername();
+        }
+        if(StringUtils.isNotBlank(dto.getImage())) {
+            this.image = dto.getImage();
+        }
+        if(StringUtils.isNotBlank(dto.getEducation())) {
+            this.education = dto.getEducation();
+        }
+        if(StringUtils.isNotBlank(dto.getHistory())) {
+            this.history = dto.getHistory();
+        }
+        if(StringUtils.isNotBlank(dto.getDescription())) {
+            this.description = dto.getDescription();
+        }
+        if(StringUtils.isNotBlank(dto.getInstagram())) {
+            this.instagram = dto.getInstagram();
+        }
+        if(StringUtils.isNotBlank(dto.getBehance())) {
+            this.behance = dto.getBehance();
+        }
+    }
+
+    // 이메일이 수정됐는지 확인. 본인 이메일 그대로거나, 비어있을 경우 수정되지 않은 걸로 간주해 false 반환.
+    public boolean isUpdatedEmail(String email){
+        if(StringUtils.isNotBlank(email) && !email.equals(this.email)){
+            return true;
+        }
+        return false;
     }
 }

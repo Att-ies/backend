@@ -2,8 +2,7 @@ package com.sptp.backend.common.config;
 
 import com.sptp.backend.jwt.web.JwtAuthenticationFilter;
 import com.sptp.backend.jwt.web.JwtTokenProvider;
-import com.sptp.backend.oauth.CustomOAuth2UserService;
-import com.sptp.backend.oauth.OAuth2SuccessHandler;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +25,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final OAuth2SuccessHandler successHandler;
-    private final CustomOAuth2UserService oAuth2UserService;
     private final RedisTemplate redisTemplate;
 
     @Override
@@ -40,11 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests() // 요청에 대한 사용권한 체크
                 .antMatchers("/test/**").hasRole("USER")
-                .anyRequest().permitAll() // 그외 나머지 요청은 누구나 접근 가능
-                .and()
-                .oauth2Login()
-                .successHandler(successHandler)
-                .userInfoEndpoint().userService(oAuth2UserService);
+                .anyRequest().permitAll(); // 그외 나머지 요청은 누구나 접근 가능
 
         http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 실행
