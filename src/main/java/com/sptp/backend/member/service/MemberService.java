@@ -85,7 +85,6 @@ public class MemberService {
             throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
 
-
         TokenDto tokenDto = jwtTokenProvider.createToken(findMember.getUserId(), findMember.getRoles());
         jwtService.saveRefreshToken(tokenDto);
 
@@ -159,7 +158,7 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        if (StringUtils.isNotBlank(dto.getEmail()) && !dto.getEmail().equals(findMember.getEmail())) {
+        if (isUpdatedEmail(dto.getEmail(), findMember.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
         }
 
@@ -172,10 +171,18 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        if (StringUtils.isNotBlank(dto.getEmail()) && !dto.getEmail().equals(findMember.getEmail())) {
+        if(isUpdatedEmail(dto.getEmail(), findMember.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
         }
 
         findMember.updateArtist(dto);
+    }
+
+    // 이메일이 수정됐는지 확인. 본인 이메일 그대로거나, 비어있을 경우 수정되지 않은 걸로 간주해 false 반환.
+    public boolean isUpdatedEmail(String checkEmail, String selfEmail){
+        if(StringUtils.isNotBlank(checkEmail) && !checkEmail.equals(selfEmail)){
+            return true;
+        }
+        return false;
     }
 }
