@@ -144,17 +144,15 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateUser(Member member, MemberUpdateRequest dto) {
+    public void updateUser(Long loginMemberId, MemberUpdateRequest dto) {
 
-        if(StringUtils.isNotBlank(dto.getEmail()) && !dto.getEmail().equals(member.getEmail())) {
+        Member findMember = memberRepository.findById(loginMemberId)
+            .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        if(StringUtils.isNotBlank(dto.getEmail()) && !dto.getEmail().equals(findMember.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
-            member.setEmail(dto.getEmail());
         }
-        if(StringUtils.isNotBlank(dto.getUsername()))
-            member.setUsername(dto.getUsername());
-        if(StringUtils.isNotBlank(dto.getImage()))
-            member.setImage(dto.getImage());
 
-        memberRepository.save(member);
+        findMember.updateUser(dto);
     }
 }
