@@ -188,7 +188,7 @@ public class MemberController {
 
     // 작가 정보 수정
     @PatchMapping("/artists")
-    public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ArtistUpdateRequest artistUpdateRequest) {
+    public ResponseEntity<?> updateArtist(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ArtistUpdateRequest artistUpdateRequest) {
 
         memberService.updateArtist(userDetails.getMember().getId(), artistUpdateRequest);
 
