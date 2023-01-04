@@ -1,10 +1,9 @@
 package com.sptp.backend.member.repository;
 
+import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.keyword.repository.Keyword;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.sptp.backend.member.web.dto.request.MemberUpdateRequest;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ public class Member {
     private String password;
     private String address;
     private String telephone;
+    private String image;
 
     // 작가 컬럼
     private String education;
@@ -45,5 +45,15 @@ public class Member {
 
         final int PASSWORD_LENGTH = 8;
         this.password = UUID.randomUUID().toString().substring(0, PASSWORD_LENGTH);
+    }
+
+    public void updateUser(MemberUpdateRequest dto) {
+
+        if (StringUtils.isNotBlank(dto.getEmail()))
+            this.email = dto.getEmail();
+        if (StringUtils.isNotBlank(dto.getUsername()))
+            this.username = dto.getUsername();
+        if (StringUtils.isNotBlank(dto.getImage()))
+            this.image = dto.getImage();
     }
 }
