@@ -1,5 +1,7 @@
 package com.sptp.backend.member.service;
 
+import com.sptp.backend.common.exception.CustomException;
+import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.repository.RefreshTokenRepository;
 import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.jwt.web.JwtTokenProvider;
@@ -7,6 +9,8 @@ import com.sptp.backend.MockPasswordEncoder;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,25 +36,44 @@ class MemberServiceTest {
     @Spy
     PasswordEncoder passwordEncoder = new MockPasswordEncoder();
 
-    @Test
-    void changePassword() {
-        //given
+    @Nested
+    class changePasswordTest {
         long id = 1L;
-        Member member = Member.builder()
-                .id(id)
-                .userId("chlwnsdud")
-                .password("12345678")
-                .build();
+        Member member;
 
-        when(memberRepository.findById(anyLong()))
-                .thenReturn(Optional.of(member));
-        System.out.println(member.getPassword());
+        @BeforeEach
+        void init() {
+            member = Member.builder()
+                    .id(id)
+                    .userId("chlwnsdud")
+                    .password("12345678")
+                    .build();
+        }
 
-        //when
-        String newPassword = "newPassword";
-        memberService.changePassword(id, newPassword);
+        @Test
+        void success() {
+            //given
+            when(memberRepository.findById(anyLong()))
+                    .thenReturn(Optional.of(member));
 
-        //then
-        Assertions.assertThat(member.getPassword()).isEqualTo(passwordEncoder.encode(newPassword));
+            //when
+            String newPassword = "newPassword";
+            memberService.changePassword(id, newPassword);
+
+            //then
+            Assertions.assertThat(member.getPassword()).isEqualTo(passwordEncoder.encode(newPassword));
+        }
+
+        @Test
+        void failByNotFoundMember() {
+            //given
+            when(memberRepository.findById(anyLong()))
+                    .thenReturn(Optional.empty());
+
+            //when
+            //then
+            Assertions.assertThatThrownBy(() -> memberService.changePassword(id, "newPassword"))
+                    .isInstanceOf(CustomException.class);
+        }
     }
 }
