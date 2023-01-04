@@ -55,19 +55,7 @@ public class MemberService {
                 .build();
 
         memberRepository.save(member);
-
-        for (String keywordName : dto.getKeywords()) {
-
-            checkExistsKeyword(keywordName);
-
-            MemberKeyword memberKeyword = MemberKeyword.builder()
-                    .member(member)
-                    .keywordId(MemberKeywordMap.map.get(keywordName))
-                    .build();
-
-            memberKeywordRepository.save(memberKeyword);
-        }
-
+        saveKeyword(member, dto.getKeywords());
         return member;
     }
 
@@ -173,6 +161,21 @@ public class MemberService {
     @Transactional(readOnly = true)
     public boolean isDuplicateEmail(String email) {
         return memberRepository.existsByEmail(email);
+    }
+
+    public void saveKeyword(Member member, List<String> keywordList) {
+
+        for (String keywordName : keywordList) {
+
+            checkExistsKeyword(keywordName);
+
+            MemberKeyword memberKeyword = MemberKeyword.builder()
+                    .member(member)
+                    .keywordId(MemberKeywordMap.map.get(keywordName))
+                    .build();
+
+            memberKeywordRepository.save(memberKeyword);
+        }
     }
 
 }
