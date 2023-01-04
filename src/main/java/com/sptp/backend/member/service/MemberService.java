@@ -1,5 +1,7 @@
 package com.sptp.backend.member.service;
 
+import com.sptp.backend.keyword.repository.Keyword;
+import com.sptp.backend.keyword.repository.KeywordRepository;
 import com.sptp.backend.member.web.dto.request.AuthorSaveRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
@@ -12,6 +14,8 @@ import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.repository.RefreshTokenRepository;
 import com.sptp.backend.jwt.service.JwtService;
+import com.sptp.backend.memberkeyword.repository.MemberKeyword;
+import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -37,6 +41,8 @@ public class MemberService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
     private final RedisTemplate redisTemplate;
+    private final KeywordRepository keywordRepository;
+    private final MemberKeywordRepository memberKeywordRepository;
 
     @Transactional
     public Member saveUser(MemberSaveRequestDto dto) {
@@ -54,6 +60,19 @@ public class MemberService {
                 .build();
 
         memberRepository.save(member);
+
+        for (String keywordName : dto.getKeywords()) {
+
+            Keyword keyword = keywordRepository.findByName(keywordName);
+
+            MemberKeyword memberKeyword = MemberKeyword.builder()
+                    .member(member)
+                    .keyword(keyword)
+                    .build();
+
+            memberKeywordRepository.save(memberKeyword);
+        }
+
         return member;
     }
 
