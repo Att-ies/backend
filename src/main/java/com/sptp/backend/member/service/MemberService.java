@@ -125,7 +125,7 @@ public class MemberService {
     public void changePassword(Long loginMemberId, String password) {
 
         Member findMember = memberRepository.findById(loginMemberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_EMAIL));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         findMember.changePassword(passwordEncoder.encode(password));
     }
