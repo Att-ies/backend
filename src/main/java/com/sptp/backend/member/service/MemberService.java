@@ -88,7 +88,7 @@ public class MemberService {
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .telephone(dto.getTelephone())
-                .roles(Collections.singletonList("ROLE_AUTHOR"))
+                .roles(Collections.singletonList("ROLE_ARTIST"))
                 .education(dto.getEducation())
                 .history(dto.getHistory())
                 .description(dto.getDescription())

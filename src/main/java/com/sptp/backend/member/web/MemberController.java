@@ -137,7 +137,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
     }
 
-    @PostMapping("authors/join")
+    @PostMapping("artists/join")
     public ResponseEntity<AuthorSaveResponseDto> joinAuthor(@RequestBody AuthorSaveRequestDto authorSaveRequestDto) {
 
         Member member = memberService.saveAuthor(authorSaveRequestDto);
