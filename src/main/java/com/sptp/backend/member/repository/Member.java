@@ -1,14 +1,12 @@
 package com.sptp.backend.member.repository;
 
 import com.nimbusds.oauth2.sdk.util.StringUtils;
-import com.sptp.backend.keyword.repository.Keyword;
 import com.sptp.backend.member.web.dto.request.MemberUpdateRequest;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -41,10 +39,9 @@ public class Member {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-    public void resetPassword() {
+    public void changePassword(String password) {
 
-        final int PASSWORD_LENGTH = 8;
-        this.password = UUID.randomUUID().toString().substring(0, PASSWORD_LENGTH);
+        this.password = password;
     }
 
     public void updateUser(MemberUpdateRequest dto) {
