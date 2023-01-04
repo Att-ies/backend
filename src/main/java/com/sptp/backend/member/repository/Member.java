@@ -49,11 +49,11 @@ public class Member {
 
     public void updateUser(MemberUpdateRequest dto) {
 
-        if(StringUtils.isNotBlank(dto.getEmail()))
-            this.email=dto.getEmail();
-        if(StringUtils.isNotBlank(dto.getUsername()))
-            this.username=dto.getUsername();
-        if(StringUtils.isNotBlank(dto.getImage()))
-            this.image=dto.getImage();
+        if (StringUtils.isNotBlank(dto.getEmail()))
+            this.email = dto.getEmail();
+        if (StringUtils.isNotBlank(dto.getUsername()))
+            this.username = dto.getUsername();
+        if (StringUtils.isNotBlank(dto.getImage()))
+            this.image = dto.getImage();
     }
 }
