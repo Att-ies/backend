@@ -1,6 +1,5 @@
 package com.sptp.backend.member.service;
 
-import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
@@ -185,7 +184,6 @@ public class MemberService {
             memberKeywordRepository.save(memberKeyword);
         }
     }
-}
 
     @Transactional
     public void updateUser(Long loginMemberId, MemberUpdateRequest dto) {
@@ -193,7 +191,7 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        if (isUpdatedEmail(dto.getEmail(), findMember.getEmail())) {
+        if (findMember.isUpdatedEmail(dto.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
         }
 
@@ -206,18 +204,11 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        if(isUpdatedEmail(dto.getEmail(), findMember.getEmail())) {
+        if(findMember.isUpdatedEmail(dto.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
         }
 
         findMember.updateArtist(dto);
     }
 
-    // 이메일이 수정됐는지 확인. 본인 이메일 그대로거나, 비어있을 경우 수정되지 않은 걸로 간주해 false 반환.
-    public boolean isUpdatedEmail(String checkEmail, String selfEmail){
-        if(StringUtils.isNotBlank(checkEmail) && !checkEmail.equals(selfEmail)){
-            return true;
-        }
-        return false;
-    }
 }

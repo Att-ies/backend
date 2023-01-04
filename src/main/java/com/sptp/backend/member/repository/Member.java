@@ -89,4 +89,12 @@ public class Member {
             this.behance = dto.getBehance();
         }
     }
+
+    // 이메일이 수정됐는지 확인. 본인 이메일 그대로거나, 비어있을 경우 수정되지 않은 걸로 간주해 false 반환.
+    public boolean isUpdatedEmail(String email){
+        if(StringUtils.isNotBlank(email) && !email.equals(this.email)){
+            return true;
+        }
+        return false;
+    }
 }
