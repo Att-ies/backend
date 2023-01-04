@@ -157,7 +157,6 @@ public class MemberController {
     }
 
     // 회원 정보 수정
-    @Secured("ROLE_USER")
     @PatchMapping("/members")
     public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MemberUpdateRequest memberUpdateRequest) {
 
