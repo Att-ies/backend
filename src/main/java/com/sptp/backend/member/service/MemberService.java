@@ -1,16 +1,13 @@
 package com.sptp.backend.member.service;
 
-import com.sptp.backend.member.web.dto.request.AuthorSaveRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberFindIdRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
-import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
+import com.nimbusds.oauth2.sdk.util.StringUtils;
+import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
-import com.sptp.backend.jwt.repository.RefreshTokenRepository;
 import com.sptp.backend.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +28,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
     private final RedisTemplate redisTemplate;
 
@@ -157,4 +153,16 @@ public class MemberService {
         return memberRepository.existsByEmail(email);
     }
 
+    @Transactional
+    public void updateUser(Long loginMemberId, MemberUpdateRequest dto) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        if (StringUtils.isNotBlank(dto.getEmail()) && !dto.getEmail().equals(findMember.getEmail())) {
+            checkDuplicateMemberEmail(dto.getEmail());
+        }
+
+        findMember.updateUser(dto);
+    }
 }
