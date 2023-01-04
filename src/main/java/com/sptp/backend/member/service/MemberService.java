@@ -16,12 +16,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -147,6 +143,18 @@ public class MemberService {
         return memberRepository.existsByEmail(email);
     }
 
+    @Transactional
+    public void updateUser(Long loginMemberId, MemberUpdateRequest dto) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        if (StringUtils.isNotBlank(dto.getEmail()) && !dto.getEmail().equals(findMember.getEmail())) {
+            checkDuplicateMemberEmail(dto.getEmail());
+        }
+
+        findMember.updateUser(dto);
+    }
 
     @Transactional
     public void updateArtist(Member member, ArtistUpdateRequest dto) {
