@@ -185,4 +185,15 @@ public class MemberController {
 
         return new ResponseEntity(HttpStatus.OK);
     }
+
+    @DeleteMapping("/members")
+    public ResponseEntity<PasswordChangeRequest> withdrawUser(
+            @RequestHeader("accessToken") String accessToken,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        memberService.logout(accessToken);
+        memberService.withdrawUser(userDetails.getMember().getId());
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

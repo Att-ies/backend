@@ -165,4 +165,10 @@ public class MemberService {
 
         findMember.updateUser(dto);
     }
+
+    @Transactional
+    public void withdrawUser(Long loginMemberId) {
+
+        memberRepository.deleteById(loginMemberId);
+    }
 }
