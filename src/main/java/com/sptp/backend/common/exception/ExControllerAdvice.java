@@ -25,12 +25,14 @@ public class ExControllerAdvice {
     // api의 bean validation 관련 예외
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+
         FieldError fieldError = e.getFieldError();
 
         if (Objects.isNull(fieldError)) { // 일반적으로는 fieldError가 null이 될 수 없지만, 예외 케이스 처리 용도.
             return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
+        log.info(fieldError.toString());
         return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, fieldError);
     }
 
