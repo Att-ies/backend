@@ -82,7 +82,7 @@ public class MemberService {
 
     }
 
-
+    @Transactional
     public TokenDto login(MemberLoginRequestDto dto) {
 
         // 이메일 및 비밀번호 유효성 체크
@@ -99,6 +99,7 @@ public class MemberService {
         return tokenDto;
     }
 
+    @Transactional(readOnly = true)
     public Member findByEmail(MemberFindIdRequestDto dto) {
 
         // 이메일 및 유저이름 유효성 체크
@@ -122,6 +123,7 @@ public class MemberService {
         return findMember.getPassword();
     }
 
+    @Transactional
     public void logout(String accessToken) {
         Long expiration = jwtTokenProvider.getExpiration(accessToken);
 
@@ -129,22 +131,26 @@ public class MemberService {
                 .set(accessToken, "blackList", expiration, TimeUnit.MILLISECONDS);
     }
 
+    @Transactional(readOnly = true)
     public void checkDuplicateMemberUserID(String userId) {
         if (memberRepository.existsByUserId(userId)) {
             throw new CustomException(ErrorCode.EXIST_USER_ID);
         }
     }
 
+    @Transactional(readOnly = true)
     public void checkDuplicateMemberEmail(String email) {
         if (memberRepository.existsByEmail(email)) {
             throw new CustomException(ErrorCode.EXIST_USER_EMAIL);
         }
     }
 
+    @Transactional(readOnly = true)
     public boolean isDuplicateUserId(String userId) {
         return memberRepository.existsByUserId(userId);
     }
 
+    @Transactional(readOnly = true)
     public boolean isDuplicateEmail(String email) {
         return memberRepository.existsByEmail(email);
     }
