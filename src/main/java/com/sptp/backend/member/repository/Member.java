@@ -1,5 +1,9 @@
 package com.sptp.backend.member.repository;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.member.web.dto.request.MemberUpdateRequest;
 import lombok.*;
