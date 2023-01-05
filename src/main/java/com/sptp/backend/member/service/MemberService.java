@@ -104,7 +104,7 @@ public class MemberService {
         Member findMember = memberRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_EMAIL));
         if (!dto.getUsername().equals(findMember.getUsername())) {
-            throw new CustomException(ErrorCode.NOT_MATCH_USERNAME);
+            throw new CustomException(ErrorCode.NOT_MATCH_NICKNAME);
         }
 
         return findMember;
