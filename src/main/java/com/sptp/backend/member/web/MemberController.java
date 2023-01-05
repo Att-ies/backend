@@ -195,4 +195,37 @@ public class MemberController {
 
         return ResponseEntity.status(HttpStatus.OK).body(memberResponse);
     }
+
+    @GetMapping("/members/form")
+    public ResponseEntity<MemberFormResponse> getMemberForm(@AuthenticationPrincipal CustomUserDetails userDetails){
+
+        Member member = memberService.findById(userDetails.getMember().getId());
+
+        MemberFormResponse memberFormResponse = MemberFormResponse.builder()
+                .nickname(member.getNickname())
+                .email(member.getEmail())
+                .image(member.getImage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(memberFormResponse);
+    }
+
+    @GetMapping("/artists/form")
+    public ResponseEntity<ArtistFormResponse> getArtistForm(@AuthenticationPrincipal CustomUserDetails userDetails){
+
+        Member member = memberService.findById(userDetails.getMember().getId());
+
+        ArtistFormResponse artistFormResponse = ArtistFormResponse.builder()
+                .nickname(member.getNickname())
+                .email(member.getEmail())
+                .image(member.getImage())
+                .education(member.getEducation())
+                .history(member.getHistory())
+                .description(member.getDescription())
+                .instagram(member.getInstagram())
+                .behance(member.getBehance())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(artistFormResponse);
+    }
 }
