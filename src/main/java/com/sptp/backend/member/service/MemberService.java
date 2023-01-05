@@ -98,14 +98,10 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member findByEmail(MemberFindIdRequestDto dto) {
+    public Member findByEmail(String email) {
 
-        // 이메일 및 유저이름 유효성 체크
-        Member findMember = memberRepository.findByEmail(dto.getEmail())
+        Member findMember = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_EMAIL));
-        if (!dto.getNickname().equals(findMember.getNickname())) {
-            throw new CustomException(ErrorCode.NOT_MATCH_NICKNAME);
-        }
 
         return findMember;
     }

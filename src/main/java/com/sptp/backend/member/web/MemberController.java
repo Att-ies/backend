@@ -1,9 +1,6 @@
 package com.sptp.backend.member.web;
 
-import com.sptp.backend.common.exception.CustomException;
-import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
-import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.response.*;
@@ -12,7 +9,6 @@ import com.sptp.backend.member.service.MemberService;
 import com.sptp.backend.email.service.EmailService;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import java.net.URI;
 import java.util.Map;
 
 @RestController
@@ -89,9 +84,10 @@ public class MemberController {
 
     // 아이디 찾기
     @PostMapping("/members/id")
-    public ResponseEntity<?> findId(@RequestBody MemberFindIdRequestDto memberFindIdRequestDto) throws Exception {
+    public ResponseEntity<?> findId(@RequestBody Map<String, String> paramMap) throws Exception {
 
-        Member member = memberService.findByEmail(memberFindIdRequestDto);
+        String email = paramMap.get("email");
+        Member member = memberService.findByEmail(email);
         emailService.sendIdMessage(member.getEmail());
 
         return new ResponseEntity<>(HttpStatus.OK);
