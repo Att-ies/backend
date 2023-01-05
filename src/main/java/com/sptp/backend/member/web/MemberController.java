@@ -3,12 +3,10 @@ package com.sptp.backend.member.web;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
+import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
-import com.sptp.backend.member.web.dto.response.AuthorSaveResponseDto;
-import com.sptp.backend.member.web.dto.response.CheckDuplicateResponse;
-import com.sptp.backend.member.web.dto.response.MemberSaveResponseDto;
-import com.sptp.backend.member.web.dto.response.TokenResponseDto;
+import com.sptp.backend.member.web.dto.response.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.service.MemberService;
 import com.sptp.backend.email.service.EmailService;
@@ -187,7 +185,7 @@ public class MemberController {
     }
 
     @DeleteMapping("/members")
-    public ResponseEntity<PasswordChangeRequest> withdrawUser(
+    public ResponseEntity<?> withdrawUser(
             @RequestHeader("accessToken") String accessToken,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
@@ -195,5 +193,27 @@ public class MemberController {
         memberService.withdrawUser(userDetails.getMember().getId());
 
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    // 작가 정보 수정
+    @PatchMapping("/artists")
+    public ResponseEntity<?> updateArtist(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ArtistUpdateRequest artistUpdateRequest) {
+
+        memberService.updateArtist(userDetails.getMember().getId(), artistUpdateRequest);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails userDetails){
+
+        Member member = memberService.findById(userDetails.getMember().getId());
+
+        MemberResponse memberResponse = MemberResponse.builder()
+                .username(member.getUsername())
+                .image(member.getImage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(memberResponse);
     }
 }

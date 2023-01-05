@@ -19,7 +19,6 @@ public class EmailServiceImpl implements EmailService {
 
     private MimeMessage createMessage(String to, String subject, String text) throws Exception {
         System.out.println("보내는 대상 : " + to);
-//        System.out.println("아이디 : " + UserId);
         MimeMessage message = emailSender.createMimeMessage();
 
         message.addRecipients(Message.RecipientType.TO, to);//보내는 대상

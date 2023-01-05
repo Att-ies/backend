@@ -1,6 +1,5 @@
 package com.sptp.backend.member.service;
 
-import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
@@ -192,7 +191,7 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        if (StringUtils.isNotBlank(dto.getEmail()) && !dto.getEmail().equals(findMember.getEmail())) {
+        if (findMember.isUpdatedEmail(dto.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
         }
 
@@ -205,5 +204,26 @@ public class MemberService {
         memberKeywordRepository.deleteByMemberId(loginMemberId);
         memberRepository.deleteById(loginMemberId);
     }
-}
 
+    @Transactional
+    public void updateArtist(Long loginMemberId, ArtistUpdateRequest dto) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        if(findMember.isUpdatedEmail(dto.getEmail())) {
+            checkDuplicateMemberEmail(dto.getEmail());
+        }
+
+        findMember.updateArtist(dto);
+    }
+
+    @Transactional(readOnly = true)
+    public Member findById(Long loginMemberId) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        return findMember;
+    }
+}
