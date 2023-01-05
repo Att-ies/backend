@@ -85,9 +85,9 @@ public class MemberService {
 
         // 이메일 및 비밀번호 유효성 체크
         Member findMember = memberRepository.findByUserId(dto.getUserId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+                .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED_ID));
         if (!passwordEncoder.matches(dto.getPassword(), findMember.getPassword())) {
-            throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD);
+            throw new CustomException(ErrorCode.UNAUTHORIZED_PASSWORD);
         }
 
 
@@ -104,7 +104,7 @@ public class MemberService {
         Member findMember = memberRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_EMAIL));
         if (!dto.getNickname().equals(findMember.getNickname())) {
-            throw new CustomException(ErrorCode.NOT_MATCH_USERNAME);
+            throw new CustomException(ErrorCode.NOT_MATCH_NICKNAME);
         }
 
         return findMember;
