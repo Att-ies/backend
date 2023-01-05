@@ -8,6 +8,7 @@ import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.service.JwtService;
+import com.sptp.backend.member.web.dto.response.MemberLoginResponseDto;
 import com.sptp.backend.memberkeyword.MemberKeywordMap;
 import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
@@ -81,7 +82,7 @@ public class MemberService {
     }
 
     @Transactional
-    public TokenDto login(MemberLoginRequestDto dto) {
+    public MemberLoginResponseDto login(MemberLoginRequestDto dto) {
 
         // 이메일 및 비밀번호 유효성 체크
         Member findMember = memberRepository.findByUserId(dto.getUserId())
@@ -90,11 +91,16 @@ public class MemberService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_PASSWORD);
         }
 
-
         TokenDto tokenDto = jwtTokenProvider.createToken(findMember.getUserId(), findMember.getRoles());
         jwtService.saveRefreshToken(tokenDto);
 
-        return tokenDto;
+        MemberLoginResponseDto memberLoginResponseDto = MemberLoginResponseDto.builder()
+                .accessToken(tokenDto.getAccessToken())
+                .refreshToken(tokenDto.getRefreshToken())
+                .roles(findMember.getRoles().get(0))
+                .build();
+
+        return memberLoginResponseDto;
     }
 
     @Transactional(readOnly = true)

@@ -53,15 +53,9 @@ public class MemberController {
     @PostMapping("/members/login")
     public ResponseEntity<?> login(@RequestBody MemberLoginRequestDto memberLoginRequestDto) {
 
-        TokenDto token = memberService.login(memberLoginRequestDto);
+        MemberLoginResponseDto memberLoginResponseDto = memberService.login(memberLoginRequestDto);
 
-        TokenResponseDto tokenResponseDto = TokenResponseDto.builder()
-                .accessToken(token.getAccessToken())
-                .refreshToken(token.getRefreshToken())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.OK).body(tokenResponseDto);
-
+        return ResponseEntity.status(HttpStatus.OK).body(memberLoginResponseDto);
     }
 
     @PostMapping("/members/token")
