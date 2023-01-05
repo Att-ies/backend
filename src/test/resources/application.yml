@@ -3,12 +3,6 @@ spring:
     host: localhost
     port: ${application.spring.redis.port}
 
-  datasource:
-    url: ${application.spring.datasource.url}
-    username: ${application.spring.datasource.username}
-    password: ${application.spring.datasource.password}
-    driver-class-name: org.h2.Driver
-
   jpa:
     hibernate:
       ddl-auto: create
