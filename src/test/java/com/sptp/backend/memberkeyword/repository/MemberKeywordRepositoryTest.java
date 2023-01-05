@@ -3,20 +3,15 @@ package com.sptp.backend.memberkeyword.repository;
 import com.sptp.backend.common.config.DBConfig;
 import com.sptp.backend.common.config.PropertyConfig;
 import com.sptp.backend.member.repository.Member;
-import com.sptp.backend.memberkeyword.MemberKeywordMap;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import javax.persistence.EntityManager;
-import java.util.HashMap;
-import java.util.List;
 
 @DataJpaTest
 @Import({DBConfig.class, PropertyConfig.class})
