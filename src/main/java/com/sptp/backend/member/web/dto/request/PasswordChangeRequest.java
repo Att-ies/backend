@@ -15,5 +15,4 @@ public class PasswordChangeRequest {
     @Length(min = 8, message = "비밀번호는 8자 이상 입력해주세요.")
     @NotBlank(message = "비밀번호는 공백일 수 없습니다.")
     private String password;
-    private String checkPassword;
 }

@@ -155,23 +155,13 @@ public class MemberController {
     }
 
     @PatchMapping("/members/password")
-    public ResponseEntity<PasswordChangeRequest> changePassword(
+    public ResponseEntity<?> changePassword(
             @RequestBody @Valid PasswordChangeRequest passwordChangeRequest,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        validatePasswordMatching(passwordChangeRequest);
         memberService.changePassword(userDetails.getMember().getId(), passwordChangeRequest.getPassword());
 
         return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    private void validatePasswordMatching(PasswordChangeRequest dto) {
-        String checkPassword = dto.getCheckPassword();
-        String password = dto.getPassword();
-
-        if (!checkPassword.equals(password)) {
-            throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD);
-        }
     }
 
     // 회원 정보 수정
