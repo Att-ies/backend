@@ -13,7 +13,7 @@ class MemberTest {
     void resetPassword() {
         //given
         Member member = Member.builder()
-                .username("test")
+                .nickname("test")
                 .password("1234")
                 .build();
         String password = member.getPassword();
