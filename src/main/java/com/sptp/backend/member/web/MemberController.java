@@ -89,22 +89,12 @@ public class MemberController {
 
     // 아이디 찾기
     @PostMapping("/members/id")
-    public ResponseEntity<?> findId(@RequestBody MemberFindIdRequestDto memberFindIdRequestDto) {
+    public ResponseEntity<?> findId(@RequestBody MemberFindIdRequestDto memberFindIdRequestDto) throws Exception {
 
         Member member = memberService.findByEmail(memberFindIdRequestDto);
+        emailService.sendIdMessage(member.getEmail());
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/emailId?email=" + member.getEmail()));
-
-        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-    }
-
-    // 이메일로 아이디 발송
-    @PostMapping("/emailId")
-    public ResponseEntity emailConfirm(@RequestParam String email) throws Exception {
-
-        emailService.sendIdMessage(email);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/members/new-password")

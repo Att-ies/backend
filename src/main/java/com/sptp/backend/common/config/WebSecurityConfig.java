@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,8 +37,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
                 .authorizeRequests() // 요청에 대한 사용권한 체크
-                .antMatchers("/test/**").hasRole("USER")
-                .anyRequest().permitAll(); // 그외 나머지 요청은 누구나 접근 가능
+                .antMatchers("/members/join", "/members/login", "/oauth2/*", "/members/token",
+                        "/artists/join", "/members/id", "/members/new-password", "/members/check-email",
+                        "/members/check-id").permitAll()
+                .antMatchers(HttpMethod.PATCH, "/members").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "/members").hasRole("USER")
+                .antMatchers(HttpMethod.PATCH, "/artists").hasRole("ARTIST")
+                .anyRequest().authenticated(); // 그외 나머지 요청은 인증 필요
 
         http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 실행
