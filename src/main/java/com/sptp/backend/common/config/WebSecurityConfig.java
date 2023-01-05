@@ -38,8 +38,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests() // 요청에 대한 사용권한 체크
                 .antMatchers("/members/join", "/members/login", "/oauth2/*", "/members/token",
-                        "/artists/join", "/members/id", "/members/new-password").permitAll()
+                        "/artists/join", "/members/id", "/members/new-password", "/members/check-email",
+                        "/members/check-id").permitAll()
                 .antMatchers(HttpMethod.PATCH, "/members").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "/members").hasRole("USER")
                 .antMatchers(HttpMethod.PATCH, "/artists").hasRole("ARTIST")
                 .anyRequest().authenticated(); // 그외 나머지 요청은 인증 필요
 
