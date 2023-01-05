@@ -40,6 +40,7 @@ public class MemberService {
 
         checkDuplicateMemberUserID(dto.getUserId());
         checkDuplicateMemberEmail(dto.getEmail());
+        checkDuplicateMemberNickname(dto.getNickname());
 
         Member member = Member.builder()
                 .nickname(dto.getNickname())
@@ -60,6 +61,7 @@ public class MemberService {
 
         checkDuplicateMemberUserID(dto.getUserId());
         checkDuplicateMemberEmail(dto.getEmail());
+        checkDuplicateMemberNickname(dto.getNickname());
 
         Member member = Member.builder()
                 .nickname(dto.getNickname())
@@ -150,6 +152,13 @@ public class MemberService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public void checkDuplicateMemberNickname(String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new CustomException(ErrorCode.EXIST_USER_NICKNAME);
+        }
+    }
+
     public void checkExistsKeyword(String key) {
         if (!MemberKeywordMap.map.containsKey(key)) {
             throw new CustomException(ErrorCode.NOT_FOUND_KEYWORD);
@@ -190,6 +199,9 @@ public class MemberService {
         if (findMember.isUpdatedEmail(dto.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
         }
+        if (findMember.isUpdatedNickname(dto.getNickname())) {
+            checkDuplicateMemberNickname(dto.getNickname());
+        }
 
         findMember.updateUser(dto);
     }
@@ -209,6 +221,9 @@ public class MemberService {
 
         if(findMember.isUpdatedEmail(dto.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
+        }
+        if (findMember.isUpdatedNickname(dto.getNickname())) {
+            checkDuplicateMemberNickname(dto.getNickname());
         }
 
         findMember.updateArtist(dto);

@@ -96,4 +96,11 @@ public class Member {
         }
         return false;
     }
+
+    public boolean isUpdatedNickname(String nickname){
+        if(StringUtils.isNotBlank(nickname) && !nickname.equals(this.nickname)){
+            return true;
+        }
+        return false;
+    }
 }
