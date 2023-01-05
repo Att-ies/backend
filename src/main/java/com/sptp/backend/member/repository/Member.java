@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.member.web.dto.request.ArtistUpdateRequest;
 import com.sptp.backend.member.web.dto.request.MemberUpdateRequest;
-import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class Member {
     private Long id;
 
     // 공통 컬럼
-    private String username;
+    private String nickname;
     private String userId;
     private String email;
     private String password;
@@ -54,8 +53,8 @@ public class Member {
         if (StringUtils.isNotBlank(dto.getEmail())) {
             this.email = dto.getEmail();
         }
-        if (StringUtils.isNotBlank(dto.getUsername())) {
-            this.username = dto.getUsername();
+        if (StringUtils.isNotBlank(dto.getNickname())) {
+            this.nickname = dto.getNickname();
         }
         if (StringUtils.isNotBlank(dto.getImage())) {
             this.image = dto.getImage();
@@ -67,8 +66,8 @@ public class Member {
         if(StringUtils.isNotBlank(dto.getEmail())) {
             this.email = dto.getEmail();
         }
-        if(StringUtils.isNotBlank(dto.getUsername())) {
-            this.username = dto.getUsername();
+        if(StringUtils.isNotBlank(dto.getNickname())) {
+            this.nickname = dto.getNickname();
         }
         if(StringUtils.isNotBlank(dto.getImage())) {
             this.image = dto.getImage();

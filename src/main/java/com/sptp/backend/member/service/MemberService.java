@@ -42,7 +42,7 @@ public class MemberService {
         checkDuplicateMemberEmail(dto.getEmail());
 
         Member member = Member.builder()
-                .username(dto.getUsername())
+                .nickname(dto.getNickname())
                 .userId(dto.getUserId())
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
@@ -62,7 +62,7 @@ public class MemberService {
         checkDuplicateMemberEmail(dto.getEmail());
 
         Member member = Member.builder()
-                .username(dto.getUsername())
+                .nickname(dto.getNickname())
                 .userId(dto.getUserId())
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
@@ -103,7 +103,7 @@ public class MemberService {
         // 이메일 및 유저이름 유효성 체크
         Member findMember = memberRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_EMAIL));
-        if (!dto.getUsername().equals(findMember.getUsername())) {
+        if (!dto.getNickname().equals(findMember.getNickname())) {
             throw new CustomException(ErrorCode.NOT_MATCH_USERNAME);
         }
 

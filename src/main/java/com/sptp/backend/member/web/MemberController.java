@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -43,7 +42,7 @@ public class MemberController {
         Member member = memberService.saveUser(memberSaveRequestDto);
 
         MemberSaveResponseDto memberSaveResponseDto = MemberSaveResponseDto.builder()
-                .username(member.getUsername())
+                .nickname(member.getNickname())
                 .userId(member.getUserId())
                 .email(member.getEmail())
                 .telephone(member.getTelephone())
@@ -143,7 +142,7 @@ public class MemberController {
         Member member = memberService.saveAuthor(authorSaveRequestDto);
 
         AuthorSaveResponseDto authorSaveResponseDto = AuthorSaveResponseDto.builder()
-                .username(member.getUsername())
+                .nickname(member.getNickname())
                 .userId(member.getUserId())
                 .email(member.getEmail())
                 .telephone(member.getTelephone())

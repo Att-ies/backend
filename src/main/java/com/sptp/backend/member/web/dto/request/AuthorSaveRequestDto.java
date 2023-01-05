@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class AuthorSaveRequestDto {
 
-    private String username;
+    private String nickname;
     private String userId;
     private String email;
     private String password;
