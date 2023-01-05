@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 public class MemberResponse {
 
-    private String username;
+    private String nickname;
     private String image;
 }

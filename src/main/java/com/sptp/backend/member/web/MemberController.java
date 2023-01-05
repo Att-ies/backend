@@ -198,7 +198,7 @@ public class MemberController {
         Member member = memberService.findById(userDetails.getMember().getId());
 
         MemberResponse memberResponse = MemberResponse.builder()
-                .username(member.getUsername())
+                .nickname(member.getNickname())
                 .image(member.getImage())
                 .build();
 
