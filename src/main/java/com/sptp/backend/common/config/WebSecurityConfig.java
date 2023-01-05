@@ -41,8 +41,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/artists/join", "/members/id", "/members/new-password", "/members/check-email",
                         "/members/check-id").permitAll()
                 .antMatchers(HttpMethod.PATCH, "/members").hasRole("USER")
-                .antMatchers(HttpMethod.GET, "/members").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "/members", "/members/form").hasRole("USER")
                 .antMatchers(HttpMethod.PATCH, "/artists").hasRole("ARTIST")
+                .antMatchers(HttpMethod.GET, "/artists/form").hasRole("ARTIST")
                 .anyRequest().authenticated(); // 그외 나머지 요청은 인증 필요
 
         http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
