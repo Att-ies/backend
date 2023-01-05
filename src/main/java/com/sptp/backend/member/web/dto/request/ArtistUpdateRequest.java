@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class ArtistUpdateRequest {
 
-    private String username;
+    private String nickname;
     private String email;
     private String image;
     private String education;

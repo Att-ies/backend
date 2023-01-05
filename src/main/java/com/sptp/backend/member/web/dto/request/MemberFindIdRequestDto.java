@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 public class MemberFindIdRequestDto {
 
-    private String username;
+    private String nickname;
     private String email;
 }

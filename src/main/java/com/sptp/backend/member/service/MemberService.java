@@ -42,7 +42,7 @@ public class MemberService {
         checkDuplicateMemberEmail(dto.getEmail());
 
         Member member = Member.builder()
-                .username(dto.getUsername())
+                .nickname(dto.getNickname())
                 .userId(dto.getUserId())
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
@@ -62,7 +62,7 @@ public class MemberService {
         checkDuplicateMemberEmail(dto.getEmail());
 
         Member member = Member.builder()
-                .username(dto.getUsername())
+                .nickname(dto.getNickname())
                 .userId(dto.getUserId())
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
@@ -105,6 +105,8 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_EMAIL));
         if (!dto.getUsername().equals(findMember.getUsername())) {
             throw new CustomException(ErrorCode.NOT_MATCH_NICKNAME);
+        if (!dto.getNickname().equals(findMember.getNickname())) {
+            throw new CustomException(ErrorCode.NOT_MATCH_USERNAME);
         }
 
         return findMember;

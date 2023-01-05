@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 public class MemberSaveRequestDto {
 
-    private String username;
+    private String nickname;
     private String userId;
     private String email;
     private String password;
