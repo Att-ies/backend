@@ -1,4 +1,4 @@
-package com.sptp.backend.member.web.dto.request;
+package com.sptp.backend.member.web.dto.response;
 
 import lombok.*;
 
@@ -7,12 +7,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuthorSaveRequestDto {
+public class ArtistSaveResponseDto {
 
     private String nickname;
     private String userId;
     private String email;
-    private String password;
     private String telephone;
 
     private String education;

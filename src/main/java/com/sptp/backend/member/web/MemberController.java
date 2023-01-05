@@ -1,18 +1,14 @@
 package com.sptp.backend.member.web;
 
-import com.sptp.backend.common.exception.CustomException;
-import com.sptp.backend.common.exception.ErrorCode;
+import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
-import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.response.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.service.MemberService;
 import com.sptp.backend.email.service.EmailService;
-import com.sptp.backend.jwt.web.dto.TokenDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import java.net.URI;
+import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,6 +29,7 @@ public class MemberController {
     private final MemberService memberService;
     private final EmailService emailService;
     private final JwtService jwtService;
+    private final AwsService awsService;
 
     // 회원가입
     @PostMapping("/members/join")
@@ -119,11 +117,13 @@ public class MemberController {
     }
 
     @PostMapping("artists/join")
-    public ResponseEntity<AuthorSaveResponseDto> joinAuthor(@RequestBody AuthorSaveRequestDto authorSaveRequestDto) {
+    public ResponseEntity<ArtistSaveResponseDto> joinAuthor(ArtistSaveRequestDto artistSaveRequestDto) throws IOException {
 
-        Member member = memberService.saveAuthor(authorSaveRequestDto);
+        String uuid = UUID.randomUUID().toString();
 
-        AuthorSaveResponseDto authorSaveResponseDto = AuthorSaveResponseDto.builder()
+        Member member = memberService.saveArtist(artistSaveRequestDto, uuid);
+
+        ArtistSaveResponseDto artistSaveResponseDto = ArtistSaveResponseDto.builder()
                 .nickname(member.getNickname())
                 .userId(member.getUserId())
                 .email(member.getEmail())
@@ -135,7 +135,9 @@ public class MemberController {
                 .behance(member.getBehance())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.OK).body(authorSaveResponseDto);
+        awsService.uploadImage(artistSaveRequestDto.getImage(), uuid);
+
+        return ResponseEntity.status(HttpStatus.OK).body(artistSaveResponseDto);
     }
 
     @PatchMapping("/members/password")

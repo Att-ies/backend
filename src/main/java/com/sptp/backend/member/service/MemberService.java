@@ -1,5 +1,6 @@
 package com.sptp.backend.member.service;
 
+import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
@@ -14,6 +15,7 @@ import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,10 @@ public class MemberService {
     private final JwtService jwtService;
     private final RedisTemplate redisTemplate;
     private final MemberKeywordRepository memberKeywordRepository;
+    private final FileService fileService;
+
+    @Value("${aws.storage.url}")
+    private String awsStorageUrl;
 
     @Transactional
     public Member saveUser(MemberSaveRequestDto dto) {
@@ -57,10 +63,12 @@ public class MemberService {
     }
 
     @Transactional
-    public Member saveAuthor(AuthorSaveRequestDto dto) {
+    public Member saveArtist(ArtistSaveRequestDto dto, String uuid) {
 
         checkDuplicateMemberUserID(dto.getUserId());
         checkDuplicateMemberEmail(dto.getEmail());
+
+        String ext = fileService.extractExt(dto.getImage().getOriginalFilename());
 
         Member member = Member.builder()
                 .nickname(dto.getNickname())
@@ -74,6 +82,7 @@ public class MemberService {
                 .description(dto.getDescription())
                 .instagram(dto.getInstagram())
                 .behance(dto.getBehance())
+                .image(awsStorageUrl + uuid + "." + ext)
                 .build();
 
         memberRepository.save(member);
