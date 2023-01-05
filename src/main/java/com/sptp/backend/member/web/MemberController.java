@@ -163,6 +163,17 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @DeleteMapping("/members")
+    public ResponseEntity<?> withdrawUser(
+            @RequestHeader("accessToken") String accessToken,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        memberService.logout(accessToken);
+        memberService.withdrawUser(userDetails.getMember().getId());
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     // 작가 정보 수정
     @PatchMapping("/artists")
     public ResponseEntity<?> updateArtist(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ArtistUpdateRequest artistUpdateRequest) {

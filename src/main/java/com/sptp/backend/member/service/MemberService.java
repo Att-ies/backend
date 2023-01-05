@@ -199,6 +199,13 @@ public class MemberService {
     }
 
     @Transactional
+    public void withdrawUser(Long loginMemberId) {
+
+        memberKeywordRepository.deleteByMemberId(loginMemberId);
+        memberRepository.deleteById(loginMemberId);
+    }
+
+    @Transactional
     public void updateArtist(Long loginMemberId, ArtistUpdateRequest dto) {
 
         Member findMember = memberRepository.findById(loginMemberId)
