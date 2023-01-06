@@ -94,4 +94,18 @@ public class Member {
         }
         return false;
     }
+
+    public boolean isUpdatedNickname(String nickname){
+        if(StringUtils.isNotBlank(nickname) && !nickname.equals(this.nickname)){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isBlankImage() {
+        if(StringUtils.isBlank(this.image)) {
+            return true;
+        }
+        return false;
+    }
 }

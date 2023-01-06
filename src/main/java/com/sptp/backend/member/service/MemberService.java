@@ -1,5 +1,6 @@
 package com.sptp.backend.member.service;
 
+import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.member.web.dto.request.*;
@@ -11,6 +12,7 @@ import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.response.MemberLoginResponseDto;
+import com.sptp.backend.member.web.dto.response.MemberResponse;
 import com.sptp.backend.memberkeyword.MemberKeywordMap;
 import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
@@ -51,6 +53,7 @@ public class MemberService {
 
         checkDuplicateMemberUserID(dto.getUserId());
         checkDuplicateMemberEmail(dto.getEmail());
+        checkDuplicateMemberNickname(dto.getNickname());
 
         Member member = Member.builder()
                 .nickname(dto.getNickname())
@@ -71,6 +74,7 @@ public class MemberService {
 
         checkDuplicateMemberUserID(dto.getUserId());
         checkDuplicateMemberEmail(dto.getEmail());
+        checkDuplicateMemberNickname(dto.getNickname());
 
         String uuid = UUID.randomUUID().toString();
         String imageUrl = "";
@@ -125,14 +129,10 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member findByEmail(MemberFindIdRequestDto dto) {
+    public Member findByEmail(String email) {
 
-        // 이메일 및 유저이름 유효성 체크
-        Member findMember = memberRepository.findByEmail(dto.getEmail())
+        Member findMember = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_EMAIL));
-        if (!dto.getNickname().equals(findMember.getNickname())) {
-            throw new CustomException(ErrorCode.NOT_MATCH_NICKNAME);
-        }
 
         return findMember;
     }
@@ -181,20 +181,17 @@ public class MemberService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public void checkDuplicateMemberNickname(String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new CustomException(ErrorCode.EXIST_USER_NICKNAME);
+        }
+    }
+
     public void checkExistsKeyword(String key) {
         if (!MemberKeywordMap.map.containsKey(key)) {
             throw new CustomException(ErrorCode.NOT_FOUND_KEYWORD);
         }
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isDuplicateUserId(String userId) {
-        return memberRepository.existsByUserId(userId);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isDuplicateEmail(String email) {
-        return memberRepository.existsByEmail(email);
     }
 
     public void saveKeyword(Member member, List<String> keywordList) {
@@ -231,6 +228,9 @@ public class MemberService {
         if (findMember.isUpdatedEmail(dto.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
         }
+        if (findMember.isUpdatedNickname(dto.getNickname())) {
+            checkDuplicateMemberNickname(dto.getNickname());
+        }
 
         findMember.updateUser(dto, imageUrl);
     }
@@ -261,16 +261,38 @@ public class MemberService {
         if(findMember.isUpdatedEmail(dto.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
         }
+        if (findMember.isUpdatedNickname(dto.getNickname())) {
+            checkDuplicateMemberNickname(dto.getNickname());
+        }
 
         findMember.updateArtist(dto, imageUrl);
     }
 
     @Transactional(readOnly = true)
-    public Member findById(Long loginMemberId) {
+    public MemberResponse getMember(Long loginMemberId) {
 
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        return findMember;
+        String imageUrl = awsStorageUrl + findMember.getImage();
+        
+        if(findMember.isBlankImage()) {
+            imageUrl = null;
+        }
+
+        MemberResponse memberResponse = MemberResponse.builder()
+                .nickname(findMember.getNickname())
+                .userId(findMember.getUserId())
+                .email(findMember.getEmail())
+                .telephone(findMember.getTelephone())
+                .image(imageUrl)
+                .education(findMember.getEducation())
+                .history(findMember.getHistory())
+                .description(findMember.getDescription())
+                .instagram(findMember.getInstagram())
+                .behance(findMember.getBehance())
+                .build();
+
+        return  memberResponse;
     }
 }
