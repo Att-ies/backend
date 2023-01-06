@@ -192,21 +192,6 @@ public class MemberService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public boolean isDuplicateUserId(String userId) {
-        return memberRepository.existsByUserId(userId);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isDuplicateEmail(String email) {
-        return memberRepository.existsByEmail(email);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isDuplicateNickname(String nickname) {
-        return memberRepository.existsByNickname(nickname);
-    }
-
     public void saveKeyword(Member member, List<String> keywordList) {
 
         for (String keywordName : keywordList) {
