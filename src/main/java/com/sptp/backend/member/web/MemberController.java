@@ -183,15 +183,10 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping("/members")
+    @GetMapping("/members/me")
     public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails userDetails){
 
-        Member member = memberService.findById(userDetails.getMember().getId());
-
-        MemberResponse memberResponse = MemberResponse.builder()
-                .nickname(member.getNickname())
-                .image(member.getImage())
-                .build();
+        MemberResponse memberResponse = memberService.getMember(userDetails.getMember().getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(memberResponse);
     }

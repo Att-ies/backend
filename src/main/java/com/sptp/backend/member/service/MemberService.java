@@ -11,6 +11,7 @@ import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.response.MemberLoginResponseDto;
+import com.sptp.backend.member.web.dto.response.MemberResponse;
 import com.sptp.backend.memberkeyword.MemberKeywordMap;
 import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
@@ -247,11 +248,31 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member findById(Long loginMemberId) {
+    public MemberResponse getMember(Long loginMemberId) {
 
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        return findMember;
+        String imageUrl = awsStorageUrl + findMember.getImage();
+
+        if((findMember.getImage()).isBlank()) {
+            imageUrl = null;
+        }
+
+        MemberResponse memberResponse = MemberResponse.builder()
+                .nickname(findMember.getNickname())
+                .userId(findMember.getUserId())
+                .email(findMember.getEmail())
+                .telephone(findMember.getTelephone())
+                .image(imageUrl)
+                .education(findMember.getEducation())
+                .history(findMember.getHistory())
+                .description(findMember.getDescription())
+                .instagram(findMember.getInstagram())
+                .behance(findMember.getBehance())
+                .build();
+
+        return  memberResponse;
+
     }
 }
