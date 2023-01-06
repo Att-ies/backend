@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -51,10 +52,10 @@ public class Member {
 
     public void updateUser(MemberUpdateRequest dto, String image) {
 
-        if (StringUtils.isNotBlank(dto.getEmail())) {
+        if (Objects.nonNull(dto.getEmail())) {
             this.email = dto.getEmail();
         }
-        if (StringUtils.isNotBlank(dto.getNickname())) {
+        if (Objects.nonNull(dto.getNickname())) {
             this.nickname = dto.getNickname();
         }
         this.image=image;
@@ -62,25 +63,25 @@ public class Member {
 
     public void updateArtist(ArtistUpdateRequest dto, String image) {
 
-        if(StringUtils.isNotBlank(dto.getEmail())) {
+        if(Objects.nonNull(dto.getEmail())) {
             this.email = dto.getEmail();
         }
-        if(StringUtils.isNotBlank(dto.getNickname())) {
+        if(Objects.nonNull(dto.getNickname())) {
             this.nickname = dto.getNickname();
         }
-        if(StringUtils.isNotBlank(dto.getEducation())) {
+        if(Objects.nonNull(dto.getEducation())) {
             this.education = dto.getEducation();
         }
-        if(StringUtils.isNotBlank(dto.getHistory())) {
+        if(Objects.nonNull(dto.getHistory())) {
             this.history = dto.getHistory();
         }
-        if(StringUtils.isNotBlank(dto.getDescription())) {
+        if(Objects.nonNull(dto.getDescription())) {
             this.description = dto.getDescription();
         }
-        if(StringUtils.isNotBlank(dto.getInstagram())) {
+        if(Objects.nonNull(dto.getInstagram())) {
             this.instagram = dto.getInstagram();
         }
-        if(StringUtils.isNotBlank(dto.getBehance())) {
+        if(Objects.nonNull(dto.getBehance())) {
             this.behance = dto.getBehance();
         }
         this.image = image;
