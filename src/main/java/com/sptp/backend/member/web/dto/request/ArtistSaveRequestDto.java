@@ -1,13 +1,14 @@
 package com.sptp.backend.member.web.dto.request;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuthorSaveRequestDto {
+public class ArtistSaveRequestDto {
 
     private String nickname;
     private String userId;
@@ -20,4 +21,5 @@ public class AuthorSaveRequestDto {
     private String description;
     private String instagram;
     private String behance;
+
 }

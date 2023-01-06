@@ -59,6 +59,10 @@ dependencies {
 
 	//H2
 	runtimeOnly 'com.h2database:h2'
+
+	//aws
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
 }
 
 tasks.named('test') {

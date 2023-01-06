@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuthorSaveResponseDto {
+public class ArtistSaveResponseDto {
 
     private String nickname;
     private String userId;

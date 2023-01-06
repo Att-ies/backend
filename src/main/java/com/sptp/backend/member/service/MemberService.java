@@ -1,5 +1,7 @@
 package com.sptp.backend.member.service;
 
+import com.sptp.backend.aws.service.AwsService;
+import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
@@ -8,16 +10,20 @@ import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.service.JwtService;
+import com.sptp.backend.member.web.dto.response.MemberLoginResponseDto;
 import com.sptp.backend.memberkeyword.MemberKeywordMap;
 import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.Collections;
 import java.util.UUID;
@@ -34,6 +40,11 @@ public class MemberService {
     private final JwtService jwtService;
     private final RedisTemplate redisTemplate;
     private final MemberKeywordRepository memberKeywordRepository;
+    private final FileService fileService;
+    private final AwsService awsService;
+
+    @Value("${aws.storage.url}")
+    private String awsStorageUrl;
 
     @Transactional
     public Member saveUser(MemberSaveRequestDto dto) {
@@ -56,10 +67,20 @@ public class MemberService {
     }
 
     @Transactional
-    public Member saveAuthor(AuthorSaveRequestDto dto) {
+    public Member saveArtist(ArtistSaveRequestDto dto, MultipartFile image) throws IOException {
 
         checkDuplicateMemberUserID(dto.getUserId());
         checkDuplicateMemberEmail(dto.getEmail());
+
+        String uuid = UUID.randomUUID().toString();
+        String imageUrl = "";
+
+        if(!image.isEmpty()){
+            String ext = fileService.extractExt(image.getOriginalFilename());
+            imageUrl = uuid + "." + ext;
+
+            awsService.uploadImage(image, uuid);
+        }
 
         Member member = Member.builder()
                 .nickname(dto.getNickname())
@@ -73,6 +94,7 @@ public class MemberService {
                 .description(dto.getDescription())
                 .instagram(dto.getInstagram())
                 .behance(dto.getBehance())
+                .image(imageUrl)
                 .build();
 
         memberRepository.save(member);
@@ -81,7 +103,7 @@ public class MemberService {
     }
 
     @Transactional
-    public TokenDto login(MemberLoginRequestDto dto) {
+    public MemberLoginResponseDto login(MemberLoginRequestDto dto) {
 
         // 이메일 및 비밀번호 유효성 체크
         Member findMember = memberRepository.findByUserId(dto.getUserId())
@@ -90,11 +112,16 @@ public class MemberService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_PASSWORD);
         }
 
-
         TokenDto tokenDto = jwtTokenProvider.createToken(findMember.getUserId(), findMember.getRoles());
         jwtService.saveRefreshToken(tokenDto);
 
-        return tokenDto;
+        MemberLoginResponseDto memberLoginResponseDto = MemberLoginResponseDto.builder()
+                .accessToken(tokenDto.getAccessToken())
+                .refreshToken(tokenDto.getRefreshToken())
+                .roles(findMember.getRoles().get(0))
+                .build();
+
+        return memberLoginResponseDto;
     }
 
     @Transactional(readOnly = true)
