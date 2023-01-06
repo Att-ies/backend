@@ -1,5 +1,6 @@
 package com.sptp.backend.member.web;
 
+import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
@@ -7,17 +8,19 @@ import com.sptp.backend.member.web.dto.response.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.service.MemberService;
 import com.sptp.backend.email.service.EmailService;
-import com.sptp.backend.jwt.web.dto.TokenDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,15 +51,9 @@ public class MemberController {
     @PostMapping("/members/login")
     public ResponseEntity<?> login(@RequestBody MemberLoginRequestDto memberLoginRequestDto) {
 
-        TokenDto token = memberService.login(memberLoginRequestDto);
+        MemberLoginResponseDto memberLoginResponseDto = memberService.login(memberLoginRequestDto);
 
-        TokenResponseDto tokenResponseDto = TokenResponseDto.builder()
-                .accessToken(token.getAccessToken())
-                .refreshToken(token.getRefreshToken())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.OK).body(tokenResponseDto);
-
+        return ResponseEntity.status(HttpStatus.OK).body(memberLoginResponseDto);
     }
 
     @PostMapping("/members/token")
@@ -131,11 +128,11 @@ public class MemberController {
     }
 
     @PostMapping("artists/join")
-    public ResponseEntity<AuthorSaveResponseDto> joinAuthor(@RequestBody AuthorSaveRequestDto authorSaveRequestDto) {
+    public ResponseEntity<?> joinAuthor(@RequestParam(value = "image", required = false) MultipartFile image, ArtistSaveRequestDto artistSaveRequestDto) throws IOException {
 
-        Member member = memberService.saveAuthor(authorSaveRequestDto);
+        Member member = memberService.saveArtist(artistSaveRequestDto, image);
 
-        AuthorSaveResponseDto authorSaveResponseDto = AuthorSaveResponseDto.builder()
+        ArtistSaveResponseDto artistSaveResponseDto = ArtistSaveResponseDto.builder()
                 .nickname(member.getNickname())
                 .userId(member.getUserId())
                 .email(member.getEmail())
@@ -147,7 +144,7 @@ public class MemberController {
                 .behance(member.getBehance())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.OK).body(authorSaveResponseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(artistSaveResponseDto);
     }
 
     @PatchMapping("/members/password")
