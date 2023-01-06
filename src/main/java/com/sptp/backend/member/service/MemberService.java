@@ -82,7 +82,7 @@ public class MemberService {
                 .description(dto.getDescription())
                 .instagram(dto.getInstagram())
                 .behance(dto.getBehance())
-                .image(awsStorageUrl + uuid + "." + ext)
+                .image(uuid + "." + ext)
                 .build();
 
         memberRepository.save(member);
