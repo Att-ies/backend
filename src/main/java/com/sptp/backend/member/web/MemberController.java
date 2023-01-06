@@ -148,9 +148,11 @@ public class MemberController {
 
     // 회원 정보 수정
     @PatchMapping("/members")
-    public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MemberUpdateRequest memberUpdateRequest) {
+    public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                        @RequestParam(value = "image", required = false) MultipartFile image,
+                                        MemberUpdateRequest memberUpdateRequest) throws IOException {
 
-        memberService.updateUser(userDetails.getMember().getId(), memberUpdateRequest);
+        memberService.updateUser(userDetails.getMember().getId(), memberUpdateRequest, image);
 
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -168,9 +170,11 @@ public class MemberController {
 
     // 작가 정보 수정
     @PatchMapping("/artists")
-    public ResponseEntity<?> updateArtist(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ArtistUpdateRequest artistUpdateRequest) {
+    public ResponseEntity<?> updateArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                          @RequestParam(value = "image", required = false) MultipartFile image,
+                                          ArtistUpdateRequest artistUpdateRequest) throws IOException {
 
-        memberService.updateArtist(userDetails.getMember().getId(), artistUpdateRequest);
+        memberService.updateArtist(userDetails.getMember().getId(), artistUpdateRequest, image);
 
         return new ResponseEntity(HttpStatus.OK);
     }

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.member.web.dto.request.ArtistUpdateRequest;
 import com.sptp.backend.member.web.dto.request.MemberUpdateRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class Member {
         this.password = password;
     }
 
-    public void updateUser(MemberUpdateRequest dto) {
+    public void updateUser(MemberUpdateRequest dto, String image) {
 
         if (StringUtils.isNotBlank(dto.getEmail())) {
             this.email = dto.getEmail();
@@ -56,21 +57,16 @@ public class Member {
         if (StringUtils.isNotBlank(dto.getNickname())) {
             this.nickname = dto.getNickname();
         }
-        if (StringUtils.isNotBlank(dto.getImage())) {
-            this.image = dto.getImage();
-        }
+        this.image=image;
     }
 
-    public void updateArtist(ArtistUpdateRequest dto) {
+    public void updateArtist(ArtistUpdateRequest dto, String image) {
 
         if(StringUtils.isNotBlank(dto.getEmail())) {
             this.email = dto.getEmail();
         }
         if(StringUtils.isNotBlank(dto.getNickname())) {
             this.nickname = dto.getNickname();
-        }
-        if(StringUtils.isNotBlank(dto.getImage())) {
-            this.image = dto.getImage();
         }
         if(StringUtils.isNotBlank(dto.getEducation())) {
             this.education = dto.getEducation();
@@ -87,6 +83,7 @@ public class Member {
         if(StringUtils.isNotBlank(dto.getBehance())) {
             this.behance = dto.getBehance();
         }
+        this.image = image;
     }
 
     // 이메일이 수정됐는지 확인. 본인 이메일 그대로거나, 비어있을 경우 수정되지 않은 걸로 간주해 false 반환.
