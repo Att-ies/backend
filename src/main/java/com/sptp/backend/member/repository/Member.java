@@ -103,4 +103,11 @@ public class Member {
         }
         return false;
     }
+
+    public boolean isBlankImage() {
+        if(StringUtils.isBlank(this.image)) {
+            return true;
+        }
+        return false;
+    }
 }

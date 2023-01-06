@@ -1,5 +1,6 @@
 package com.sptp.backend.member.service;
 
+import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.member.web.dto.request.*;
@@ -255,10 +256,10 @@ public class MemberService {
 
         String imageUrl = awsStorageUrl + findMember.getImage();
 
-        if((findMember.getImage()).isBlank()) {
+        if(findMember.isBlankImage()) {
             imageUrl = null;
         }
-
+        
         MemberResponse memberResponse = MemberResponse.builder()
                 .nickname(findMember.getNickname())
                 .userId(findMember.getUserId())
@@ -273,6 +274,5 @@ public class MemberService {
                 .build();
 
         return  memberResponse;
-
     }
 }
