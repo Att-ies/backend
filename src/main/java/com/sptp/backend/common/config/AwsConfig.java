@@ -17,7 +17,7 @@ public class AwsConfig {
     @Value("${aws.iamSecretKey}")
     private String iamSecretKey;
 
-    @Value("${cloud.aws.region.static}")
+    @Value("${aws.region.static}")
     private String region;
 
     @Bean
