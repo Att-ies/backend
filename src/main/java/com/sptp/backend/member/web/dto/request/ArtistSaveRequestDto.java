@@ -22,5 +22,4 @@ public class ArtistSaveRequestDto {
     private String instagram;
     private String behance;
 
-    private MultipartFile image;
 }

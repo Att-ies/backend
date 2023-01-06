@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -29,7 +30,6 @@ public class MemberController {
     private final MemberService memberService;
     private final EmailService emailService;
     private final JwtService jwtService;
-    private final AwsService awsService;
 
     // 회원가입
     @PostMapping("/members/join")
@@ -117,11 +117,9 @@ public class MemberController {
     }
 
     @PostMapping("artists/join")
-    public ResponseEntity<ArtistSaveResponseDto> joinAuthor(ArtistSaveRequestDto artistSaveRequestDto) throws IOException {
+    public ResponseEntity<?> joinAuthor(@RequestParam(value = "image", required = false) MultipartFile image, ArtistSaveRequestDto artistSaveRequestDto) throws IOException {
 
-        String uuid = UUID.randomUUID().toString();
-
-        Member member = memberService.saveArtist(artistSaveRequestDto, uuid);
+        Member member = memberService.saveArtist(artistSaveRequestDto, image);
 
         ArtistSaveResponseDto artistSaveResponseDto = ArtistSaveResponseDto.builder()
                 .nickname(member.getNickname())
@@ -134,8 +132,6 @@ public class MemberController {
                 .instagram(member.getInstagram())
                 .behance(member.getBehance())
                 .build();
-
-        awsService.uploadImage(artistSaveRequestDto.getImage(), uuid);
 
         return ResponseEntity.status(HttpStatus.OK).body(artistSaveResponseDto);
     }

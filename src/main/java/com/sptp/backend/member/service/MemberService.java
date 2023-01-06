@@ -1,5 +1,6 @@
 package com.sptp.backend.member.service;
 
+import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.member.repository.Member;
@@ -20,7 +21,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.Collections;
 import java.util.UUID;
@@ -38,6 +41,7 @@ public class MemberService {
     private final RedisTemplate redisTemplate;
     private final MemberKeywordRepository memberKeywordRepository;
     private final FileService fileService;
+    private final AwsService awsService;
 
     @Value("${aws.storage.url}")
     private String awsStorageUrl;
@@ -63,12 +67,20 @@ public class MemberService {
     }
 
     @Transactional
-    public Member saveArtist(ArtistSaveRequestDto dto, String uuid) {
+    public Member saveArtist(ArtistSaveRequestDto dto, MultipartFile image) throws IOException {
 
         checkDuplicateMemberUserID(dto.getUserId());
         checkDuplicateMemberEmail(dto.getEmail());
 
-        String ext = fileService.extractExt(dto.getImage().getOriginalFilename());
+        String uuid = UUID.randomUUID().toString();
+        String imageUrl = "";
+
+        if(!image.isEmpty()){
+            String ext = fileService.extractExt(image.getOriginalFilename());
+            imageUrl = uuid + "." + ext;
+
+            awsService.uploadImage(image, uuid);
+        }
 
         Member member = Member.builder()
                 .nickname(dto.getNickname())
@@ -82,7 +94,7 @@ public class MemberService {
                 .description(dto.getDescription())
                 .instagram(dto.getInstagram())
                 .behance(dto.getBehance())
-                .image(uuid + "." + ext)
+                .image(imageUrl)
                 .build();
 
         memberRepository.save(member);
