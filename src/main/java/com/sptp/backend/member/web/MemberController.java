@@ -108,6 +108,7 @@ public class MemberController {
 
         boolean isDuplicated = memberService.isDuplicateUserId(userId);
         CheckDuplicateResponse checkDuplicateResponse = CheckDuplicateResponse.builder().duplicate(isDuplicated).build();
+
         return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
     }
 
@@ -115,6 +116,15 @@ public class MemberController {
     public ResponseEntity<?> checkUserEmail(@RequestParam("email") String email) {
 
         boolean isDuplicated = memberService.isDuplicateEmail(email);
+        CheckDuplicateResponse checkDuplicateResponse = CheckDuplicateResponse.builder().duplicate(isDuplicated).build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
+    }
+
+    @GetMapping("/members/check-nickname")
+    public ResponseEntity<?> checkUserNickname(@RequestParam("nickname") String nickname) {
+
+        boolean isDuplicated = memberService.isDuplicateNickname(nickname);
         CheckDuplicateResponse checkDuplicateResponse = CheckDuplicateResponse.builder().duplicate(isDuplicated).build();
 
         return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
