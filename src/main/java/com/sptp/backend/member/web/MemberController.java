@@ -56,6 +56,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(memberLoginResponseDto);
     }
 
+    // 토큰 재발급
     @PostMapping("/members/token")
     public ResponseEntity<?> refresh(@RequestBody Map<String, String> refreshToken) {
 
@@ -89,6 +90,7 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 비밀번호 임시 발급
     @PostMapping("/members/new-password")
     public ResponseEntity<?> sendNewPassword(@RequestBody Map<String, String> paramMap) throws Exception {
 
@@ -99,6 +101,7 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 아이디 중복 체크
     @GetMapping("/members/check-id")
     public ResponseEntity<?> checkUserId(@RequestParam("userId") String userId) {
 
@@ -107,6 +110,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
     }
 
+    // 이메일 중복 체크
     @GetMapping("/members/check-email")
     public ResponseEntity<?> checkUserEmail(@RequestParam("email") String email) {
 
@@ -116,6 +120,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(checkDuplicateResponse);
     }
 
+    // 작가 가입
     @PostMapping("artists/join")
     public ResponseEntity<?> joinAuthor(@RequestParam(value = "image", required = false) MultipartFile image, ArtistSaveRequestDto artistSaveRequestDto) throws IOException {
 
@@ -136,6 +141,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(artistSaveResponseDto);
     }
 
+    // 비밀번호 재설정
     @PatchMapping("/members/password")
     public ResponseEntity<?> changePassword(
             @RequestBody @Valid PasswordChangeRequest passwordChangeRequest,
@@ -148,13 +154,16 @@ public class MemberController {
 
     // 회원 정보 수정
     @PatchMapping("/members")
-    public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MemberUpdateRequest memberUpdateRequest) {
+    public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                        @RequestParam(value = "image", required = false) MultipartFile image,
+                                        MemberUpdateRequest memberUpdateRequest) throws IOException {
 
-        memberService.updateUser(userDetails.getMember().getId(), memberUpdateRequest);
+        memberService.updateUser(userDetails.getMember().getId(), memberUpdateRequest, image);
 
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 회원 탈퇴
     @DeleteMapping("/members")
     public ResponseEntity<?> withdrawUser(
             @RequestHeader("accessToken") String accessToken,
@@ -168,13 +177,16 @@ public class MemberController {
 
     // 작가 정보 수정
     @PatchMapping("/artists")
-    public ResponseEntity<?> updateArtist(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ArtistUpdateRequest artistUpdateRequest) {
+    public ResponseEntity<?> updateArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                          @RequestParam(value = "image", required = false) MultipartFile image,
+                                          ArtistUpdateRequest artistUpdateRequest) throws IOException {
 
-        memberService.updateArtist(userDetails.getMember().getId(), artistUpdateRequest);
+        memberService.updateArtist(userDetails.getMember().getId(), artistUpdateRequest, image);
 
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 회원 정보 조회
     @GetMapping("/members")
     public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails userDetails){
 
