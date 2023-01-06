@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.member.web.dto.request.ArtistUpdateRequest;
 import com.sptp.backend.member.web.dto.request.MemberUpdateRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -48,45 +50,41 @@ public class Member {
         this.password = password;
     }
 
-    public void updateUser(MemberUpdateRequest dto) {
+    public void updateUser(MemberUpdateRequest dto, String image) {
 
-        if (StringUtils.isNotBlank(dto.getEmail())) {
+        if (Objects.nonNull(dto.getEmail())) {
             this.email = dto.getEmail();
         }
-        if (StringUtils.isNotBlank(dto.getNickname())) {
+        if (Objects.nonNull(dto.getNickname())) {
             this.nickname = dto.getNickname();
         }
-        if (StringUtils.isNotBlank(dto.getImage())) {
-            this.image = dto.getImage();
-        }
+        this.image=image;
     }
 
-    public void updateArtist(ArtistUpdateRequest dto) {
+    public void updateArtist(ArtistUpdateRequest dto, String image) {
 
-        if(StringUtils.isNotBlank(dto.getEmail())) {
+        if(Objects.nonNull(dto.getEmail())) {
             this.email = dto.getEmail();
         }
-        if(StringUtils.isNotBlank(dto.getNickname())) {
+        if(Objects.nonNull(dto.getNickname())) {
             this.nickname = dto.getNickname();
         }
-        if(StringUtils.isNotBlank(dto.getImage())) {
-            this.image = dto.getImage();
-        }
-        if(StringUtils.isNotBlank(dto.getEducation())) {
+        if(Objects.nonNull(dto.getEducation())) {
             this.education = dto.getEducation();
         }
-        if(StringUtils.isNotBlank(dto.getHistory())) {
+        if(Objects.nonNull(dto.getHistory())) {
             this.history = dto.getHistory();
         }
-        if(StringUtils.isNotBlank(dto.getDescription())) {
+        if(Objects.nonNull(dto.getDescription())) {
             this.description = dto.getDescription();
         }
-        if(StringUtils.isNotBlank(dto.getInstagram())) {
+        if(Objects.nonNull(dto.getInstagram())) {
             this.instagram = dto.getInstagram();
         }
-        if(StringUtils.isNotBlank(dto.getBehance())) {
+        if(Objects.nonNull(dto.getBehance())) {
             this.behance = dto.getBehance();
         }
+        this.image = image;
     }
 
     // 이메일이 수정됐는지 확인. 본인 이메일 그대로거나, 비어있을 경우 수정되지 않은 걸로 간주해 false 반환.

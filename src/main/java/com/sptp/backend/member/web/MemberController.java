@@ -56,6 +56,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(memberLoginResponseDto);
     }
 
+    // 토큰 재발급
     @PostMapping("/members/token")
     public ResponseEntity<TokenResponseDto> refresh(@RequestBody Map<String, String> refreshToken) {
 
@@ -90,6 +91,7 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 비밀번호 임시 발급
     @PostMapping("/members/new-password")
     public ResponseEntity<Void> sendNewPassword(@RequestBody Map<String, String> paramMap) throws Exception {
 
@@ -100,6 +102,7 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 아이디 중복 체크
     @GetMapping("/members/check-id")
     public ResponseEntity<Void> checkUserId(@RequestParam("userId") String userId) {
 
@@ -108,6 +111,7 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 이메일 중복 체크
     @GetMapping("/members/check-email")
     public ResponseEntity<Void> checkUserEmail(@RequestParam("email") String email) {
 
@@ -124,6 +128,7 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 작가 가입
     @PostMapping("artists/join")
     public ResponseEntity<ArtistSaveResponseDto> joinAuthor(@RequestParam(value = "image", required = false) MultipartFile image, ArtistSaveRequestDto artistSaveRequestDto) throws IOException {
 
@@ -144,6 +149,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(artistSaveResponseDto);
     }
 
+    // 비밀번호 재설정
     @PatchMapping("/members/password")
     public ResponseEntity<Void> changePassword(
             @RequestBody @Valid PasswordChangeRequest passwordChangeRequest,
@@ -156,13 +162,16 @@ public class MemberController {
 
     // 회원 정보 수정
     @PatchMapping("/members")
-    public ResponseEntity<Void> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MemberUpdateRequest memberUpdateRequest) {
+    public ResponseEntity<Void> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                        @RequestParam(value = "image", required = false) MultipartFile image,
+                                        MemberUpdateRequest memberUpdateRequest) throws IOException {
 
-        memberService.updateUser(userDetails.getMember().getId(), memberUpdateRequest);
+        memberService.updateUser(userDetails.getMember().getId(), memberUpdateRequest, image);
 
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 회원 탈퇴
     @DeleteMapping("/members")
     public ResponseEntity<Void> withdrawUser(
             @RequestHeader("accessToken") String accessToken,
@@ -176,14 +185,17 @@ public class MemberController {
 
     // 작가 정보 수정
     @PatchMapping("/artists")
-    public ResponseEntity<Void> updateArtist(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ArtistUpdateRequest artistUpdateRequest) {
+    public ResponseEntity<Void> updateArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                          @RequestParam(value = "image", required = false) MultipartFile image,
+                                          ArtistUpdateRequest artistUpdateRequest) throws IOException {
 
-        memberService.updateArtist(userDetails.getMember().getId(), artistUpdateRequest);
+        memberService.updateArtist(userDetails.getMember().getId(), artistUpdateRequest, image);
 
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/members/me")
+    // 회원 정보 조회
     public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails userDetails){
 
         MemberResponse memberResponse = memberService.getMember(userDetails.getMember().getId());

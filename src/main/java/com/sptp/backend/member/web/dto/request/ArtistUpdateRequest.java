@@ -11,7 +11,6 @@ public class ArtistUpdateRequest {
 
     private String nickname;
     private String email;
-    private String image;
     private String education;
     private String history;
     private String description;

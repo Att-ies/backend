@@ -210,10 +210,20 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateUser(Long loginMemberId, MemberUpdateRequest dto) {
+    public void updateUser(Long loginMemberId, MemberUpdateRequest dto, MultipartFile image) throws IOException {
 
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        String uuid = UUID.randomUUID().toString();
+        String imageUrl = "";
+
+        if(!image.isEmpty()){
+            String ext = fileService.extractExt(image.getOriginalFilename());
+            imageUrl = uuid + "." + ext;
+
+            awsService.uploadImage(image, uuid);
+        }
 
         if (findMember.isUpdatedEmail(dto.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
@@ -222,7 +232,7 @@ public class MemberService {
             checkDuplicateMemberNickname(dto.getNickname());
         }
 
-        findMember.updateUser(dto);
+        findMember.updateUser(dto, imageUrl);
     }
 
     @Transactional
@@ -233,10 +243,20 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateArtist(Long loginMemberId, ArtistUpdateRequest dto) {
+    public void updateArtist(Long loginMemberId, ArtistUpdateRequest dto, MultipartFile image) throws IOException {
 
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        String uuid = UUID.randomUUID().toString();
+        String imageUrl = "";
+
+        if(!image.isEmpty()){
+            String ext = fileService.extractExt(image.getOriginalFilename());
+            imageUrl = uuid + "." + ext;
+
+            awsService.uploadImage(image, uuid);
+        }
 
         if(findMember.isUpdatedEmail(dto.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
@@ -245,7 +265,7 @@ public class MemberService {
             checkDuplicateMemberNickname(dto.getNickname());
         }
 
-        findMember.updateArtist(dto);
+        findMember.updateArtist(dto, imageUrl);
     }
 
     @Transactional(readOnly = true)
