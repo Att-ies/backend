@@ -73,7 +73,7 @@ public class MemberController {
 
     // 로그아웃
     @PostMapping("/members/logout")
-    public ResponseEntity<Void> logout(@RequestHeader("accessToken") String accessToken) {
+    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String accessToken) {
 
         memberService.logout(accessToken);
 
@@ -174,7 +174,7 @@ public class MemberController {
     // 회원 탈퇴
     @DeleteMapping("/members")
     public ResponseEntity<Void> withdrawUser(
-            @RequestHeader("accessToken") String accessToken,
+            @RequestHeader("Authorization") String accessToken,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         memberService.logout(accessToken);
