@@ -147,7 +147,7 @@ public class MemberService {
         String password = UUID.randomUUID().toString().substring(0, PASSWORD_LENGTH);
         findMember.changePassword(passwordEncoder.encode(password));
 
-        return findMember.getPassword();
+        return password;
     }
 
     @Transactional
