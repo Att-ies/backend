@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Service
@@ -39,6 +40,8 @@ public class Art_workService extends BaseEntity {
 
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        checkExistsImage(dto);
 
         String GuaranteeImageUUID = UUID.randomUUID().toString();
         String GuaranteeImageEXT = fileService.extractExt(dto.getGuaranteeImage().getOriginalFilename());
@@ -86,6 +89,12 @@ public class Art_workService extends BaseEntity {
                     .build();
 
             art_work_keywordRepository.save(art_work_keyword);
+        }
+    }
+
+    public void checkExistsImage(Art_workSaveRequestDto dto) {
+        if (dto.getGuaranteeImage().isEmpty() || dto.getImage()[0].isEmpty()) {
+            throw new CustomException(ErrorCode.BAD_REQUEST_PARAM);
         }
     }
 }
