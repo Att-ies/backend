@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -22,6 +24,7 @@ public class Art_work_keyword {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "art_work_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Art_work art_work;
 
     private Integer keywordId;

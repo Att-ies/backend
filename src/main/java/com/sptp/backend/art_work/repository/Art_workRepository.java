@@ -4,4 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface Art_workRepository extends JpaRepository<Art_work, Long> {
 
+    void deleteByMemberId(Long memberId);
 }
