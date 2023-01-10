@@ -15,6 +15,9 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name="MEMBER_PREFERRED_ARTIST", uniqueConstraints = {@UniqueConstraint(
+        name = "MEMBER_ARTIST_UNIQUE",
+        columnNames = {"MEMBER_ID", "PREFERRED_ARTIST_ID"} )})
 public class MemberPreferredArtist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

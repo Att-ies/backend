@@ -19,6 +19,7 @@ public enum ErrorCode {
     EXIST_USER_ID(HttpStatus.CONFLICT, "이미 존재하는 아이디입니다."),
     EXIST_USER_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
     EXIST_USER_NICKNAME(HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
+    EXIST_USER_PREFERRED_ARTIST(HttpStatus.CONFLICT, "이미 찜한 작가입니다."),
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
     NOT_FOUND_ARTIST(HttpStatus.NOT_FOUND, "해당 작가를 찾을 수 없습니다."),
     NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND, "가입되지 않은 이메일 입니다."),

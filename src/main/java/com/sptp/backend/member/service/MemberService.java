@@ -21,6 +21,8 @@ import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -296,7 +298,7 @@ public class MemberService {
                 .behance(findMember.getBehance())
                 .build();
 
-        return  memberResponse;
+        return memberResponse;
     }
 
     @Transactional
@@ -312,20 +314,21 @@ public class MemberService {
             throw new CustomException(ErrorCode.NOT_FOUND_ARTIST);
         }
 
-        // 중복필드인지 검사
-        if(!memberPreferredArtistRepository.existsByArtist(findArtist) || !memberPreferredArtistRepository.existsByMember(findMember)){
-            updatePreferredArtist(findMember, findArtist);
-        }
+        updatePreferredArtist(findMember, findArtist);
     }
 
     @Transactional
     public void updatePreferredArtist(Member member,Member artist) {
 
-        MemberPreferredArtist memberPreferredArtist = MemberPreferredArtist.builder()
-                .member(member)
-                .artist(artist)
-                .build();
+        try{
+            MemberPreferredArtist memberPreferredArtist = MemberPreferredArtist.builder()
+                    .member(member)
+                    .artist(artist)
+                    .build();
 
-        memberPreferredArtistRepository.save(memberPreferredArtist);
+            memberPreferredArtistRepository.save(memberPreferredArtist);
+        } catch(DataIntegrityViolationException e) { // Column unique 제약조건 핸들링 (중복 컬럼 검증)
+            throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTIST);
+        }
     }
 }
