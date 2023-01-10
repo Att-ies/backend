@@ -1,6 +1,5 @@
 package com.sptp.backend.member.service;
 
-import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.member.web.dto.request.*;
@@ -13,7 +12,7 @@ import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.response.MemberLoginResponseDto;
 import com.sptp.backend.member.web.dto.response.MemberResponse;
-import com.sptp.backend.memberkeyword.MemberKeywordMap;
+import com.sptp.backend.common.KeywordMap;
 import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
 import lombok.RequiredArgsConstructor;
@@ -189,7 +188,7 @@ public class MemberService {
     }
 
     public void checkExistsKeyword(String key) {
-        if (!MemberKeywordMap.map.containsKey(key)) {
+        if (!KeywordMap.map.containsKey(key)) {
             throw new CustomException(ErrorCode.NOT_FOUND_KEYWORD);
         }
     }
@@ -202,7 +201,7 @@ public class MemberService {
 
             MemberKeyword memberKeyword = MemberKeyword.builder()
                     .member(member)
-                    .keywordId(MemberKeywordMap.map.get(keywordName))
+                    .keywordId(KeywordMap.map.get(keywordName))
                     .build();
 
             memberKeywordRepository.save(memberKeyword);

@@ -1,8 +1,8 @@
-package com.sptp.backend.memberkeyword;
+package com.sptp.backend.common;
 
 import java.util.HashMap;
 
-public class MemberKeywordMap {
+public class KeywordMap {
 
     public static final HashMap<String, Integer> map = new HashMap<>();
     static {
