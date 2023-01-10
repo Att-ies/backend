@@ -39,6 +39,7 @@ class MemberServiceTest {
     @Nested
     class changePasswordTest {
         long id = 1L;
+        String password = "12345678";
         Member member;
 
         @BeforeEach
@@ -46,7 +47,7 @@ class MemberServiceTest {
             member = Member.builder()
                     .id(id)
                     .userId("chlwnsdud")
-                    .password("12345678")
+                    .password(password)
                     .build();
         }
 
@@ -73,6 +74,18 @@ class MemberServiceTest {
             //when
             //then
             Assertions.assertThatThrownBy(() -> memberService.changePassword(id, "newPassword"))
+                    .isInstanceOf(CustomException.class);
+        }
+
+        @Test
+        void failBySamePassword() {
+            //given
+            when(memberRepository.findById(anyLong()))
+                    .thenReturn(Optional.empty());
+
+            //when
+            //then
+            Assertions.assertThatThrownBy(() -> memberService.changePassword(id, password))
                     .isInstanceOf(CustomException.class);
         }
     }
