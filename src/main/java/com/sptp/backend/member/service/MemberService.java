@@ -13,6 +13,8 @@ import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.response.MemberLoginResponseDto;
 import com.sptp.backend.member.web.dto.response.MemberResponse;
+import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtist;
+import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtistRepository;
 import com.sptp.backend.memberkeyword.MemberKeywordMap;
 import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
@@ -44,6 +46,7 @@ public class MemberService {
     private final MemberKeywordRepository memberKeywordRepository;
     private final FileService fileService;
     private final AwsService awsService;
+    private final MemberPreferredArtistRepository memberPreferredArtistRepository;
 
     @Value("${aws.storage.url}")
     private String awsStorageUrl;
@@ -302,6 +305,27 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        findMember.pickArtist(artistId);
+        // 작가id 유효성 검사
+        Member findArtist = memberRepository.findById(artistId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
+        if (!Objects.equals(findArtist.getRoles().get(0), "ROLE_ARTIST")) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ARTIST);
+        }
+
+        // 중복필드인지 검사
+        if(!memberPreferredArtistRepository.existsByArtist(findArtist) || !memberPreferredArtistRepository.existsByMember(findMember)){
+            updatePreferredArtist(findMember, findArtist);
+        }
+    }
+
+    @Transactional
+    public void updatePreferredArtist(Member member,Member artist) {
+
+        MemberPreferredArtist memberPreferredArtist = MemberPreferredArtist.builder()
+                .member(member)
+                .artist(artist)
+                .build();
+
+        memberPreferredArtistRepository.save(memberPreferredArtist);
     }
 }

@@ -48,20 +48,9 @@ public class Member {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<Long> preferred_artists = new ArrayList<>();
-
     public void changePassword(String password) {
 
         this.password = password;
-    }
-
-    public void pickArtist(Long artistId) {
-
-        if(!this.preferred_artists.contains(artistId)) {
-            this.preferred_artists.add(artistId);
-        }
     }
 
     public void updateUser(MemberUpdateRequest dto, String image) {

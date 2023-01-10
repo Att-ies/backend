@@ -201,8 +201,8 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(memberResponse);
     }
 
-    // 회원의 픽작가 리스트 업데이트 (작가 픽하기)
-    @PatchMapping("/members/preferred-artists/{artistId}")
+    // 회원-작가 픽 관계 등록 (작가 픽하기)
+    @PostMapping("/members/preferred-artists/{artistId}")
     public ResponseEntity<Void> pickArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
                                            @PathVariable(value = "artistId") Long artistId) {
 
