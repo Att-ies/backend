@@ -38,6 +38,8 @@ public class Art_work extends BaseEntity {
 
     private String status;
 
+    private String status_description;
+
     private String guaranteeImage;
 
 }
