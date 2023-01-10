@@ -21,6 +21,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@BatchSize(size = 50)
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +46,6 @@ public class Member {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
-    @BatchSize(size = 3)
     private List<String> roles = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.LAZY)
