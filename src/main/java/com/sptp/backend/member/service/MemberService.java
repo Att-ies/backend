@@ -295,4 +295,13 @@ public class MemberService {
 
         return  memberResponse;
     }
+
+    @Transactional
+    public void pickArtist(Long loginMemberId, Long artistId) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        findMember.pickArtist(artistId);
+    }
 }

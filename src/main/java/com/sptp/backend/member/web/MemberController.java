@@ -1,6 +1,5 @@
 package com.sptp.backend.member.web;
 
-import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
@@ -20,7 +19,6 @@ import javax.validation.Valid;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -160,17 +158,6 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    // 회원 정보 수정
-    @PatchMapping("/members")
-    public ResponseEntity<Void> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                        @RequestParam(value = "image", required = false) MultipartFile image,
-                                        MemberUpdateRequest memberUpdateRequest) throws IOException {
-
-        memberService.updateUser(userDetails.getMember().getId(), memberUpdateRequest, image);
-
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
     // 회원 탈퇴
     @DeleteMapping("/members")
     public ResponseEntity<Void> withdrawUser(
@@ -179,6 +166,17 @@ public class MemberController {
 
         memberService.logout(accessToken);
         memberService.withdrawUser(userDetails.getMember().getId());
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    // 회원 정보 수정
+    @PatchMapping("/members")
+    public ResponseEntity<Void> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                           @RequestParam(value = "image", required = false) MultipartFile image,
+                                           MemberUpdateRequest memberUpdateRequest) throws IOException {
+
+        memberService.updateUser(userDetails.getMember().getId(), memberUpdateRequest, image);
 
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -194,12 +192,22 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping("/members/me")
     // 회원 정보 조회
+    @GetMapping("/members/me")
     public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails userDetails){
 
         MemberResponse memberResponse = memberService.getMember(userDetails.getMember().getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(memberResponse);
+    }
+
+    // 회원의 픽작가 리스트 업데이트 (작가 픽하기)
+    @PatchMapping("/members/preferred-artists/{artistId}")
+    public ResponseEntity<Void> pickArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                           @PathVariable(value = "artistId") Long artistId) {
+
+        memberService.pickArtist(userDetails.getMember().getId(), artistId);
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 }
