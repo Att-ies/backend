@@ -1,6 +1,7 @@
 package com.sptp.backend.art_work_keyword.repository;
 
 import com.sptp.backend.art_work.repository.Art_work;
+import com.sptp.backend.common.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Art_work_keyword {
+public class Art_work_keyword extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

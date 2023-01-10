@@ -10,6 +10,7 @@ import com.sptp.backend.art_work_keyword.repository.Art_work_keywordRepository;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.common.KeywordMap;
+import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.member.repository.Member;
@@ -24,7 +25,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class Art_workService {
+public class Art_workService extends BaseEntity {
 
     private final Art_workRepository art_workRepository;
     private final Art_work_keywordRepository art_work_keywordRepository;
