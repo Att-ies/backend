@@ -156,6 +156,10 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
+        if (passwordEncoder.matches(password, findMember.getPassword())) {
+            throw new CustomException(ErrorCode.SHOULD_CHANGE_PASSWORD);
+        }
+
         findMember.changePassword(passwordEncoder.encode(password));
     }
 
