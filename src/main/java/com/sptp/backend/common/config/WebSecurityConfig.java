@@ -1,5 +1,7 @@
 package com.sptp.backend.common.config;
 
+import com.sptp.backend.jwt.web.CustomAccessDeniedHandler;
+import com.sptp.backend.jwt.web.CustomAuthenticationEntryPoint;
 import com.sptp.backend.jwt.web.JwtAuthenticationFilter;
 import com.sptp.backend.jwt.web.JwtTokenProvider;
 
@@ -15,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -27,12 +30,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable() // csrf 보안 토큰 disable처리.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 사용하지 x
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .and()
+                .exceptionHandling()
+                .accessDeniedHandler(customAccessDeniedHandler)
                 .and()
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
