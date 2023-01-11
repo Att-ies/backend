@@ -44,7 +44,7 @@ public class MemberService {
     private final MemberKeywordRepository memberKeywordRepository;
     private final FileService fileService;
     private final AwsService awsService;
-    private final ArtWorkRepository art_workRepository;
+    private final KeywordMap keywordMap;
 
     @Value("${aws.storage.url}")
     private String awsStorageUrl;
@@ -189,17 +189,11 @@ public class MemberService {
         }
     }
 
-    public void checkExistsKeyword(String key) {
-        if (!KeywordMap.map.containsKey(key)) {
-            throw new CustomException(ErrorCode.NOT_FOUND_KEYWORD);
-        }
-    }
-
     public void saveKeyword(Member member, List<String> keywordList) {
 
         for (String keywordName : keywordList) {
 
-            checkExistsKeyword(keywordName);
+            keywordMap.checkExistsKeyword(keywordName);
 
             MemberKeyword memberKeyword = MemberKeyword.builder()
                     .member(member)

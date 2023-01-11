@@ -1,8 +1,19 @@
 package com.sptp.backend.common;
 
+import com.sptp.backend.common.exception.CustomException;
+import com.sptp.backend.common.exception.ErrorCode;
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 
+@Component
 public class KeywordMap {
+
+    public void checkExistsKeyword(String key) {
+        if (!KeywordMap.map.containsKey(key)) {
+            throw new CustomException(ErrorCode.NOT_FOUND_KEYWORD);
+        }
+    }
 
     public static final HashMap<String, Integer> map = new HashMap<>();
     static {

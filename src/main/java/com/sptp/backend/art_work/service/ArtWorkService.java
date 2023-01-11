@@ -15,6 +15,7 @@ import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
+import com.sptp.backend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,7 @@ public class ArtWorkService extends BaseEntity {
     private final MemberRepository memberRepository;
     private final AwsService awsService;
     private final FileService fileService;
+    private final KeywordMap keywordMap;
 
     @Transactional
     public void saveArtWork(Long loginMemberId, ArtWorkSaveRequestDto dto) throws IOException {
@@ -83,7 +85,7 @@ public class ArtWorkService extends BaseEntity {
 
         for (String keyword : keywords) {
 
-            checkExistsKeyword(keyword);
+            keywordMap.checkExistsKeyword(keyword);
 
             ArtWorkKeyword artWorkKeyword = ArtWorkKeyword.builder()
                     .artWork(artWork)
@@ -97,12 +99,6 @@ public class ArtWorkService extends BaseEntity {
     public void checkExistsImage(ArtWorkSaveRequestDto dto) {
         if (dto.getGuaranteeImage().isEmpty() || dto.getImage()[0].isEmpty()) {
             throw new CustomException(ErrorCode.SHOULD_EXIST_IMAGE);
-        }
-    }
-
-    public void checkExistsKeyword(String key) {
-        if (!KeywordMap.map.containsKey(key)) {
-            throw new CustomException(ErrorCode.NOT_FOUND_KEYWORD);
         }
     }
 }
