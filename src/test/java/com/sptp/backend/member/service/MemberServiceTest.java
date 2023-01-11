@@ -22,6 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -74,19 +76,21 @@ class MemberServiceTest {
             //when
             //then
             Assertions.assertThatThrownBy(() -> memberService.changePassword(id, "newPassword"))
-                    .isInstanceOf(CustomException.class);
+                    .isInstanceOf(CustomException.class)
+                    .message().isEqualTo(ErrorCode.NOT_FOUND_MEMBER.getDetail());
         }
 
         @Test
         void failBySamePassword() {
             //given
             when(memberRepository.findById(anyLong()))
-                    .thenReturn(Optional.empty());
+                    .thenReturn(Optional.of(member));
 
             //when
             //then
             Assertions.assertThatThrownBy(() -> memberService.changePassword(id, password))
-                    .isInstanceOf(CustomException.class);
+                    .isInstanceOf(CustomException.class)
+                    .message().isEqualTo(ErrorCode.SHOULD_CHANGE_PASSWORD.getDetail());
         }
     }
 }
