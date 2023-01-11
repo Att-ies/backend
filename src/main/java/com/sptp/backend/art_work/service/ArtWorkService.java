@@ -83,6 +83,8 @@ public class ArtWorkService extends BaseEntity {
 
         for (String keyword : keywords) {
 
+            checkExistsKeyword(keyword);
+
             ArtWorkKeyword artWorkKeyword = ArtWorkKeyword.builder()
                     .artWork(artWork)
                     .keywordId(KeywordMap.map.get(keyword))
@@ -95,6 +97,12 @@ public class ArtWorkService extends BaseEntity {
     public void checkExistsImage(ArtWorkSaveRequestDto dto) {
         if (dto.getGuaranteeImage().isEmpty() || dto.getImage()[0].isEmpty()) {
             throw new CustomException(ErrorCode.SHOULD_EXIST_IMAGE);
+        }
+    }
+
+    public void checkExistsKeyword(String key) {
+        if (!KeywordMap.map.containsKey(key)) {
+            throw new CustomException(ErrorCode.NOT_FOUND_KEYWORD);
         }
     }
 }
