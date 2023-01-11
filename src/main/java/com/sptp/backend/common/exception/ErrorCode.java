@@ -25,7 +25,10 @@ public enum ErrorCode {
 
     //토큰 예외
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
-    TOKEN_INVALID(HttpStatus.NOT_FOUND, "토큰이 유효하지 않습니다.");
+    TOKEN_INVALID(HttpStatus.NOT_FOUND, "토큰이 유효하지 않습니다."),
+
+    //작품 예외
+    SHOULD_EXIST_IMAGE(HttpStatus.BAD_REQUEST, "이미지가 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String detail;

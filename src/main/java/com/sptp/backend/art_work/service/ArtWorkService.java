@@ -94,7 +94,7 @@ public class ArtWorkService extends BaseEntity {
 
     public void checkExistsImage(ArtWorkSaveRequestDto dto) {
         if (dto.getGuaranteeImage().isEmpty() || dto.getImage()[0].isEmpty()) {
-            throw new CustomException(ErrorCode.BAD_REQUEST_PARAM);
+            throw new CustomException(ErrorCode.SHOULD_EXIST_IMAGE);
         }
     }
 }
