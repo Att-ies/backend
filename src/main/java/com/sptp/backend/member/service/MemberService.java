@@ -320,15 +320,16 @@ public class MemberService {
     @Transactional
     public void updatePreferredArtist(Member member,Member artist) {
 
-        try{
-            MemberPreferredArtist memberPreferredArtist = MemberPreferredArtist.builder()
-                    .member(member)
-                    .artist(artist)
-                    .build();
-
-            memberPreferredArtistRepository.save(memberPreferredArtist);
-        } catch(DataIntegrityViolationException e) { // Column unique 제약조건 핸들링 (중복 컬럼 검증)
+        // Column unique 제약조건 핸들링 (중복 컬럼 검증)
+        if (memberPreferredArtistRepository.existsByMemberAndArtist(member, artist)){
             throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTIST);
         }
+
+        MemberPreferredArtist memberPreferredArtist = MemberPreferredArtist.builder()
+                .member(member)
+                .artist(artist)
+                .build();
+
+        memberPreferredArtistRepository.save(memberPreferredArtist);
     }
 }
