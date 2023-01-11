@@ -18,8 +18,9 @@ public class ArtWorkController {
 
     private final ArtWorkService artWorkService;
 
+    // 작품 등록
     @PostMapping("/art-work")
-    public ResponseEntity<Void> postArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<Void> saveArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                              ArtWorkSaveRequestDto artWorkSaveRequestDto) throws IOException {
 
         artWorkService.saveArtWork(userDetails.getMember().getId(), artWorkSaveRequestDto);
