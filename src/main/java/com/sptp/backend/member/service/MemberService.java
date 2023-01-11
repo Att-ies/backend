@@ -1,5 +1,6 @@
 package com.sptp.backend.member.service;
 
+import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
@@ -16,6 +17,8 @@ import com.sptp.backend.member.web.dto.response.MemberResponse;
 import com.sptp.backend.common.KeywordMap;
 import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtist;
 import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtistRepository;
+import com.sptp.backend.member_preffereed_art_work.repository.MemberPreferredArtWork;
+import com.sptp.backend.member_preffereed_art_work.repository.MemberPreferredArtWorkRepository;
 import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +52,8 @@ public class MemberService {
     private final FileService fileService;
     private final AwsService awsService;
     private final MemberPreferredArtistRepository memberPreferredArtistRepository;
+    private final ArtWorkRepository artWorkRepository;
+    private final MemberPreferredArtWorkRepository memberPreferredArtWorkRepository;
 
     @Value("${aws.storage.url}")
     private String awsStorageUrl;
@@ -329,5 +334,44 @@ public class MemberService {
                 .build();
 
         memberPreferredArtistRepository.save(memberPreferredArtist);
+    }
+
+    @Transactional
+    public void pickArtWork(Long loginMemberId, Long artWorkId) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        ArtWork findArtWork = artWorkRepository.findById(artWorkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+
+        updatePreferredArtWork(findMember, findArtWork);
+    }
+
+    @Transactional
+    public void updatePreferredArtWork(Member member, ArtWork artWork) {
+
+        if (memberPreferredArtWorkRepository.existsByMemberAndArtWork(member, artWork)) {
+            throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTWORK);
+        }
+
+        MemberPreferredArtWork memberPreferredArtWork = MemberPreferredArtWork.builder()
+                .member(member)
+                .artWork(artWork)
+                .build();
+
+        memberPreferredArtWorkRepository.save(memberPreferredArtWork);
+    }
+
+    @Transactional
+    public void deletePreferredArtWork(Long loginMemberId, Long artWorkId) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        ArtWork findArtWork = artWorkRepository.findById(artWorkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+
+        memberPreferredArtWorkRepository.deleteByMemberAndArtWork(findMember, findArtWork);
     }
 }
