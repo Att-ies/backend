@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.member.web.dto.request.ArtistUpdateRequest;
 import com.sptp.backend.member.web.dto.request.MemberUpdateRequest;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,6 +21,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@BatchSize(size = 50)
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
