@@ -2,6 +2,8 @@ package com.sptp.backend.member.web.dto.response;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,6 +16,7 @@ public class MemberResponse {
     private String email;
     private String telephone;
     private String image;
+    private List<String> keywords;
 
     private String education;
     private String history;

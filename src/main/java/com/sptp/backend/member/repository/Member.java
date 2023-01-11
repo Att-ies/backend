@@ -1,6 +1,7 @@
 package com.sptp.backend.member.repository;
 
 import com.sptp.backend.common.entity.BaseEntity;
+import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,6 +49,10 @@ public class Member extends BaseEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
+
+//    @OneToMany(fetch=FetchType.LAZY)
+//    @JoinColumn(name="member_id")
+//    private List<MemberKeyword> keywords = new ArrayList<>();
 
     public void changePassword(String password) {
 

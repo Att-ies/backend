@@ -21,13 +21,12 @@ import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.Map.Entry;
 
 import java.io.IOException;
 import java.util.*;
@@ -283,12 +282,29 @@ public class MemberService {
             imageUrl = null;
         }
 
+        List<Integer> keywordList = List.of(1, 2);
+        ArrayList<String> keywordNameList = new ArrayList<String>();
+        Set<Entry<String, Integer>> entrySet = KeywordMap.map.entrySet();
+
+        for(Integer keyword : keywordList){
+
+            for (Entry<String, Integer> entry : entrySet) {
+                if (entry.getValue().equals(keyword)) {
+                    keywordNameList.add(entry.getKey());
+                    System.out.println(entry.getKey());
+                }
+            }
+        }
+
+        System.out.println(keywordNameList);
+
         MemberResponse memberResponse = MemberResponse.builder()
                 .nickname(findMember.getNickname())
                 .userId(findMember.getUserId())
                 .email(findMember.getEmail())
                 .telephone(findMember.getTelephone())
                 .image(imageUrl)
+                .keywords(keywordNameList)
                 .education(findMember.getEducation())
                 .history(findMember.getHistory())
                 .description(findMember.getDescription())
