@@ -1,5 +1,6 @@
 package com.sptp.backend.member.repository;
 
+import com.sptp.backend.common.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +23,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @BatchSize(size = 50)
-public class Member {
+public class Member extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
