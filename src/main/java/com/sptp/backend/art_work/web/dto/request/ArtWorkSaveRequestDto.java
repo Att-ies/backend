@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Art_workSaveRequestDto {
+public class ArtWorkSaveRequestDto {
 
     private MultipartFile[] image;
     private MultipartFile guaranteeImage;

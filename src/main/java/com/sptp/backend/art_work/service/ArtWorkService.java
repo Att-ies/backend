@@ -1,12 +1,12 @@
 package com.sptp.backend.art_work.service;
 
-import com.sptp.backend.art_work.repository.Art_work;
-import com.sptp.backend.art_work.repository.Art_workRepository;
-import com.sptp.backend.art_work.web.dto.request.Art_workSaveRequestDto;
-import com.sptp.backend.art_work_image.repository.Art_work_image;
-import com.sptp.backend.art_work_image.repository.Art_work_imageRepository;
-import com.sptp.backend.art_work_keyword.repository.Art_work_keyword;
-import com.sptp.backend.art_work_keyword.repository.Art_work_keywordRepository;
+import com.sptp.backend.art_work.repository.ArtWork;
+import com.sptp.backend.art_work.repository.ArtWorkRepository;
+import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
+import com.sptp.backend.art_work_image.repository.ArtWorkImage;
+import com.sptp.backend.art_work_image.repository.ArtWorkImageRepository;
+import com.sptp.backend.art_work_keyword.repository.ArtWorkKeyword;
+import com.sptp.backend.art_work_keyword.repository.ArtWorkKeywordRepository;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.common.KeywordMap;
@@ -21,22 +21,21 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class Art_workService extends BaseEntity {
+public class ArtWorkService extends BaseEntity {
 
-    private final Art_workRepository art_workRepository;
-    private final Art_work_keywordRepository art_work_keywordRepository;
-    private final Art_work_imageRepository art_work_imageRepository;
+    private final ArtWorkRepository artWorkRepository;
+    private final ArtWorkKeywordRepository artWorkKeywordRepository;
+    private final ArtWorkImageRepository artWorkImageRepository;
     private final MemberRepository memberRepository;
     private final AwsService awsService;
     private final FileService fileService;
 
     @Transactional
-    public void saveArt_work(Long loginMemberId, Art_workSaveRequestDto dto) throws IOException {
+    public void saveArtWork(Long loginMemberId, ArtWorkSaveRequestDto dto) throws IOException {
 
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
@@ -46,7 +45,7 @@ public class Art_workService extends BaseEntity {
         String GuaranteeImageUUID = UUID.randomUUID().toString();
         String GuaranteeImageEXT = fileService.extractExt(dto.getGuaranteeImage().getOriginalFilename());
 
-        Art_work art_work = Art_work.builder()
+        ArtWork artWork = ArtWork.builder()
                 .member(findMember)
                 .title(dto.getTitle())
                 .material(dto.getMaterial())
@@ -57,43 +56,43 @@ public class Art_workService extends BaseEntity {
                 .guaranteeImage(GuaranteeImageUUID + "." + GuaranteeImageEXT)
                 .build();
 
-        art_workRepository.save(art_work);
+        artWorkRepository.save(artWork);
         awsService.uploadImage(dto.getGuaranteeImage(), GuaranteeImageUUID);
-        saveArtImages(dto.getImage(), art_work);
-        saveArtKeywords(dto.getKeywords(), art_work);
+        saveArtImages(dto.getImage(), artWork);
+        saveArtKeywords(dto.getKeywords(), artWork);
     }
 
-    public void saveArtImages(MultipartFile[] files, Art_work art_work) throws IOException {
+    public void saveArtImages(MultipartFile[] files, ArtWork artWork) throws IOException {
 
         for (MultipartFile file : files) {
 
             String imageUUID = UUID.randomUUID().toString();
             String imageEXT = fileService.extractExt(file.getOriginalFilename());
 
-            Art_work_image art_work_image = Art_work_image.builder()
-                    .art_work(art_work)
+            ArtWorkImage artWorkImage = ArtWorkImage.builder()
+                    .artWork(artWork)
                     .image(imageUUID + "." + imageEXT)
                     .build();
 
-            art_work_imageRepository.save(art_work_image);
+            artWorkImageRepository.save(artWorkImage);
             awsService.uploadImage(file, imageUUID);
         }
     }
 
-    public void saveArtKeywords(String[] keywords, Art_work art_work) {
+    public void saveArtKeywords(String[] keywords, ArtWork artWork) {
 
         for (String keyword : keywords) {
 
-            Art_work_keyword art_work_keyword = Art_work_keyword.builder()
-                    .art_work(art_work)
+            ArtWorkKeyword artWorkKeyword = ArtWorkKeyword.builder()
+                    .artWork(artWork)
                     .keywordId(KeywordMap.map.get(keyword))
                     .build();
 
-            art_work_keywordRepository.save(art_work_keyword);
+            artWorkKeywordRepository.save(artWorkKeyword);
         }
     }
 
-    public void checkExistsImage(Art_workSaveRequestDto dto) {
+    public void checkExistsImage(ArtWorkSaveRequestDto dto) {
         if (dto.getGuaranteeImage().isEmpty() || dto.getImage()[0].isEmpty()) {
             throw new CustomException(ErrorCode.BAD_REQUEST_PARAM);
         }

@@ -1,7 +1,7 @@
 package com.sptp.backend.art_work.web;
 
-import com.sptp.backend.art_work.service.Art_workService;
-import com.sptp.backend.art_work.web.dto.request.Art_workSaveRequestDto;
+import com.sptp.backend.art_work.service.ArtWorkService;
+import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,15 +14,15 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-public class Art_workController {
+public class ArtWorkController {
 
-    private final Art_workService art_workService;
+    private final ArtWorkService artWorkService;
 
     @PostMapping("/art-work")
-    public ResponseEntity<Void> postArt_work(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                             Art_workSaveRequestDto art_workSaveRequestDto) throws IOException {
+    public ResponseEntity<Void> postArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                             ArtWorkSaveRequestDto artWorkSaveRequestDto) throws IOException {
 
-        art_workService.saveArt_work(userDetails.getMember().getId(), art_workSaveRequestDto);
+        artWorkService.saveArtWork(userDetails.getMember().getId(), artWorkSaveRequestDto);
 
         return new ResponseEntity(HttpStatus.OK);
     }

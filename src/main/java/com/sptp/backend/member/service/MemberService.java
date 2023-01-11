@@ -1,6 +1,6 @@
 package com.sptp.backend.member.service;
 
-import com.sptp.backend.art_work.repository.Art_workRepository;
+import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.member.web.dto.request.*;
@@ -44,7 +44,7 @@ public class MemberService {
     private final MemberKeywordRepository memberKeywordRepository;
     private final FileService fileService;
     private final AwsService awsService;
-    private final Art_workRepository art_workRepository;
+    private final ArtWorkRepository art_workRepository;
 
     @Value("${aws.storage.url}")
     private String awsStorageUrl;

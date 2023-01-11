@@ -1,6 +1,6 @@
 package com.sptp.backend.art_work_keyword.repository;
 
-import com.sptp.backend.art_work.repository.Art_work;
+import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.common.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +16,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Art_work_keyword extends BaseEntity {
+public class ArtWorkKeyword extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class Art_work_keyword extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "art_work_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Art_work art_work;
+    private ArtWork artWork;
 
     private Integer keywordId;
 }
