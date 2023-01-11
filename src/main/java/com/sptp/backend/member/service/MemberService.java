@@ -44,7 +44,6 @@ public class MemberService {
     private final MemberKeywordRepository memberKeywordRepository;
     private final FileService fileService;
     private final AwsService awsService;
-    private final KeywordMap keywordMap;
 
     @Value("${aws.storage.url}")
     private String awsStorageUrl;
@@ -193,7 +192,7 @@ public class MemberService {
 
         for (String keywordName : keywordList) {
 
-            keywordMap.checkExistsKeyword(keywordName);
+            KeywordMap.checkExistsKeyword(keywordName);
 
             MemberKeyword memberKeyword = MemberKeyword.builder()
                     .member(member)

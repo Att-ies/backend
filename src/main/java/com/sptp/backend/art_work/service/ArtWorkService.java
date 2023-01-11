@@ -34,7 +34,6 @@ public class ArtWorkService extends BaseEntity {
     private final MemberRepository memberRepository;
     private final AwsService awsService;
     private final FileService fileService;
-    private final KeywordMap keywordMap;
 
     @Transactional
     public void saveArtWork(Long loginMemberId, ArtWorkSaveRequestDto dto) throws IOException {
@@ -85,7 +84,7 @@ public class ArtWorkService extends BaseEntity {
 
         for (String keyword : keywords) {
 
-            keywordMap.checkExistsKeyword(keyword);
+            KeywordMap.checkExistsKeyword(keyword);
 
             ArtWorkKeyword artWorkKeyword = ArtWorkKeyword.builder()
                     .artWork(artWork)
