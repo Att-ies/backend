@@ -19,6 +19,6 @@ public class ArtWorkSaveRequestDto {
     private String size;
     private Integer price;
     private String status;
-    private String status_description;
+    private String statusDescription;
 
 }

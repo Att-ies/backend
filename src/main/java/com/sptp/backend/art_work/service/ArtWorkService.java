@@ -52,7 +52,7 @@ public class ArtWorkService extends BaseEntity {
                 .size(dto.getSize())
                 .price(dto.getPrice())
                 .status(dto.getStatus())
-                .status_description(dto.getStatus_description())
+                .statusDescription(dto.getStatusDescription())
                 .guaranteeImage(GuaranteeImageUUID + "." + GuaranteeImageEXT)
                 .build();
 
