@@ -1,7 +1,6 @@
 package com.sptp.backend.member.repository;
 
 import com.sptp.backend.common.entity.BaseEntity;
-import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,11 +9,9 @@ import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.member.web.dto.request.ArtistUpdateRequest;
 import com.sptp.backend.member.web.dto.request.MemberUpdateRequest;
 import org.hibernate.annotations.BatchSize;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 

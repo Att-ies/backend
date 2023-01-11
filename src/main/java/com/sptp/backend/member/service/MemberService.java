@@ -1,6 +1,5 @@
 package com.sptp.backend.member.service;
 
-import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.member.web.dto.request.*;
@@ -303,7 +302,7 @@ public class MemberService {
         return memberResponse;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<String> getKeywordName(Long memberId) {
 
         List<MemberKeyword> findMemberKeywordList = memberKeywordRepository.findByMemberId(memberId);
