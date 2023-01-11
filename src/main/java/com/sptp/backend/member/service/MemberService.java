@@ -282,7 +282,11 @@ public class MemberService {
             imageUrl = null;
         }
 
-        List<Integer> keywordList = List.of(1, 2);
+//        List<Member> findMemberKeyword = memberRepository.findWithKeywordById(loginMemberId);
+//        System.out.println(findMemberKeyword);
+
+        List<Integer> keywordList = List.of(1,2);
+
         ArrayList<String> keywordNameList = new ArrayList<String>();
         Set<Entry<String, Integer>> entrySet = KeywordMap.map.entrySet();
 
