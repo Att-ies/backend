@@ -14,11 +14,15 @@ import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.response.MemberLoginResponseDto;
 import com.sptp.backend.member.web.dto.response.MemberResponse;
 import com.sptp.backend.common.KeywordMap;
+import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtist;
+import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtistRepository;
 import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,6 +48,7 @@ public class MemberService {
     private final MemberKeywordRepository memberKeywordRepository;
     private final FileService fileService;
     private final AwsService awsService;
+    private final MemberPreferredArtistRepository memberPreferredArtistRepository;
 
     @Value("${aws.storage.url}")
     private String awsStorageUrl;
@@ -156,7 +161,12 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        findMember.changePassword(passwordEncoder.encode(password));
+        password = passwordEncoder.encode(password);
+        if (passwordEncoder.matches(password, findMember.getPassword())) {
+            throw new CustomException(ErrorCode.SHOULD_CHANGE_PASSWORD);
+        }
+
+        findMember.changePassword(password);
     }
 
     @Transactional
@@ -286,6 +296,38 @@ public class MemberService {
                 .behance(findMember.getBehance())
                 .build();
 
-        return  memberResponse;
+        return memberResponse;
+    }
+
+    @Transactional
+    public void pickArtist(Long loginMemberId, Long artistId) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        // 작가id 유효성 검사
+        Member findArtist = memberRepository.findById(artistId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
+        if (!Objects.equals(findArtist.getRoles().get(0), "ROLE_ARTIST")) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ARTIST);
+        }
+
+        updatePreferredArtist(findMember, findArtist);
+    }
+
+    @Transactional
+    public void updatePreferredArtist(Member member,Member artist) {
+
+        // Column unique 제약조건 핸들링 (중복 컬럼 검증)
+        if (memberPreferredArtistRepository.existsByMemberAndArtist(member, artist)){
+            throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTIST);
+        }
+
+        MemberPreferredArtist memberPreferredArtist = MemberPreferredArtist.builder()
+                .member(member)
+                .artist(artist)
+                .build();
+
+        memberPreferredArtistRepository.save(memberPreferredArtist);
     }
 }
