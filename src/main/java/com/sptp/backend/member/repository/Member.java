@@ -50,10 +50,6 @@ public class Member extends BaseEntity {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-//    @OneToMany(fetch=FetchType.LAZY)
-//    @JoinColumn(name="member_id")
-//    private List<MemberKeyword> keywords = new ArrayList<>();
-
     public void changePassword(String password) {
 
         this.password = password;

@@ -276,31 +276,15 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
+        // 이미지 처리
         String imageUrl = awsStorageUrl + findMember.getImage();
         
         if(findMember.isBlankImage()) {
             imageUrl = null;
         }
 
-//        List<Member> findMemberKeyword = memberRepository.findWithKeywordById(loginMemberId);
-//        System.out.println(findMemberKeyword);
-
-        List<Integer> keywordList = List.of(1,2);
-
-        ArrayList<String> keywordNameList = new ArrayList<String>();
-        Set<Entry<String, Integer>> entrySet = KeywordMap.map.entrySet();
-
-        for(Integer keyword : keywordList){
-
-            for (Entry<String, Integer> entry : entrySet) {
-                if (entry.getValue().equals(keyword)) {
-                    keywordNameList.add(entry.getKey());
-                    System.out.println(entry.getKey());
-                }
-            }
-        }
-
-        System.out.println(keywordNameList);
+        //키워드 처리
+        List<String> keywordNameList = getKeywordName(findMember.getId());
 
         MemberResponse memberResponse = MemberResponse.builder()
                 .nickname(findMember.getNickname())
@@ -317,6 +301,31 @@ public class MemberService {
                 .build();
 
         return memberResponse;
+    }
+
+    @Transactional
+    public List<String> getKeywordName(Long memberId) {
+
+        List<MemberKeyword> findMemberKeywordList = memberKeywordRepository.findByMemberId(memberId);
+
+        // keywordId(value) 리스트 구하기
+        List<Integer> keywordIdList = new ArrayList();
+        for(MemberKeyword memberKeyword : findMemberKeywordList){
+            keywordIdList.add(memberKeyword.getKeywordId());
+        }
+
+        // keywordName(key) 리스트 구하기
+        List<String> keywordNameList = new ArrayList();
+        Set<Entry<String, Integer>> entrySet = KeywordMap.map.entrySet();
+        for(Integer keywordId : keywordIdList) {
+            for (Entry<String, Integer> entry : entrySet) {
+                if (entry.getValue().equals(keywordId)) {
+                    keywordNameList.add(entry.getKey());
+                }
+            }
+        }
+
+        return keywordNameList;
     }
 
     @Transactional
