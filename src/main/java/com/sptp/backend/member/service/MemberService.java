@@ -348,8 +348,7 @@ public class MemberService {
         updatePreferredArtWork(findMember, findArtWork);
     }
 
-    @Transactional
-    public void updatePreferredArtWork(Member member, ArtWork artWork) {
+    private void updatePreferredArtWork(Member member, ArtWork artWork) {
 
         if (memberPreferredArtWorkRepository.existsByMemberAndArtWork(member, artWork)) {
             throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTWORK);
