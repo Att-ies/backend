@@ -84,7 +84,7 @@ class MemberServiceTest {
 
             //when
             //then
-            Assertions.assertThatThrownBy(() -> memberService.changePassword(id, password))
+            Assertions.assertThatThrownBy(() -> memberService.changePassword(id, passwordEncoder.encode(password)))
                     .isInstanceOf(CustomException.class)
                     .message().isEqualTo(ErrorCode.SHOULD_CHANGE_PASSWORD.getDetail());
         }
