@@ -215,7 +215,7 @@ public class MemberController {
     }
 
     // 회원-작가 픽 관계 등록 (작가 픽하기)
-    @PostMapping("/members/preferred-artist/{artistId}")
+    @PostMapping("/members/preferred-artists/{artistId}")
     public ResponseEntity<Void> pickArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
                                            @PathVariable(value = "artistId") Long artistId) {
 
@@ -225,7 +225,7 @@ public class MemberController {
     }
 
     // 회원-작가 픽 관계 취소
-    @DeleteMapping("/members/preferred-artist/{artistId}")
+    @DeleteMapping("/members/preferred-artists/{artistId}")
     public ResponseEntity<Void> deletePickArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                  @PathVariable(value = "artistId") Long artistId) {
 
