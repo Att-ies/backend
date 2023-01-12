@@ -54,6 +54,8 @@ public class MemberService {
     private final ArtWorkRepository artWorkRepository;
     private final MemberPreferredArtWorkRepository memberPreferredArtWorkRepository;
 
+    private final int PREFERRED_ART_WORK_MAXIMUM = 100;
+
     @Value("${aws.storage.url}")
     private String awsStorageUrl;
 
@@ -381,6 +383,10 @@ public class MemberService {
 
         ArtWork findArtWork = artWorkRepository.findById(artWorkId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+
+        if(memberPreferredArtWorkRepository.countByMemberId(loginMemberId) >= PREFERRED_ART_WORK_MAXIMUM){
+            throw new CustomException(ErrorCode.OVER_PREFERRED_ART_WORK_MAXIMUM);
+        }
 
         updatePreferredArtWork(findMember, findArtWork);
     }

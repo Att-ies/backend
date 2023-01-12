@@ -8,4 +8,6 @@ public interface MemberPreferredArtWorkRepository extends JpaRepository<MemberPr
     Boolean existsByMemberAndArtWork(Member member, ArtWork artWork);
 
     void deleteByMemberAndArtWork(Member member, ArtWork artWork);
+
+    Long countByMemberId(Long memberId);
 }

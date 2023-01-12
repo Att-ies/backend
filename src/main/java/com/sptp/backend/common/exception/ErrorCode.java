@@ -25,6 +25,7 @@ public enum ErrorCode {
     NOT_FOUND_ARTIST(HttpStatus.NOT_FOUND, "해당 작가를 찾을 수 없습니다."),
     NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND, "가입되지 않은 이메일 입니다."),
     NOT_FOUND_KEYWORD(HttpStatus.NOT_FOUND, "해당 키워드를 찾을 수 없습니다."),
+    OVER_PREFERRED_ART_WORK_MAXIMUM(HttpStatus.BAD_REQUEST, "관심 작품을 100개 이상 등록할 수 없습니다."),
 
     //토큰 예외
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
