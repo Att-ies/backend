@@ -238,12 +238,6 @@ public class MemberService {
     }
 
     @Transactional
-    public void withdrawUser(Long loginMemberId) {
-
-        memberRepository.deleteById(loginMemberId);
-    }
-
-    @Transactional
     public void updateArtist(Long loginMemberId, ArtistUpdateRequest dto, MultipartFile image) throws IOException {
 
         Member findMember = memberRepository.findById(loginMemberId)
@@ -267,6 +261,12 @@ public class MemberService {
         }
 
         findMember.updateArtist(dto, imageUrl);
+    }
+
+    @Transactional
+    public void withdrawUser(Long loginMemberId) {
+
+        memberRepository.deleteById(loginMemberId);
     }
 
     @Transactional(readOnly = true)
