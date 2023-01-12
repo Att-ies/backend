@@ -31,7 +31,9 @@ public enum ErrorCode {
     TOKEN_INVALID(HttpStatus.NOT_FOUND, "토큰이 유효하지 않습니다."),
 
     //작품 예외
-    SHOULD_EXIST_IMAGE(HttpStatus.BAD_REQUEST, "이미지가 존재하지 않습니다.");
+    SHOULD_EXIST_IMAGE(HttpStatus.BAD_REQUEST, "이미지가 존재하지 않습니다."),
+    EXIST_USER_PREFERRED_ARTWORK(HttpStatus.CONFLICT, "이미 찜한 작품입니다."),
+    NOT_FOUND_ARTWORK(HttpStatus.NOT_FOUND, "해당 작품을 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String detail;
