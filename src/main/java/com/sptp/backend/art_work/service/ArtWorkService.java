@@ -15,7 +15,6 @@ import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
-import com.sptp.backend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

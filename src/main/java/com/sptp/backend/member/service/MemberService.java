@@ -12,6 +12,7 @@ import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.service.JwtService;
+import com.sptp.backend.member.web.dto.response.ArtistResponse;
 import com.sptp.backend.member.web.dto.response.MemberLoginResponseDto;
 import com.sptp.backend.member.web.dto.response.MemberResponse;
 import com.sptp.backend.common.KeywordMap;
@@ -24,8 +25,6 @@ import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -282,10 +281,32 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
+        // 이미지 처리
         String imageUrl = awsStorageUrl + findMember.getImage();
         
         if(findMember.isBlankImage()) {
             imageUrl = null;
+        }
+
+        //키워드 처리
+        List<String> keywordNameList = getKeywordName(findMember.getId());
+
+        if(Objects.equals(findMember.getRoles().get(0), "ROLE_ARTIST")) {
+            MemberResponse artistResponse = ArtistResponse.builder()
+                    .nickname(findMember.getNickname())
+                    .userId(findMember.getUserId())
+                    .email(findMember.getEmail())
+                    .telephone(findMember.getTelephone())
+                    .image(imageUrl)
+                    .keywords(keywordNameList)
+                    .education(findMember.getEducation())
+                    .history(findMember.getHistory())
+                    .description(findMember.getDescription())
+                    .instagram(findMember.getInstagram())
+                    .behance(findMember.getBehance())
+                    .build();
+
+            return artistResponse;
         }
 
         MemberResponse memberResponse = MemberResponse.builder()
@@ -294,14 +315,30 @@ public class MemberService {
                 .email(findMember.getEmail())
                 .telephone(findMember.getTelephone())
                 .image(imageUrl)
-                .education(findMember.getEducation())
-                .history(findMember.getHistory())
-                .description(findMember.getDescription())
-                .instagram(findMember.getInstagram())
-                .behance(findMember.getBehance())
+                .keywords(keywordNameList)
                 .build();
 
         return memberResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> getKeywordName(Long memberId) {
+
+        List<MemberKeyword> findMemberKeywordList = memberKeywordRepository.findByMemberId(memberId);
+
+        // keywordId(value) 리스트 구하기
+        List<Integer> keywordIdList = new ArrayList();
+        for(MemberKeyword memberKeyword : findMemberKeywordList){
+            keywordIdList.add(memberKeyword.getKeywordId());
+        }
+
+        // keywordName(key) 리스트 구하기
+        List<String> keywordNameList = new ArrayList();
+        for(Integer keywordId : keywordIdList) {
+            keywordNameList.add(KeywordMap.getKeywordName(keywordId));
+        }
+
+        return keywordNameList;
     }
 
     @Transactional

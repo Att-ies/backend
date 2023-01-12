@@ -2,7 +2,8 @@ package com.sptp.backend.common;
 
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
-import java.util.HashMap;
+
+import java.util.*;
 
 public class KeywordMap {
 
@@ -10,6 +11,22 @@ public class KeywordMap {
         if (!KeywordMap.map.containsKey(key)) {
             throw new CustomException(ErrorCode.NOT_FOUND_KEYWORD);
         }
+    }
+
+    public static String getKeywordName(Integer keywordId) {
+
+        String keywordName = "";
+        Set<Map.Entry<String, Integer>> entrySet = KeywordMap.map.entrySet();
+
+        // KeywordName(key) 구하기
+        for (Map.Entry<String, Integer> entry : entrySet) {
+            if (entry.getValue().equals(keywordId)) {
+                keywordName = entry.getKey();
+                break;
+            }
+        }
+
+        return keywordName;
     }
 
     public static final HashMap<String, Integer> map = new HashMap<>();

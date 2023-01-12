@@ -1,12 +1,15 @@
 package com.sptp.backend.member.web.dto.response;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class MemberResponse {
 
     private String nickname;
@@ -14,10 +17,5 @@ public class MemberResponse {
     private String email;
     private String telephone;
     private String image;
-
-    private String education;
-    private String history;
-    private String description;
-    private String instagram;
-    private String behance;
+    private List<String> keywords;
 }

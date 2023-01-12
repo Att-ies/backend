@@ -2,9 +2,6 @@ package com.sptp.backend.member.service;
 
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
-import com.sptp.backend.jwt.repository.RefreshTokenRepository;
-import com.sptp.backend.jwt.service.JwtService;
-import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.MockPasswordEncoder;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
@@ -17,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
