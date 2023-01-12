@@ -12,6 +12,7 @@ import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,6 +51,11 @@ public class Member extends BaseEntity {
     public void changePassword(String password) {
 
         this.password = password;
+    }
+
+    public void changeRoles() {
+
+        this.roles = Collections.singletonList("ROLE_ARTIST");
     }
 
     public void updateUser(MemberUpdateRequest dto, String image) {

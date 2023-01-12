@@ -264,6 +264,17 @@ public class MemberService {
     }
 
     @Transactional
+    public String changeRoles(Long memberId) {
+
+        Member findMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        findMember.changeRoles();
+
+        return findMember.getRoles().get(0);
+    }
+
+    @Transactional
     public void withdrawUser(Long loginMemberId) {
 
         memberRepository.deleteById(loginMemberId);
