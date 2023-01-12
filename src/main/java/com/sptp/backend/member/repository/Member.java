@@ -53,7 +53,7 @@ public class Member extends BaseEntity {
         this.password = password;
     }
 
-    public void changeRoles() {
+    public void changeToArtist() {
 
         this.roles = Collections.singletonList("ROLE_ARTIST");
     }

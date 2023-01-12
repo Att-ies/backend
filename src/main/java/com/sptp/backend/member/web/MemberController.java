@@ -194,9 +194,9 @@ public class MemberController {
 
     // roles 작가로 전환
     @PatchMapping("/members/roles")
-    public ResponseEntity<RolesChangeResponse> changeRoles(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<RolesChangeResponse> changeToArtist(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        String roles = memberService.changeRoles(userDetails.getMember().getId());
+        String roles = memberService.changeToArtist(userDetails.getMember().getId());
 
         RolesChangeResponse rolesChangeResponse = RolesChangeResponse.builder()
                 .roles(roles)
