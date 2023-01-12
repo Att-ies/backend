@@ -329,13 +329,8 @@ public class MemberService {
 
         // keywordName(key) 리스트 구하기
         List<String> keywordNameList = new ArrayList();
-        Set<Entry<String, Integer>> entrySet = KeywordMap.map.entrySet();
         for(Integer keywordId : keywordIdList) {
-            for (Entry<String, Integer> entry : entrySet) {
-                if (entry.getValue().equals(keywordId)) {
-                    keywordNameList.add(entry.getKey());
-                }
-            }
+            keywordNameList.add(KeywordMap.getKeywordName(keywordId));
         }
 
         return keywordNameList;
