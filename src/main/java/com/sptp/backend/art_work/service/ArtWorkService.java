@@ -45,6 +45,9 @@ public class ArtWorkService extends BaseEntity {
         String GuaranteeImageUUID = UUID.randomUUID().toString();
         String GuaranteeImageEXT = fileService.extractExt(dto.getGuaranteeImage().getOriginalFilename());
 
+        String mainImageUUID = UUID.randomUUID().toString();
+        String mainImageEXT = fileService.extractExt(dto.getImage()[0].getOriginalFilename());
+
         ArtWork artWork = ArtWork.builder()
                 .member(findMember)
                 .title(dto.getTitle())
@@ -54,10 +57,12 @@ public class ArtWorkService extends BaseEntity {
                 .status(dto.getStatus())
                 .statusDescription(dto.getStatusDescription())
                 .guaranteeImage(GuaranteeImageUUID + "." + GuaranteeImageEXT)
+                .mainImage(mainImageUUID + "." + mainImageEXT)
                 .build();
 
         artWorkRepository.save(artWork);
         awsService.uploadImage(dto.getGuaranteeImage(), GuaranteeImageUUID);
+        awsService.uploadImage(dto.getImage()[0], mainImageUUID);
         saveArtImages(dto.getImage(), artWork);
         saveArtKeywords(dto.getKeywords(), artWork);
     }

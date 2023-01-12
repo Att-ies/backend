@@ -416,4 +416,12 @@ public class MemberService {
 
         memberPreferredArtWorkRepository.deleteByMemberAndArtWork(findMember, findArtWork);
     }
+
+    @Transactional(readOnly = true)
+    public List<ArtWork> getPreferredArtWorkList(Long loginMemberId) {
+
+        List<ArtWork> findPreferredArtWorkList = memberPreferredArtWorkRepository.findPreferredArtWork(loginMemberId);
+
+        return findPreferredArtWorkList;
+    }
 }

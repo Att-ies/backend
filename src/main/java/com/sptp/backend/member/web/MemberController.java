@@ -1,5 +1,6 @@
 package com.sptp.backend.member.web;
 
+import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
@@ -18,7 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -229,5 +232,18 @@ public class MemberController {
         memberService.deletePreferredArtWork(userDetails.getMember().getId(), artWorkId);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 회원 작품 찜 목록 조회
+    @GetMapping("/members/preferred-artwork")
+    public ResponseEntity<List<PreferredArtWorkResponse>> preferredArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        List<ArtWork> preferredArtWorkList = memberService.getPreferredArtWorkList(userDetails.getMember().getId());
+
+        List<PreferredArtWorkResponse> preferredArtWorkResponse = preferredArtWorkList.stream()
+                .map(m -> new PreferredArtWorkResponse(m.getTitle(), m.getPrice(), m.getMainImage()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(preferredArtWorkResponse);
     }
 }
