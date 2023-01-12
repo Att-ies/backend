@@ -1,6 +1,6 @@
 package com.sptp.backend.message.repository;
 
-import com.sptp.backend.chatroom.repository.ChatRoom;
+import com.sptp.backend.chat_room.repository.ChatRoom;
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,5 +31,5 @@ public class Message {
     private ChatRoom chatRoom;
 
     private String message;
-    private LocalDateTime sendTime;
+//    private LocalDateTime sendTime;
 }
