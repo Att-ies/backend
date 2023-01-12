@@ -7,4 +7,6 @@ public interface MemberPreferredArtistRepository extends JpaRepository<MemberPre
     Boolean existsByMemberAndArtist(Member member, Member artist);
 
     void deleteByMemberAndArtist(Member member, Member artist);
+
+    Long countByMemberId(Long memberId);
 }

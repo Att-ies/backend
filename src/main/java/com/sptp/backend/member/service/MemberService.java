@@ -53,6 +53,7 @@ public class MemberService {
     private final MemberPreferredArtistRepository memberPreferredArtistRepository;
     private final ArtWorkRepository artWorkRepository;
     private final MemberPreferredArtWorkRepository memberPreferredArtWorkRepository;
+    private final int PREFERRED_ARTIST_MAXIMUM = 3;
 
     @Value("${aws.storage.url}")
     private String awsStorageUrl;
@@ -372,6 +373,10 @@ public class MemberService {
         // Column unique 제약조건 핸들링 (중복 컬럼 검증)
         if (memberPreferredArtistRepository.existsByMemberAndArtist(member, artist)){
             throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTIST);
+        }
+
+        if(memberPreferredArtistRepository.countByMemberId(member.getId()) >= PREFERRED_ARTIST_MAXIMUM) {
+            throw new CustomException(ErrorCode.OVER_PREFERRED_ARTIST_MAXIMUM);
         }
 
         MemberPreferredArtist memberPreferredArtist = MemberPreferredArtist.builder()
