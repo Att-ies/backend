@@ -243,12 +243,6 @@ public class MemberService {
     }
 
     @Transactional
-    public void withdrawUser(Long loginMemberId) {
-
-        memberRepository.deleteById(loginMemberId);
-    }
-
-    @Transactional
     public void updateArtist(Long loginMemberId, ArtistUpdateRequest dto, MultipartFile image) throws IOException {
 
         Member findMember = memberRepository.findById(loginMemberId)
@@ -272,6 +266,23 @@ public class MemberService {
         }
 
         findMember.updateArtist(dto, imageUrl);
+    }
+
+    @Transactional
+    public String changeToArtist(Long memberId) {
+
+        Member findMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        findMember.changeToArtist();
+
+        return findMember.getRoles().get(0);
+    }
+
+    @Transactional
+    public void withdrawUser(Long loginMemberId) {
+
+        memberRepository.deleteById(loginMemberId);
     }
 
     @Transactional(readOnly = true)

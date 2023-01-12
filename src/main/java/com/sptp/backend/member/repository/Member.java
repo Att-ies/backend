@@ -12,6 +12,7 @@ import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,40 +53,27 @@ public class Member extends BaseEntity {
         this.password = password;
     }
 
+    public void changeToArtist() {
+
+        this.roles = Collections.singletonList("ROLE_ARTIST");
+    }
+
     public void updateUser(MemberUpdateRequest dto, String image) {
 
-        if (Objects.nonNull(dto.getEmail())) {
-            this.email = dto.getEmail();
-        }
-        if (Objects.nonNull(dto.getNickname())) {
-            this.nickname = dto.getNickname();
-        }
+        this.email = dto.getEmail();
+        this.nickname = dto.getNickname();
         this.image=image;
     }
 
     public void updateArtist(ArtistUpdateRequest dto, String image) {
 
-        if(Objects.nonNull(dto.getEmail())) {
-            this.email = dto.getEmail();
-        }
-        if(Objects.nonNull(dto.getNickname())) {
-            this.nickname = dto.getNickname();
-        }
-        if(Objects.nonNull(dto.getEducation())) {
-            this.education = dto.getEducation();
-        }
-        if(Objects.nonNull(dto.getHistory())) {
-            this.history = dto.getHistory();
-        }
-        if(Objects.nonNull(dto.getDescription())) {
-            this.description = dto.getDescription();
-        }
-        if(Objects.nonNull(dto.getInstagram())) {
-            this.instagram = dto.getInstagram();
-        }
-        if(Objects.nonNull(dto.getBehance())) {
-            this.behance = dto.getBehance();
-        }
+        this.email = dto.getEmail();
+        this.nickname = dto.getNickname();
+        this.education = dto.getEducation();
+        this.history = dto.getHistory();
+        this.description = dto.getDescription();
+        this.instagram = dto.getInstagram();
+        this.behance = dto.getBehance();
         this.image = image;
     }
 

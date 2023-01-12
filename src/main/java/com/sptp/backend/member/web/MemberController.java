@@ -192,6 +192,19 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // roles 작가로 전환
+    @PatchMapping("/members/roles")
+    public ResponseEntity<RolesChangeResponse> changeToArtist(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        String roles = memberService.changeToArtist(userDetails.getMember().getId());
+
+        RolesChangeResponse rolesChangeResponse = RolesChangeResponse.builder()
+                .roles(roles)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(rolesChangeResponse);
+    }
+
     // 회원 정보 조회
     @GetMapping("/members/me")
     public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails userDetails){
