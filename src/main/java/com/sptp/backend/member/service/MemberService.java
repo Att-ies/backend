@@ -10,6 +10,7 @@ import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.service.JwtService;
+import com.sptp.backend.member.web.dto.response.ArtistResponse;
 import com.sptp.backend.member.web.dto.response.MemberLoginResponseDto;
 import com.sptp.backend.member.web.dto.response.MemberResponse;
 import com.sptp.backend.common.KeywordMap;
@@ -285,6 +286,24 @@ public class MemberService {
         //키워드 처리
         List<String> keywordNameList = getKeywordName(findMember.getId());
 
+        if(Objects.equals(findMember.getRoles().get(0), "ROLE_ARTIST")) {
+            MemberResponse artistResponse = ArtistResponse.builder()
+                    .nickname(findMember.getNickname())
+                    .userId(findMember.getUserId())
+                    .email(findMember.getEmail())
+                    .telephone(findMember.getTelephone())
+                    .image(imageUrl)
+                    .keywords(keywordNameList)
+                    .education(findMember.getEducation())
+                    .history(findMember.getHistory())
+                    .description(findMember.getDescription())
+                    .instagram(findMember.getInstagram())
+                    .behance(findMember.getBehance())
+                    .build();
+
+            return artistResponse;
+        }
+
         MemberResponse memberResponse = MemberResponse.builder()
                 .nickname(findMember.getNickname())
                 .userId(findMember.getUserId())
@@ -292,11 +311,6 @@ public class MemberService {
                 .telephone(findMember.getTelephone())
                 .image(imageUrl)
                 .keywords(keywordNameList)
-                .education(findMember.getEducation())
-                .history(findMember.getHistory())
-                .description(findMember.getDescription())
-                .instagram(findMember.getInstagram())
-                .behance(findMember.getBehance())
                 .build();
 
         return memberResponse;
