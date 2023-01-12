@@ -25,7 +25,10 @@ public enum ErrorCode {
 
     //토큰 예외
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
-    TOKEN_INVALID(HttpStatus.NOT_FOUND, "토큰이 유효하지 않습니다.");
+    TOKEN_INVALID(HttpStatus.NOT_FOUND, "토큰이 유효하지 않습니다."),
+
+    //채팅 예외
+    NOT_FOUND_CHAT_ROOM(HttpStatus.NOT_FOUND, "존재하지 않는 채팅방입니다.");
 
     private final HttpStatus httpStatus;
     private final String detail;
