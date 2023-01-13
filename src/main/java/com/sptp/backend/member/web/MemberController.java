@@ -7,6 +7,8 @@ import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.response.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.service.MemberService;
+
+
 import com.sptp.backend.email.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -237,7 +239,20 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    // 회원-작품 픽 관계 등록 (작품 픽하기)
+    // 회원-작가 픽 목록 조회
+    @GetMapping("/members/preferred-artists")
+    public ResponseEntity<List<PreferredArtistResponse>> preferredArtistList(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        List<Member> preferredArtistList = memberService.getPreferredArtistList(userDetails.getMember().getId());
+
+        List<PreferredArtistResponse> preferredArtistResponse = preferredArtistList.stream()
+                .map(m -> new PreferredArtistResponse(m.getNickname(), m.getEducation(), m.getImage()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(preferredArtistResponse);
+    }
+
+    // 회원-작품 찜 관계 등록 (작품 찜하기)
     @PostMapping("/members/preferred-artworks/{artWorkId}")
     public ResponseEntity<Void> pickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @PathVariable(value = "artWorkId") Long artWorkId) {
@@ -247,7 +262,7 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // 회원-작품 픽 관계 취소
+    // 회원-작품 찜 관계 취소
     @DeleteMapping("/members/preferred-artworks/{artWorkId}")
     public ResponseEntity<Void> deletePickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @PathVariable(value = "artWorkId") Long artWorkId) {
@@ -257,7 +272,7 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // 회원 작품 찜 목록 조회
+    // 회원-작품 찜 목록 조회
     @GetMapping("/members/preferred-artworks")
     public ResponseEntity<List<PreferredArtWorkResponse>> preferredArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails) {
 

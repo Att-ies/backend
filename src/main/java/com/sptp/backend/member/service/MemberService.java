@@ -53,7 +53,7 @@ public class MemberService {
     private final MemberPreferredArtistRepository memberPreferredArtistRepository;
     private final ArtWorkRepository artWorkRepository;
     private final MemberPreferredArtWorkRepository memberPreferredArtWorkRepository;
-    private final int PREFERRED_ARTIST_MAXIMUM = 3;
+    private final int PREFERRED_ARTIST_MAXIMUM = 100;
 
     private final int PREFERRED_ART_WORK_MAXIMUM = 100;
 
@@ -403,6 +403,14 @@ public class MemberService {
         }
 
         memberPreferredArtistRepository.deleteByMemberAndArtist(findMember, findArtist);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Member> getPreferredArtistList(Long loginMemberId) {
+
+        List<Member> findPreferredArtistList = memberPreferredArtistRepository.findPreferredArtist(loginMemberId);
+
+        return findPreferredArtistList;
     }
 
     @Transactional
