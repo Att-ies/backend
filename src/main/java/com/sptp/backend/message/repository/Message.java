@@ -27,7 +27,7 @@ public class Message {
     private Member sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "artist_id")
+    @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
     private String message;
