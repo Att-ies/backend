@@ -20,5 +20,4 @@ public class ArtWorkSaveRequestDto {
     private Integer price;
     private String status;
     private String statusDescription;
-
 }

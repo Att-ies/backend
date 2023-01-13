@@ -1,5 +1,6 @@
 package com.sptp.backend.member.service;
 
+import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.aws.service.AwsService;
@@ -12,9 +13,7 @@ import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.service.JwtService;
-import com.sptp.backend.member.web.dto.response.ArtistResponse;
-import com.sptp.backend.member.web.dto.response.MemberLoginResponseDto;
-import com.sptp.backend.member.web.dto.response.MemberResponse;
+import com.sptp.backend.member.web.dto.response.*;
 import com.sptp.backend.common.KeywordMap;
 import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtist;
 import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtistRepository;
@@ -36,6 +35,7 @@ import java.util.*;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -295,11 +295,7 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         // 이미지 처리
-        String imageUrl = awsStorageUrl + findMember.getImage();
-        
-        if(findMember.isBlankImage()) {
-            imageUrl = null;
-        }
+        String imageUrl = processImage(findMember.getImage());
 
         //키워드 처리
         List<String> keywordNameList = getKeywordName(findMember.getId());
@@ -406,11 +402,15 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<Member> getPreferredArtistList(Long loginMemberId) {
+    public List<PreferredArtistResponse> getPreferredArtistList(Long loginMemberId) {
 
         List<Member> findPreferredArtistList = memberPreferredArtistRepository.findPreferredArtist(loginMemberId);
 
-        return findPreferredArtistList;
+        List<PreferredArtistResponse> preferredArtistResponse = findPreferredArtistList.stream()
+                .map(m -> new PreferredArtistResponse(m.getNickname(), m.getEducation(), processImage(m.getImage())))
+                .collect(Collectors.toList());
+
+        return preferredArtistResponse;
     }
 
     @Transactional
@@ -456,10 +456,23 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<ArtWork> getPreferredArtWorkList(Long loginMemberId) {
+    public List<PreferredArtWorkResponse> getPreferredArtWorkList(Long loginMemberId) {
 
         List<ArtWork> findPreferredArtWorkList = memberPreferredArtWorkRepository.findPreferredArtWork(loginMemberId);
 
-        return findPreferredArtWorkList;
+        List<PreferredArtWorkResponse> preferredArtWorkResponse = findPreferredArtWorkList.stream()
+                .map(m -> new PreferredArtWorkResponse(m.getTitle(), m.getPrice(), processImage(m.getMainImage())))
+                .collect(Collectors.toList());
+
+        return preferredArtWorkResponse;
+    }
+
+    //이미지 처리
+    private String processImage(String image){
+
+        if(StringUtils.isBlank(image)) {
+            return null;
+        }
+        return awsStorageUrl + image;
     }
 }

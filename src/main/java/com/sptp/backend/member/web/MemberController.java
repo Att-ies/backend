@@ -7,8 +7,6 @@ import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.response.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.service.MemberService;
-
-
 import com.sptp.backend.email.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -243,11 +241,7 @@ public class MemberController {
     @GetMapping("/members/preferred-artists")
     public ResponseEntity<List<PreferredArtistResponse>> preferredArtistList(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        List<Member> preferredArtistList = memberService.getPreferredArtistList(userDetails.getMember().getId());
-
-        List<PreferredArtistResponse> preferredArtistResponse = preferredArtistList.stream()
-                .map(m -> new PreferredArtistResponse(m.getNickname(), m.getEducation(), m.getImage()))
-                .collect(Collectors.toList());
+        List<PreferredArtistResponse> preferredArtistResponse = memberService.getPreferredArtistList(userDetails.getMember().getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(preferredArtistResponse);
     }
@@ -276,11 +270,7 @@ public class MemberController {
     @GetMapping("/members/preferred-artworks")
     public ResponseEntity<List<PreferredArtWorkResponse>> preferredArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        List<ArtWork> preferredArtWorkList = memberService.getPreferredArtWorkList(userDetails.getMember().getId());
-
-        List<PreferredArtWorkResponse> preferredArtWorkResponse = preferredArtWorkList.stream()
-                .map(m -> new PreferredArtWorkResponse(m.getTitle(), m.getPrice(), m.getMainImage()))
-                .collect(Collectors.toList());
+        List<PreferredArtWorkResponse> preferredArtWorkResponse = memberService.getPreferredArtWorkList(userDetails.getMember().getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(preferredArtWorkResponse);
     }

@@ -14,7 +14,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -87,13 +86,6 @@ public class Member extends BaseEntity {
 
     public boolean isUpdatedNickname(String nickname){
         if(StringUtils.isNotBlank(nickname) && !nickname.equals(this.nickname)){
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isBlankImage() {
-        if(StringUtils.isBlank(this.image)) {
             return true;
         }
         return false;
