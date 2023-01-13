@@ -17,7 +17,7 @@ import javax.persistence.*;
 @Builder
 @Table(name="MEMBER_PREFERRED_ARTIST", uniqueConstraints = {@UniqueConstraint(
         name = "MEMBER_ARTIST_UNIQUE",
-        columnNames = {"MEMBER_ID", "PREFERRED_ARTIST_ID"} )})
+        columnNames = {"MEMBER_ID", "ARTIST_ID"} )})
 public class MemberPreferredArtist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +30,7 @@ public class MemberPreferredArtist {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "preferred_artist_id")
+    @JoinColumn(name = "artist_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member artist;
 }

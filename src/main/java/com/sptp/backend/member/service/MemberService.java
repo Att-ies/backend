@@ -53,6 +53,7 @@ public class MemberService {
     private final MemberPreferredArtistRepository memberPreferredArtistRepository;
     private final ArtWorkRepository artWorkRepository;
     private final MemberPreferredArtWorkRepository memberPreferredArtWorkRepository;
+    private final int PREFERRED_ARTIST_MAXIMUM = 3;
 
     @Value("${aws.storage.url}")
     private String awsStorageUrl;
@@ -367,12 +368,15 @@ public class MemberService {
         updatePreferredArtist(findMember, findArtist);
     }
 
-    @Transactional
-    public void updatePreferredArtist(Member member,Member artist) {
+    private void updatePreferredArtist(Member member,Member artist) {
 
         // Column unique 제약조건 핸들링 (중복 컬럼 검증)
         if (memberPreferredArtistRepository.existsByMemberAndArtist(member, artist)){
             throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTIST);
+        }
+
+        if(memberPreferredArtistRepository.countByMemberId(member.getId()) >= PREFERRED_ARTIST_MAXIMUM) {
+            throw new CustomException(ErrorCode.OVER_PREFERRED_ARTIST_MAXIMUM);
         }
 
         MemberPreferredArtist memberPreferredArtist = MemberPreferredArtist.builder()
@@ -381,6 +385,22 @@ public class MemberService {
                 .build();
 
         memberPreferredArtistRepository.save(memberPreferredArtist);
+    }
+
+    @Transactional
+    public void deletePickArtist(Long loginMemberId, Long artistId){
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        // 작가id 유효성 검사
+        Member findArtist = memberRepository.findById(artistId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
+        if (!Objects.equals(findArtist.getRoles().get(0), "ROLE_ARTIST")) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ARTIST);
+        }
+
+        memberPreferredArtistRepository.deleteByMemberAndArtist(findMember, findArtist);
     }
 
     @Transactional
@@ -410,7 +430,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void deletePreferredArtWork(Long loginMemberId, Long artWorkId) {
+    public void deletePickArtWork(Long loginMemberId, Long artWorkId) {
 
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));

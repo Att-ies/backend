@@ -224,6 +224,16 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 회원-작가 픽 관계 취소
+    @DeleteMapping("/members/preferred-artists/{artistId}")
+    public ResponseEntity<Void> deletePickArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                 @PathVariable(value = "artistId") Long artistId) {
+
+        memberService.deletePickArtist(userDetails.getMember().getId(), artistId);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     // 회원-작품 픽 관계 등록 (작품 픽하기)
     @PostMapping("/members/preferred-artwork/{artWorkId}")
     public ResponseEntity<Void> pickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -239,7 +249,7 @@ public class MemberController {
     public ResponseEntity<Void> deletePickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @PathVariable(value = "artWorkId") Long artWorkId) {
 
-        memberService.deletePreferredArtWork(userDetails.getMember().getId(), artWorkId);
+        memberService.deletePickArtWork(userDetails.getMember().getId(), artWorkId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
