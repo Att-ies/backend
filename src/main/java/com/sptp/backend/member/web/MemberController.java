@@ -1,5 +1,6 @@
 package com.sptp.backend.member.web;
 
+import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
@@ -18,7 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -224,8 +227,18 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 회원-작가 픽 관계 취소
+    @DeleteMapping("/members/preferred-artists/{artistId}")
+    public ResponseEntity<Void> deletePickArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                 @PathVariable(value = "artistId") Long artistId) {
+
+        memberService.deletePickArtist(userDetails.getMember().getId(), artistId);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     // 회원-작품 픽 관계 등록 (작품 픽하기)
-    @PostMapping("/members/preferred-artwork/{artWorkId}")
+    @PostMapping("/members/preferred-artworks/{artWorkId}")
     public ResponseEntity<Void> pickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @PathVariable(value = "artWorkId") Long artWorkId) {
 
@@ -235,12 +248,25 @@ public class MemberController {
     }
 
     // 회원-작품 픽 관계 취소
-    @DeleteMapping("/members/preferred-artwork/{artWorkId}")
+    @DeleteMapping("/members/preferred-artworks/{artWorkId}")
     public ResponseEntity<Void> deletePickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @PathVariable(value = "artWorkId") Long artWorkId) {
 
-        memberService.deletePreferredArtWork(userDetails.getMember().getId(), artWorkId);
+        memberService.deletePickArtWork(userDetails.getMember().getId(), artWorkId);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 회원 작품 찜 목록 조회
+    @GetMapping("/members/preferred-artworks")
+    public ResponseEntity<List<PreferredArtWorkResponse>> preferredArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        List<ArtWork> preferredArtWorkList = memberService.getPreferredArtWorkList(userDetails.getMember().getId());
+
+        List<PreferredArtWorkResponse> preferredArtWorkResponse = preferredArtWorkList.stream()
+                .map(m -> new PreferredArtWorkResponse(m.getTitle(), m.getPrice(), m.getMainImage()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(preferredArtWorkResponse);
     }
 }
