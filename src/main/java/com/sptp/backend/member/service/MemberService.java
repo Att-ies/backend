@@ -384,17 +384,17 @@ public class MemberService {
         ArtWork findArtWork = artWorkRepository.findById(artWorkId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
 
-        if(memberPreferredArtWorkRepository.countByMemberId(loginMemberId) >= PREFERRED_ART_WORK_MAXIMUM){
-            throw new CustomException(ErrorCode.OVER_PREFERRED_ART_WORK_MAXIMUM);
-        }
-
-        updatePreferredArtWork(findMember, findArtWork);
+        updatePreferredArtWork(findMember, findArtWork, loginMemberId);
     }
 
-    private void updatePreferredArtWork(Member member, ArtWork artWork) {
+    private void updatePreferredArtWork(Member member, ArtWork artWork, Long loginMemberId) {
 
         if (memberPreferredArtWorkRepository.existsByMemberAndArtWork(member, artWork)) {
             throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTWORK);
+        }
+
+        if(memberPreferredArtWorkRepository.countByMemberId(loginMemberId) >= PREFERRED_ART_WORK_MAXIMUM){
+            throw new CustomException(ErrorCode.OVER_PREFERRED_ART_WORK_MAXIMUM);
         }
 
         MemberPreferredArtWork memberPreferredArtWork = MemberPreferredArtWork.builder()

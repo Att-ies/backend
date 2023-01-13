@@ -215,7 +215,7 @@ public class MemberController {
     }
 
     // 회원-작품 픽 관계 등록 (작품 픽하기)
-    @PostMapping("/members/preferred-artwork/{artWorkId}")
+    @PostMapping("/members/preferred-artworks/{artWorkId}")
     public ResponseEntity<Void> pickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @PathVariable(value = "artWorkId") Long artWorkId) {
 
@@ -225,7 +225,7 @@ public class MemberController {
     }
 
     // 회원-작품 픽 관계 취소
-    @DeleteMapping("/members/preferred-artwork/{artWorkId}")
+    @DeleteMapping("/members/preferred-artworks/{artWorkId}")
     public ResponseEntity<Void> deletePickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @PathVariable(value = "artWorkId") Long artWorkId) {
 
@@ -235,7 +235,7 @@ public class MemberController {
     }
 
     // 회원 작품 찜 목록 조회
-    @GetMapping("/members/preferred-artwork")
+    @GetMapping("/members/preferred-artworks")
     public ResponseEntity<List<PreferredArtWorkResponse>> preferredArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
         List<ArtWork> preferredArtWorkList = memberService.getPreferredArtWorkList(userDetails.getMember().getId());
