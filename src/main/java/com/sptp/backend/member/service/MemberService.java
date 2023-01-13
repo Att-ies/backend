@@ -53,6 +53,7 @@ public class MemberService {
     private final MemberPreferredArtistRepository memberPreferredArtistRepository;
     private final ArtWorkRepository artWorkRepository;
     private final MemberPreferredArtWorkRepository memberPreferredArtWorkRepository;
+    private final int PREFERRED_ARTIST_MAXIMUM = 3;
 
     private final int PREFERRED_ART_WORK_MAXIMUM = 100;
 
@@ -167,12 +168,11 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        password = passwordEncoder.encode(password);
         if (passwordEncoder.matches(password, findMember.getPassword())) {
             throw new CustomException(ErrorCode.SHOULD_CHANGE_PASSWORD);
         }
 
-        findMember.changePassword(password);
+        findMember.changePassword(passwordEncoder.encode(password));
     }
 
     @Transactional
@@ -246,12 +246,6 @@ public class MemberService {
     }
 
     @Transactional
-    public void withdrawUser(Long loginMemberId) {
-
-        memberRepository.deleteById(loginMemberId);
-    }
-
-    @Transactional
     public void updateArtist(Long loginMemberId, ArtistUpdateRequest dto, MultipartFile image) throws IOException {
 
         Member findMember = memberRepository.findById(loginMemberId)
@@ -275,6 +269,23 @@ public class MemberService {
         }
 
         findMember.updateArtist(dto, imageUrl);
+    }
+
+    @Transactional
+    public String changeToArtist(Long memberId) {
+
+        Member findMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        findMember.changeToArtist();
+
+        return findMember.getRoles().get(0);
+    }
+
+    @Transactional
+    public void withdrawUser(Long loginMemberId) {
+
+        memberRepository.deleteById(loginMemberId);
     }
 
     @Transactional(readOnly = true)
@@ -359,12 +370,15 @@ public class MemberService {
         updatePreferredArtist(findMember, findArtist);
     }
 
-    @Transactional
-    public void updatePreferredArtist(Member member,Member artist) {
+    private void updatePreferredArtist(Member member,Member artist) {
 
         // Column unique 제약조건 핸들링 (중복 컬럼 검증)
         if (memberPreferredArtistRepository.existsByMemberAndArtist(member, artist)){
             throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTIST);
+        }
+
+        if(memberPreferredArtistRepository.countByMemberId(member.getId()) >= PREFERRED_ARTIST_MAXIMUM) {
+            throw new CustomException(ErrorCode.OVER_PREFERRED_ARTIST_MAXIMUM);
         }
 
         MemberPreferredArtist memberPreferredArtist = MemberPreferredArtist.builder()
@@ -373,6 +387,22 @@ public class MemberService {
                 .build();
 
         memberPreferredArtistRepository.save(memberPreferredArtist);
+    }
+
+    @Transactional
+    public void deletePickArtist(Long loginMemberId, Long artistId){
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        // 작가id 유효성 검사
+        Member findArtist = memberRepository.findById(artistId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
+        if (!Objects.equals(findArtist.getRoles().get(0), "ROLE_ARTIST")) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ARTIST);
+        }
+
+        memberPreferredArtistRepository.deleteByMemberAndArtist(findMember, findArtist);
     }
 
     @Transactional
@@ -406,7 +436,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void deletePreferredArtWork(Long loginMemberId, Long artWorkId) {
+    public void deletePickArtWork(Long loginMemberId, Long artWorkId) {
 
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));

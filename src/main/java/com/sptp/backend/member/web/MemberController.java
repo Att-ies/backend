@@ -195,6 +195,19 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // roles 작가로 전환
+    @PatchMapping("/members/roles")
+    public ResponseEntity<RolesChangeResponse> changeToArtist(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        String roles = memberService.changeToArtist(userDetails.getMember().getId());
+
+        RolesChangeResponse rolesChangeResponse = RolesChangeResponse.builder()
+                .roles(roles)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(rolesChangeResponse);
+    }
+
     // 회원 정보 조회
     @GetMapping("/members/me")
     public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails userDetails){
@@ -214,6 +227,16 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 회원-작가 픽 관계 취소
+    @DeleteMapping("/members/preferred-artists/{artistId}")
+    public ResponseEntity<Void> deletePickArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                 @PathVariable(value = "artistId") Long artistId) {
+
+        memberService.deletePickArtist(userDetails.getMember().getId(), artistId);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     // 회원-작품 픽 관계 등록 (작품 픽하기)
     @PostMapping("/members/preferred-artworks/{artWorkId}")
     public ResponseEntity<Void> pickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -229,7 +252,7 @@ public class MemberController {
     public ResponseEntity<Void> deletePickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @PathVariable(value = "artWorkId") Long artWorkId) {
 
-        memberService.deletePreferredArtWork(userDetails.getMember().getId(), artWorkId);
+        memberService.deletePickArtWork(userDetails.getMember().getId(), artWorkId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
