@@ -62,8 +62,7 @@ public class Member extends BaseEntity {
 
         this.email = dto.getEmail();
         this.nickname = dto.getNickname();
-        // image 수정 여부 체크. null 값으로 들어올 수도 있어서 null로 체크하면 안됨
-        if(dto.getIsChanged()) {
+        if(dto.getIsChanged()) { // image 수정 여부 체크. null 값으로 들어올 수도 있어서 null로 체크하면 안됨
             this.image=image;
         }
     }
@@ -77,7 +76,9 @@ public class Member extends BaseEntity {
         this.description = dto.getDescription();
         this.instagram = dto.getInstagram();
         this.behance = dto.getBehance();
-        this.image = image;
+        if(dto.getIsChanged()) {
+            this.image=image;
+        }
     }
 
     // 이메일이 수정됐는지 확인. 본인 이메일 그대로거나, 비어있을 경우 수정되지 않은 걸로 간주해 false 반환.

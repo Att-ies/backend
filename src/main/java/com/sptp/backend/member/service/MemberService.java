@@ -225,14 +225,15 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        String uuid = UUID.randomUUID().toString();
-        String imageUrl = null;
-
         // 원래 이미지가 있는데 수정한 경우
 //        if(!findMember.getImage().isEmpty() && dto.getIsChanged()) {
 //
 //            // s3에서 이미지 삭제
 //        }
+
+        // 유저가 이미지를 없애도록 수정한 경우
+        String imageUrl = null;
+        String uuid = UUID.randomUUID().toString();
 
         // 유저가 이미지를 다른 파일로 수정한 경우
         if(!image.isEmpty()) {
