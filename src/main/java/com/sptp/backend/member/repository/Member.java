@@ -62,6 +62,7 @@ public class Member extends BaseEntity {
 
         this.email = dto.getEmail();
         this.nickname = dto.getNickname();
+        this.address = dto.getAddress();
         this.image=image;
     }
 
