@@ -75,6 +75,7 @@ public class Member extends BaseEntity {
         this.description = dto.getDescription();
         this.instagram = dto.getInstagram();
         this.behance = dto.getBehance();
+        this.address = dto.getAddress();
         this.image = image;
     }
 

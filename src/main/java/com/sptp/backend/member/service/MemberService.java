@@ -287,6 +287,8 @@ public class MemberService {
             checkDuplicateMemberNickname(dto.getNickname());
         }
 
+        updateKeyword(findMember, dto.getKeywords());
+
         findMember.updateArtist(dto, imageUrl);
     }
 
