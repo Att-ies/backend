@@ -226,13 +226,20 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         String uuid = UUID.randomUUID().toString();
-        String imageUrl = "";
+        String imageUrl = null;
 
-        if(!image.isEmpty()){
+        // 원래 이미지가 있는데 수정한 경우
+//        if(!findMember.getImage().isEmpty() && dto.getIsChanged()) {
+//
+//            // s3에서 이미지 삭제
+//        }
+
+        // 유저가 이미지를 다른 파일로 수정한 경우
+        if(!image.isEmpty()) {
             String ext = fileService.extractExt(image.getOriginalFilename());
             imageUrl = uuid + "." + ext;
 
-            awsService.uploadImage(image, uuid);
+            awsService.uploadImage(image, uuid); // s3에 이미지 업로드
         }
 
         if (findMember.isUpdatedEmail(dto.getEmail())) {
