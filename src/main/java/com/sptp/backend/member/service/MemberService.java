@@ -55,6 +55,8 @@ public class MemberService {
     private final MemberPreferredArtWorkRepository memberPreferredArtWorkRepository;
     private final int PREFERRED_ARTIST_MAXIMUM = 3;
 
+    private final int PREFERRED_ART_WORK_MAXIMUM = 100;
+
     @Value("${aws.storage.url}")
     private String awsStorageUrl;
 
@@ -412,13 +414,17 @@ public class MemberService {
         ArtWork findArtWork = artWorkRepository.findById(artWorkId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
 
-        updatePreferredArtWork(findMember, findArtWork);
+        updatePreferredArtWork(findMember, findArtWork, loginMemberId);
     }
 
-    private void updatePreferredArtWork(Member member, ArtWork artWork) {
+    private void updatePreferredArtWork(Member member, ArtWork artWork, Long loginMemberId) {
 
         if (memberPreferredArtWorkRepository.existsByMemberAndArtWork(member, artWork)) {
             throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTWORK);
+        }
+
+        if(memberPreferredArtWorkRepository.countByMemberId(loginMemberId) >= PREFERRED_ART_WORK_MAXIMUM){
+            throw new CustomException(ErrorCode.OVER_PREFERRED_ART_WORK_MAXIMUM);
         }
 
         MemberPreferredArtWork memberPreferredArtWork = MemberPreferredArtWork.builder()
@@ -439,5 +445,13 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
 
         memberPreferredArtWorkRepository.deleteByMemberAndArtWork(findMember, findArtWork);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ArtWork> getPreferredArtWorkList(Long loginMemberId) {
+
+        List<ArtWork> findPreferredArtWorkList = memberPreferredArtWorkRepository.findPreferredArtWork(loginMemberId);
+
+        return findPreferredArtWorkList;
     }
 }

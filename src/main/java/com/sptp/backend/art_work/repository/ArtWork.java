@@ -42,4 +42,5 @@ public class ArtWork extends BaseEntity {
 
     private String guaranteeImage;
 
+    private String mainImage;
 }
