@@ -89,7 +89,7 @@ public class MemberService {
         checkDuplicateMemberNickname(dto.getNickname());
 
         String uuid = UUID.randomUUID().toString();
-        String imageUrl = "";
+        String imageUrl = null;
 
         if(!image.isEmpty()){
             String ext = fileService.extractExt(image.getOriginalFilename());
@@ -243,7 +243,7 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         String uuid = UUID.randomUUID().toString();
-        String imageUrl = "";
+        String imageUrl = null;
 
         if(!image.isEmpty()){
             String ext = fileService.extractExt(image.getOriginalFilename());
@@ -271,7 +271,7 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         String uuid = UUID.randomUUID().toString();
-        String imageUrl = "";
+        String imageUrl = null;
 
         if(!image.isEmpty()){
             String ext = fileService.extractExt(image.getOriginalFilename());
