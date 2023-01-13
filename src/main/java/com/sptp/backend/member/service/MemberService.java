@@ -219,7 +219,7 @@ public class MemberService {
         }
     }
 
-    private void updateKeyword(Member member, String[] keywordList) {
+    private void updateKeyword(Member member, List<String> keywordList) {
 
         memberKeywordRepository.deleteByMember(member);
 
