@@ -1,6 +1,6 @@
 package com.sptp.backend.member.web;
 
-import com.sptp.backend.aws.service.AwsService;
+import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
@@ -19,8 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -160,17 +161,6 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    // 회원 정보 수정
-    @PatchMapping("/members")
-    public ResponseEntity<Void> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                        @RequestParam(value = "image", required = false) MultipartFile image,
-                                        MemberUpdateRequest memberUpdateRequest) throws IOException {
-
-        memberService.updateUser(userDetails.getMember().getId(), memberUpdateRequest, image);
-
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
     // 회원 탈퇴
     @DeleteMapping("/members")
     public ResponseEntity<Void> withdrawUser(
@@ -179,6 +169,17 @@ public class MemberController {
 
         memberService.logout(accessToken);
         memberService.withdrawUser(userDetails.getMember().getId());
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    // 회원 정보 수정
+    @PatchMapping("/members")
+    public ResponseEntity<Void> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                           @RequestParam(value = "image", required = false) MultipartFile image,
+                                           MemberUpdateRequest memberUpdateRequest) throws IOException {
+
+        memberService.updateUser(userDetails.getMember().getId(), memberUpdateRequest, image);
 
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -194,12 +195,78 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping("/members/me")
+    // roles 작가로 전환
+    @PatchMapping("/members/roles")
+    public ResponseEntity<RolesChangeResponse> changeToArtist(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        String roles = memberService.changeToArtist(userDetails.getMember().getId());
+
+        RolesChangeResponse rolesChangeResponse = RolesChangeResponse.builder()
+                .roles(roles)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(rolesChangeResponse);
+    }
+
     // 회원 정보 조회
+    @GetMapping("/members/me")
     public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails userDetails){
 
         MemberResponse memberResponse = memberService.getMember(userDetails.getMember().getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(memberResponse);
+    }
+
+    // 회원-작가 픽 관계 등록 (작가 픽하기)
+    @PostMapping("/members/preferred-artists/{artistId}")
+    public ResponseEntity<Void> pickArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                           @PathVariable(value = "artistId") Long artistId) {
+
+        memberService.pickArtist(userDetails.getMember().getId(), artistId);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    // 회원-작가 픽 관계 취소
+    @DeleteMapping("/members/preferred-artists/{artistId}")
+    public ResponseEntity<Void> deletePickArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                 @PathVariable(value = "artistId") Long artistId) {
+
+        memberService.deletePickArtist(userDetails.getMember().getId(), artistId);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    // 회원-작품 픽 관계 등록 (작품 픽하기)
+    @PostMapping("/members/preferred-artworks/{artWorkId}")
+    public ResponseEntity<Void> pickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                            @PathVariable(value = "artWorkId") Long artWorkId) {
+
+        memberService.pickArtWork(userDetails.getMember().getId(), artWorkId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 회원-작품 픽 관계 취소
+    @DeleteMapping("/members/preferred-artworks/{artWorkId}")
+    public ResponseEntity<Void> deletePickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                            @PathVariable(value = "artWorkId") Long artWorkId) {
+
+        memberService.deletePickArtWork(userDetails.getMember().getId(), artWorkId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 회원 작품 찜 목록 조회
+    @GetMapping("/members/preferred-artworks")
+    public ResponseEntity<List<PreferredArtWorkResponse>> preferredArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        List<ArtWork> preferredArtWorkList = memberService.getPreferredArtWorkList(userDetails.getMember().getId());
+
+        List<PreferredArtWorkResponse> preferredArtWorkResponse = preferredArtWorkList.stream()
+                .map(m -> new PreferredArtWorkResponse(m.getTitle(), m.getPrice(), m.getMainImage()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(preferredArtWorkResponse);
     }
 }

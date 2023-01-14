@@ -1,5 +1,6 @@
-package com.sptp.backend.memberkeyword.repository;
+package com.sptp.backend.art_work.repository;
 
+import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,10 +16,11 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberKeyword {
+public class ArtWork extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_keyword_id")
+    @Column(name = "art_work_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,6 +28,19 @@ public class MemberKeyword {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
-    private Integer keywordId;
-}
+    private String title;
 
+    private String material;
+
+    private String size;
+
+    private Integer price;
+
+    private String status;
+
+    private String statusDescription;
+
+    private String guaranteeImage;
+
+    private String mainImage;
+}

@@ -1,4 +1,4 @@
-package com.sptp.backend.memberkeyword.repository;
+package com.sptp.backend.member_preferred_artist.repository;
 
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
@@ -15,10 +15,13 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberKeyword {
+@Table(name="MEMBER_PREFERRED_ARTIST", uniqueConstraints = {@UniqueConstraint(
+        name = "MEMBER_ARTIST_UNIQUE",
+        columnNames = {"MEMBER_ID", "ARTIST_ID"} )})
+public class MemberPreferredArtist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_keyword_id")
+    @Column(name = "member_preferred_artist_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,6 +29,8 @@ public class MemberKeyword {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
-    private Integer keywordId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "artist_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Member artist;
 }
-

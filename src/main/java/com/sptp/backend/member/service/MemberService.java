@@ -1,6 +1,7 @@
 package com.sptp.backend.member.service;
 
-import com.nimbusds.oauth2.sdk.util.StringUtils;
+import com.sptp.backend.art_work.repository.ArtWork;
+import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.member.web.dto.request.*;
@@ -11,9 +12,14 @@ import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.web.JwtTokenProvider;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.service.JwtService;
+import com.sptp.backend.member.web.dto.response.ArtistResponse;
 import com.sptp.backend.member.web.dto.response.MemberLoginResponseDto;
 import com.sptp.backend.member.web.dto.response.MemberResponse;
-import com.sptp.backend.memberkeyword.MemberKeywordMap;
+import com.sptp.backend.common.KeywordMap;
+import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtist;
+import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtistRepository;
+import com.sptp.backend.member_preffereed_art_work.repository.MemberPreferredArtWork;
+import com.sptp.backend.member_preffereed_art_work.repository.MemberPreferredArtWorkRepository;
 import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +50,12 @@ public class MemberService {
     private final MemberKeywordRepository memberKeywordRepository;
     private final FileService fileService;
     private final AwsService awsService;
+    private final MemberPreferredArtistRepository memberPreferredArtistRepository;
+    private final ArtWorkRepository artWorkRepository;
+    private final MemberPreferredArtWorkRepository memberPreferredArtWorkRepository;
+    private final int PREFERRED_ARTIST_MAXIMUM = 3;
+
+    private final int PREFERRED_ART_WORK_MAXIMUM = 100;
 
     @Value("${aws.storage.url}")
     private String awsStorageUrl;
@@ -156,6 +168,10 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
+        if (passwordEncoder.matches(password, findMember.getPassword())) {
+            throw new CustomException(ErrorCode.SHOULD_CHANGE_PASSWORD);
+        }
+
         findMember.changePassword(passwordEncoder.encode(password));
     }
 
@@ -188,21 +204,15 @@ public class MemberService {
         }
     }
 
-    public void checkExistsKeyword(String key) {
-        if (!MemberKeywordMap.map.containsKey(key)) {
-            throw new CustomException(ErrorCode.NOT_FOUND_KEYWORD);
-        }
-    }
-
     public void saveKeyword(Member member, List<String> keywordList) {
 
         for (String keywordName : keywordList) {
 
-            checkExistsKeyword(keywordName);
+            KeywordMap.checkExistsKeyword(keywordName);
 
             MemberKeyword memberKeyword = MemberKeyword.builder()
                     .member(member)
-                    .keywordId(MemberKeywordMap.map.get(keywordName))
+                    .keywordId(KeywordMap.map.get(keywordName))
                     .build();
 
             memberKeywordRepository.save(memberKeyword);
@@ -236,13 +246,6 @@ public class MemberService {
     }
 
     @Transactional
-    public void withdrawUser(Long loginMemberId) {
-
-        memberKeywordRepository.deleteByMemberId(loginMemberId);
-        memberRepository.deleteById(loginMemberId);
-    }
-
-    @Transactional
     public void updateArtist(Long loginMemberId, ArtistUpdateRequest dto, MultipartFile image) throws IOException {
 
         Member findMember = memberRepository.findById(loginMemberId)
@@ -268,16 +271,55 @@ public class MemberService {
         findMember.updateArtist(dto, imageUrl);
     }
 
+    @Transactional
+    public String changeToArtist(Long memberId) {
+
+        Member findMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        findMember.changeToArtist();
+
+        return findMember.getRoles().get(0);
+    }
+
+    @Transactional
+    public void withdrawUser(Long loginMemberId) {
+
+        memberRepository.deleteById(loginMemberId);
+    }
+
     @Transactional(readOnly = true)
     public MemberResponse getMember(Long loginMemberId) {
 
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
+        // 이미지 처리
         String imageUrl = awsStorageUrl + findMember.getImage();
         
         if(findMember.isBlankImage()) {
             imageUrl = null;
+        }
+
+        //키워드 처리
+        List<String> keywordNameList = getKeywordName(findMember.getId());
+
+        if(Objects.equals(findMember.getRoles().get(0), "ROLE_ARTIST")) {
+            MemberResponse artistResponse = ArtistResponse.builder()
+                    .nickname(findMember.getNickname())
+                    .userId(findMember.getUserId())
+                    .email(findMember.getEmail())
+                    .telephone(findMember.getTelephone())
+                    .image(imageUrl)
+                    .keywords(keywordNameList)
+                    .education(findMember.getEducation())
+                    .history(findMember.getHistory())
+                    .description(findMember.getDescription())
+                    .instagram(findMember.getInstagram())
+                    .behance(findMember.getBehance())
+                    .build();
+
+            return artistResponse;
         }
 
         MemberResponse memberResponse = MemberResponse.builder()
@@ -286,13 +328,130 @@ public class MemberService {
                 .email(findMember.getEmail())
                 .telephone(findMember.getTelephone())
                 .image(imageUrl)
-                .education(findMember.getEducation())
-                .history(findMember.getHistory())
-                .description(findMember.getDescription())
-                .instagram(findMember.getInstagram())
-                .behance(findMember.getBehance())
+                .keywords(keywordNameList)
                 .build();
 
-        return  memberResponse;
+        return memberResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> getKeywordName(Long memberId) {
+
+        List<MemberKeyword> findMemberKeywordList = memberKeywordRepository.findByMemberId(memberId);
+
+        // keywordId(value) 리스트 구하기
+        List<Integer> keywordIdList = new ArrayList();
+        for(MemberKeyword memberKeyword : findMemberKeywordList){
+            keywordIdList.add(memberKeyword.getKeywordId());
+        }
+
+        // keywordName(key) 리스트 구하기
+        List<String> keywordNameList = new ArrayList();
+        for(Integer keywordId : keywordIdList) {
+            keywordNameList.add(KeywordMap.getKeywordName(keywordId));
+        }
+
+        return keywordNameList;
+    }
+
+    @Transactional
+    public void pickArtist(Long loginMemberId, Long artistId) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        // 작가id 유효성 검사
+        Member findArtist = memberRepository.findById(artistId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
+        if (!Objects.equals(findArtist.getRoles().get(0), "ROLE_ARTIST")) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ARTIST);
+        }
+
+        updatePreferredArtist(findMember, findArtist);
+    }
+
+    private void updatePreferredArtist(Member member,Member artist) {
+
+        // Column unique 제약조건 핸들링 (중복 컬럼 검증)
+        if (memberPreferredArtistRepository.existsByMemberAndArtist(member, artist)){
+            throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTIST);
+        }
+
+        if(memberPreferredArtistRepository.countByMemberId(member.getId()) >= PREFERRED_ARTIST_MAXIMUM) {
+            throw new CustomException(ErrorCode.OVER_PREFERRED_ARTIST_MAXIMUM);
+        }
+
+        MemberPreferredArtist memberPreferredArtist = MemberPreferredArtist.builder()
+                .member(member)
+                .artist(artist)
+                .build();
+
+        memberPreferredArtistRepository.save(memberPreferredArtist);
+    }
+
+    @Transactional
+    public void deletePickArtist(Long loginMemberId, Long artistId){
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        // 작가id 유효성 검사
+        Member findArtist = memberRepository.findById(artistId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
+        if (!Objects.equals(findArtist.getRoles().get(0), "ROLE_ARTIST")) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ARTIST);
+        }
+
+        memberPreferredArtistRepository.deleteByMemberAndArtist(findMember, findArtist);
+    }
+
+    @Transactional
+    public void pickArtWork(Long loginMemberId, Long artWorkId) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        ArtWork findArtWork = artWorkRepository.findById(artWorkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+
+        updatePreferredArtWork(findMember, findArtWork, loginMemberId);
+    }
+
+    private void updatePreferredArtWork(Member member, ArtWork artWork, Long loginMemberId) {
+
+        if (memberPreferredArtWorkRepository.existsByMemberAndArtWork(member, artWork)) {
+            throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTWORK);
+        }
+
+        if(memberPreferredArtWorkRepository.countByMemberId(loginMemberId) >= PREFERRED_ART_WORK_MAXIMUM){
+            throw new CustomException(ErrorCode.OVER_PREFERRED_ART_WORK_MAXIMUM);
+        }
+
+        MemberPreferredArtWork memberPreferredArtWork = MemberPreferredArtWork.builder()
+                .member(member)
+                .artWork(artWork)
+                .build();
+
+        memberPreferredArtWorkRepository.save(memberPreferredArtWork);
+    }
+
+    @Transactional
+    public void deletePickArtWork(Long loginMemberId, Long artWorkId) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        ArtWork findArtWork = artWorkRepository.findById(artWorkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+
+        memberPreferredArtWorkRepository.deleteByMemberAndArtWork(findMember, findArtWork);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ArtWork> getPreferredArtWorkList(Long loginMemberId) {
+
+        List<ArtWork> findPreferredArtWorkList = memberPreferredArtWorkRepository.findPreferredArtWork(loginMemberId);
+
+        return findPreferredArtWorkList;
     }
 }
