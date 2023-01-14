@@ -1,6 +1,7 @@
 package com.sptp.backend.message.repository;
 
 import com.sptp.backend.chat_room.repository.ChatRoom;
+import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Message {
+public class Message extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,5 +32,4 @@ public class Message {
     private ChatRoom chatRoom;
 
     private String message;
-//    private LocalDateTime sendTime;
 }

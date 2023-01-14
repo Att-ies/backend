@@ -1,6 +1,7 @@
 package com.sptp.backend.chat_room.repository;
 
-import com.sptp.backend.artwork.repository.ArtWork;
+import com.sptp.backend.art_work.repository.ArtWork;
+import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChatRoom {
+public class ChatRoom extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
