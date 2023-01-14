@@ -254,7 +254,7 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         // 작가가 이미지를 없애도록 수정한 경우
-        String imageUrl = "";
+        String imageUrl = null;
         String uuid = UUID.randomUUID().toString();
 
         // 작가가 이미지를 다른 파일로 수정한 경우
