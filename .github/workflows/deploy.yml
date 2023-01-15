@@ -57,6 +57,7 @@ jobs:
         echo aws.storage.url=${{ secrets.AWS_STORAGE_URL }} >> env.properties |
         echo aws.region.static=${{ secrets.AWS_REGION_STATIC }} >> env.properties |
         echo aws.stack.auto=${{ secrets.AWS_STACK_AUTO }} >> env.properties
+        echo CI=false >> env.properties
         cat env.properties
     # Docker build
     - name: Docker build
