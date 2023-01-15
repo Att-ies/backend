@@ -89,7 +89,7 @@ public class MemberService {
         checkDuplicateMemberNickname(dto.getNickname());
 
         String uuid = UUID.randomUUID().toString();
-        String imageUrl = "";
+        String imageUrl = null;
 
         if(!image.isEmpty()){
             String ext = fileService.extractExt(image.getOriginalFilename());
@@ -219,6 +219,23 @@ public class MemberService {
         }
     }
 
+    private void updateKeyword(Member member, List<String> keywordList) {
+
+        memberKeywordRepository.deleteByMember(member);
+
+        for (String keywordName : keywordList) {
+
+            KeywordMap.checkExistsKeyword(keywordName);
+
+            MemberKeyword memberKeyword = MemberKeyword.builder()
+                    .member(member)
+                    .keywordId(KeywordMap.map.get(keywordName))
+                    .build();
+
+            memberKeywordRepository.save(memberKeyword);
+        }
+    }
+
     @Transactional
     public void updateUser(Long loginMemberId, MemberUpdateRequest dto, MultipartFile image) throws IOException {
 
@@ -226,7 +243,7 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         String uuid = UUID.randomUUID().toString();
-        String imageUrl = "";
+        String imageUrl = null;
 
         if(!image.isEmpty()){
             String ext = fileService.extractExt(image.getOriginalFilename());
@@ -242,6 +259,8 @@ public class MemberService {
             checkDuplicateMemberNickname(dto.getNickname());
         }
 
+        updateKeyword(findMember, dto.getKeywords());
+
         findMember.updateUser(dto, imageUrl);
     }
 
@@ -252,7 +271,7 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         String uuid = UUID.randomUUID().toString();
-        String imageUrl = "";
+        String imageUrl = null;
 
         if(!image.isEmpty()){
             String ext = fileService.extractExt(image.getOriginalFilename());
@@ -267,6 +286,8 @@ public class MemberService {
         if (findMember.isUpdatedNickname(dto.getNickname())) {
             checkDuplicateMemberNickname(dto.getNickname());
         }
+
+        updateKeyword(findMember, dto.getKeywords());
 
         findMember.updateArtist(dto, imageUrl);
     }

@@ -32,6 +32,9 @@ public enum ErrorCode {
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
     TOKEN_INVALID(HttpStatus.NOT_FOUND, "토큰이 유효하지 않습니다."),
 
+    //채팅 예외
+    NOT_FOUND_CHAT_ROOM(HttpStatus.NOT_FOUND, "존재하지 않는 채팅방입니다."),
+
     //작품 예외
     SHOULD_EXIST_IMAGE(HttpStatus.BAD_REQUEST, "이미지가 존재하지 않습니다."),
     EXIST_USER_PREFERRED_ARTWORK(HttpStatus.CONFLICT, "이미 찜한 작품입니다."),
