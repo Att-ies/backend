@@ -15,15 +15,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    # 환경 변수 설정
+    - name: Set environment values
+      working-directory: ./
+      run: |
+        echo email.AdminMail.id=${{ secrets.EMAIL_ADMINMAIL_ID }} >> env.properties |
+        echo email.AdminMail.password=${{ secrets.EMAIL_ADMINMAIL_PASSWORD }} >> env.properties |
+        echo application.spring.redis.port=${{ secrets.APPLICATION_SPRING_REDIS_PORT }} >> env.properties |
+        echo application.spring.datasource.url=${{ secrets.APPLICATION_SPRING_DATASOURCE_URL }} >> env.properties |
+        echo application.spring.datasource.username=${{ secrets.APPLICATION_SPRING_DATASOURCE_USERNAME }} >> env.properties |
+        echo application.spring.datasource.password=${{ secrets.APPLICATION_SPRING_DATASOURCE_PASSWORD }} >> env.properties |
+        echo application.spring.security.kakao.client-id=${{ secrets.APPLICATION_SPRING_SECURITY_KAKAO_CLIENT_ID }} >> env.properties |
+        echo application.spring.security.kakao.client-secret=${{ secrets.APPLICATION_SPRING_SECURITY_KAKAO_CLIENT_SECRET }} >> env.properties |
+        echo application.spring.security.naver.client-id=${{ secrets.APPLICATION_SPRING_SECURITY_NAVER_CLIENT_ID }} >> env.properties |
+        echo application.spring.security.naver.client-secret=${{ secrets.APPLICATION_SPRING_SECURITY_NAVER_CLIENT_SECRET }} >> env.properties |
+        echo application.jwt.secret=${{ secrets.APPLICATION_JWT_SECRET }} >> env.properties |
+        echo application.jwt.secret_refresh=${{ secrets.APPLICATION_JWT_SECRET_REFRESH }} >> env.properties |
+        echo application.spring.security.kakao.redirect-uri=${{ secrets.APPLICATION_SPRING_SECURITY_KAKAO_REDIRECT_URI }} >> env.properties |
+        echo application.spring.security.naver.redirect-uri=${{ secrets.APPLICATION_SPRING_SECURITY_NAVER_REDIRECT_URI }} >> env.properties |
+        echo aws.iamAccessKey=${{ secrets.AWS_IAMACCESSKEY }} >> env.properties |
+        echo aws.iamSecretKey=${{ secrets.AWS_IAMSECRETKEY }} >> env.properties |
+        echo aws.storage.url=${{ secrets.AWS_STORAGE_URL }} >> env.properties |
+        echo aws.region.static=${{ secrets.AWS_REGION_STATIC }} >> env.properties |
+        echo aws.stack.auto=${{ secrets.AWS_STACK_AUTO }} >> env.properties
+    # 기본 체크아웃
+    - name: Checkout
+      uses: actions/checkout@v3
+    # Gradlew 실행 허용
+    - name: Run chmod to make gradlew executable
+      run: chmod +x ./gradlew
+    # JDK 11 세팅
     - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
         java-version: '11'
         distribution: 'temurin'
+    # Gradle build (Test 제외)
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
         arguments: clean build -x test
-    - name: Run chmod to make gradlew executable
-      run: chmod +x ./gradlew
