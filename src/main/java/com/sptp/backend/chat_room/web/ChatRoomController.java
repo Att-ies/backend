@@ -20,6 +20,16 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
 
+    @PostMapping
+    public ResponseEntity<Void> createChatRoom(@Valid @RequestBody ChatRoomCreateRequest chatRoomCreateRequest,
+                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        long chatRoomId = chatRoomService.createChatRoom(userDetails.getMember().getId(),
+                chatRoomCreateRequest.getArtistId(), chatRoomCreateRequest.getArtWorkId());
+
+        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
+                .header(HttpHeaders.LOCATION, "/chat-rooms/" + chatRoomId).build();
+    }
 
     @GetMapping("/{chatRoomId}")
     public ResponseEntity<ChatRoomDetailResponse> getChatRoomDetail(@PathVariable Long chatRoomId) {
