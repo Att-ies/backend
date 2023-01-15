@@ -17,8 +17,8 @@ jobs:
     steps:
     # 환경 변수 설정
     - name: Set environment values
+      working-directory: ./src/main/resources
       run: |
-        cd ./
         touch env.properties
         echo email.AdminMail.id=${{ secrets.EMAIL_ADMINMAIL_ID }} >> env.properties |
         echo email.AdminMail.password=${{ secrets.EMAIL_ADMINMAIL_PASSWORD }} >> env.properties |
@@ -39,6 +39,7 @@ jobs:
         echo aws.storage.url=${{ secrets.AWS_STORAGE_URL }} >> env.properties |
         echo aws.region.static=${{ secrets.AWS_REGION_STATIC }} >> env.properties |
         echo aws.stack.auto=${{ secrets.AWS_STACK_AUTO }} >> env.properties
+        cat env.properties
     # 기본 체크아웃
     - name: Checkout
       uses: actions/checkout@v3
