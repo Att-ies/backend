@@ -73,4 +73,5 @@ jobs:
         script: |
           docker pull choo000407/atties_spring:${GITHUB_SHA::7}
           docker tag choo000407/atties_spring:${GITHUB_SHA::7} atties_spring
+          docker-compose down
           docker-compose up
