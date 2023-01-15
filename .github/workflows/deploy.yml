@@ -17,11 +17,8 @@ jobs:
     steps:
     # 환경 변수 설정
     - name: Set environment values
+      working-directory: ./
       run: |
-        cd ..
-        cd ..
-        cd ..
-        cd home/runner/work/backend/backend/./src/main/resources
         touch env.properties
         echo email.AdminMail.id=${{ secrets.EMAIL_ADMINMAIL_ID }} >> env.properties |
         echo email.AdminMail.password=${{ secrets.EMAIL_ADMINMAIL_PASSWORD }} >> env.properties |
