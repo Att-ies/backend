@@ -5,7 +5,6 @@ import com.sptp.backend.member.web.dto.response.TokenResponseDto;
 import com.sptp.backend.oauth.dto.KakaoTokenDto;
 import com.sptp.backend.oauth.service.KakaoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

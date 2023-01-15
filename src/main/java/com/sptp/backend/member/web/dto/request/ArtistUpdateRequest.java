@@ -2,6 +2,8 @@ package com.sptp.backend.member.web.dto.request;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,5 +18,7 @@ public class ArtistUpdateRequest {
     private String description;
     private String instagram;
     private String behance;
+    private String address;
+    private List<String> keywords;
     private Boolean isChanged;
 }

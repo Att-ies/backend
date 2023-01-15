@@ -38,3 +38,6 @@ out/
 
 #####
 env.properties
+
+### 초기 데이터 ###
+initDB.java
