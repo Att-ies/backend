@@ -15,7 +15,7 @@ public enum ErrorCode {
     //회원 예외
     UNAUTHORIZED_MEMBER(HttpStatus.UNAUTHORIZED, "해당 요청은 로그인이 필요합니다."),
     UNAUTHORIZED_PASSWORD(HttpStatus.UNAUTHORIZED, "패스워드가 틀립니다."),
-    UNAUTHORIZED_ID(HttpStatus.UNAUTHORIZED, "아이디가 틀립니다!"),
+    UNAUTHORIZED_ID(HttpStatus.UNAUTHORIZED, "아이디가 틀립니다."),
     EXIST_USER_ID(HttpStatus.CONFLICT, "이미 존재하는 아이디입니다."),
     EXIST_USER_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
     EXIST_USER_NICKNAME(HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
