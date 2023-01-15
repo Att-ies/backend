@@ -17,7 +17,7 @@ jobs:
     steps:
     # 환경 변수 설정
     - name: Set environment values
-      working-directory: /home/runner/work/backend/backend/./src/main/resources/
+      working-directory: /usr/bin/bash/home/runner/work/backend/backend/./src/main/resources/
       run: |
         echo email.AdminMail.id=${{ secrets.EMAIL_ADMINMAIL_ID }} >> env.properties |
         echo email.AdminMail.password=${{ secrets.EMAIL_ADMINMAIL_PASSWORD }} >> env.properties |
