@@ -20,4 +20,5 @@ public class ArtistUpdateRequest {
     private String behance;
     private String address;
     private List<String> keywords;
+    private Boolean isChanged;
 }

@@ -54,7 +54,6 @@ public class MemberService {
     private final ArtWorkRepository artWorkRepository;
     private final MemberPreferredArtWorkRepository memberPreferredArtWorkRepository;
     private final int PREFERRED_ARTIST_MAXIMUM = 100;
-
     private final int PREFERRED_ART_WORK_MAXIMUM = 100;
 
     @Value("${aws.storage.url}")
@@ -242,10 +241,12 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        String uuid = UUID.randomUUID().toString();
+        // 유저가 이미지를 없애도록 수정한 경우
         String imageUrl = null;
+        String uuid = UUID.randomUUID().toString();
 
-        if(!image.isEmpty()){
+        // 유저가 이미지를 다른 파일로 수정한 경우
+        if(!image.isEmpty()) {
             String ext = fileService.extractExt(image.getOriginalFilename());
             imageUrl = uuid + "." + ext;
 
@@ -260,7 +261,6 @@ public class MemberService {
         }
 
         updateKeyword(findMember, dto.getKeywords());
-
         findMember.updateUser(dto, imageUrl);
     }
 
@@ -270,9 +270,11 @@ public class MemberService {
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        String uuid = UUID.randomUUID().toString();
+        // 작가가 이미지를 없애도록 수정한 경우
         String imageUrl = null;
+        String uuid = UUID.randomUUID().toString();
 
+        // 작가가 이미지를 다른 파일로 수정한 경우
         if(!image.isEmpty()){
             String ext = fileService.extractExt(image.getOriginalFilename());
             imageUrl = uuid + "." + ext;
@@ -288,7 +290,6 @@ public class MemberService {
         }
 
         updateKeyword(findMember, dto.getKeywords());
-
         findMember.updateArtist(dto, imageUrl);
     }
 
