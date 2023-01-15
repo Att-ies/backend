@@ -17,7 +17,7 @@ jobs:
     steps:
     # 환경 변수 설정
     - name: Set environment values
-      working-directory: ./
+      working-directory: ./src/main/resources/
       run: |
         pwd
         touch env.properties
