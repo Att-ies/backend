@@ -50,12 +50,15 @@ public class KeywordMap {
         map.put("자유로운", 17);
         map.put("다양한", 18);
         map.put("개성적인", 19);
-        map.put("율동적인", 20);
-        map.put("편안한", 21);
-        map.put("포근한", 22);
-        map.put("자연적인", 23);
-        map.put("강한", 24);
-        map.put("다이나믹한", 25);
-        map.put("서양적인", 26);
+        map.put("새로운", 20);
+        map.put("한국적인", 21);
+        map.put("강한", 22);
+        map.put("거친", 23);
+        map.put("율동적인", 24);
+        map.put("편안한", 25);
+        map.put("포근한", 26);
+        map.put("자연적인", 27);
+        map.put("다이나믹한", 28);
+        map.put("서양적인", 29);
     }
 }

@@ -237,7 +237,16 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    // 회원-작품 픽 관계 등록 (작품 픽하기)
+    // 회원-작가 픽 목록 조회
+    @GetMapping("/members/preferred-artists")
+    public ResponseEntity<List<PreferredArtistResponse>> preferredArtistList(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        List<PreferredArtistResponse> preferredArtistResponse = memberService.getPreferredArtistList(userDetails.getMember().getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(preferredArtistResponse);
+    }
+
+    // 회원-작품 찜 관계 등록 (작품 찜하기)
     @PostMapping("/members/preferred-artworks/{artWorkId}")
     public ResponseEntity<Void> pickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @PathVariable(value = "artWorkId") Long artWorkId) {
@@ -247,7 +256,7 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // 회원-작품 픽 관계 취소
+    // 회원-작품 찜 관계 취소
     @DeleteMapping("/members/preferred-artworks/{artWorkId}")
     public ResponseEntity<Void> deletePickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @PathVariable(value = "artWorkId") Long artWorkId) {
@@ -257,15 +266,11 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // 회원 작품 찜 목록 조회
+    // 회원-작품 찜 목록 조회
     @GetMapping("/members/preferred-artworks")
     public ResponseEntity<List<PreferredArtWorkResponse>> preferredArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        List<ArtWork> preferredArtWorkList = memberService.getPreferredArtWorkList(userDetails.getMember().getId());
-
-        List<PreferredArtWorkResponse> preferredArtWorkResponse = preferredArtWorkList.stream()
-                .map(m -> new PreferredArtWorkResponse(m.getTitle(), m.getPrice(), m.getMainImage()))
-                .collect(Collectors.toList());
+        List<PreferredArtWorkResponse> preferredArtWorkResponse = memberService.getPreferredArtWorkList(userDetails.getMember().getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(preferredArtWorkResponse);
     }
