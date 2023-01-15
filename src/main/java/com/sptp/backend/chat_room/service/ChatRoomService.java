@@ -1,13 +1,11 @@
 package com.sptp.backend.chat_room.service;
 
-import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.chat_room.repository.ChatRoom;
 import com.sptp.backend.chat_room.repository.ChatRoomRepository;
 import com.sptp.backend.chat_room.web.dto.ChatRoomDetailResponse;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
-import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.message.repository.Message;
 import com.sptp.backend.message.repository.MessageRepository;
@@ -40,22 +38,15 @@ public class ChatRoomService {
         }
 
         ChatRoom chatRoom = ChatRoom.builder()
-                .member(getMember(loginMemberId))
-                .artist(getMember(artistId))
-                .artWork(getArtWork(artWorkId))
+                .member(memberRepository.findById(loginMemberId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)))
+                .artist(memberRepository.findById(artistId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTIST)))
+                .artWork(artWorkRepository.findById(artWorkId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK)))
                 .build();
 
         return chatRoomRepository.save(chatRoom).getId();
-    }
-
-    private Member getMember(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-    }
-
-    private ArtWork getArtWork(Long artistId) {
-        return artWorkRepository.findById(artistId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
     }
 
     public ChatRoomDetailResponse getChatRoomDetail(Long chatRoomId) {
