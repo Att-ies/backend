@@ -68,7 +68,6 @@ jobs:
       with:
         host: ec2-44-193-163-114.compute-1.amazonaws.com
         username: ec2-user
-        key: ${{ secrets.PRIVATE_KEY }}
         password: ${{ secrets.SSH_PASSWORD }}
         envs: GITHUB_SHA
         script: |
