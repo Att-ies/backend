@@ -68,7 +68,7 @@ jobs:
       with:
         host: ec2-44-193-163-114.compute-1.amazonaws.com
         username: ec2-user
-        key: ${{ secrests.PRIVATE_KEY }}
+        key: ${{ secrets.PRIVATE_KEY }}
         envs: GITHUB_SHA
         script: |
           docker pull choo000407/atties_spring:${GITHUB_SHA::7}
