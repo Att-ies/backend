@@ -1,6 +1,5 @@
 package com.sptp.backend.member.web;
 
-import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
@@ -21,7 +20,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -273,5 +271,14 @@ public class MemberController {
         List<PreferredArtWorkResponse> preferredArtWorkResponse = memberService.getPreferredArtWorkList(userDetails.getMember().getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(preferredArtWorkResponse);
+    }
+
+    // 회원-작품 취향 맞춤 추천 목록 조회
+    @GetMapping("/members/customized-artworks")
+    public ResponseEntity<List<CustomizedArtWorkResponse>> customizedArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        List<CustomizedArtWorkResponse> customizedArtWorkResponse = memberService.getCustomizedArtWorkList(userDetails.getMember().getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(customizedArtWorkResponse);
     }
 }
