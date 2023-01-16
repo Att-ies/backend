@@ -28,7 +28,7 @@ public enum ErrorCode {
     OVER_PREFERRED_ART_WORK_MAXIMUM(HttpStatus.BAD_REQUEST, "관심 작품은 최대 100개까지 등록할 수 있습니다."),
     OVER_PREFERRED_ARTIST_MAXIMUM(HttpStatus.BAD_REQUEST, "픽 작가는 최대 100개까지만 등록할 수 있습니다."),
     NOT_FOUNT_ASK(HttpStatus.NOT_FOUND, "해당 문의 글이 존재하지 않습니다."),
-    PERMISSION_DENIED(HttpStatus.UNAUTHORIZED, "타인의 글은 수정할 수 없습니다"),
+    PERMISSION_DENIED(HttpStatus.UNAUTHORIZED, "타인의 글은 수정 및 삭제할 수 없습니다"),
 
     //토큰 예외
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),

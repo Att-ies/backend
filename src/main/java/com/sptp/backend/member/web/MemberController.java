@@ -295,4 +295,15 @@ public class MemberController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    // 일대일 문의 삭제
+    @DeleteMapping("/members/ask/{askId}")
+    public ResponseEntity<Void> deleteAsk(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                          @PathVariable(value = "askId") Long askId) throws IOException {
+
+        memberService.deleteAsk(userDetails.getMember().getId(), askId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

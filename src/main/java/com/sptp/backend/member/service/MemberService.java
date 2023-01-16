@@ -526,6 +526,20 @@ public class MemberService {
         saveAskImages(dto.getImage(), findMemberAsk);
     }
 
+    @Transactional
+    public void deleteAsk(Long loginMemberId, Long memberAskId) {
+
+        MemberAsk findMemberAsk = memberAskRepository.findById(memberAskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUNT_ASK));
+
+        // 자신이 쓴 글이 맞는지 검증
+        if (findMemberAsk.getMember().getId() != loginMemberId) {
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
+        }
+
+        memberAskRepository.deleteById(findMemberAsk.getId());
+    }
+
     private void saveAskImages(MultipartFile[] files, MemberAsk memberAsk) throws IOException {
 
         if(files[0].isEmpty()) return;
