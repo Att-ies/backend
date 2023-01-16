@@ -1,5 +1,6 @@
 package com.sptp.backend.member_ask_image.repository;
 
+import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member_ask.repository.MemberAsk;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberAskImage {
+public class MemberAskImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
