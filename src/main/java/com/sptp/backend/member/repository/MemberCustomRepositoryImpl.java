@@ -20,7 +20,7 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                 .from(artWork, artWorkKeyword)
                 .where(artWork.id.eq(artWorkKeyword.artWork.id), artWorkKeyword.keywordId.in(memberKeywordId))
                 .groupBy(artWork.id)
-                .orderBy(artWork.count().desc())
+                .orderBy(artWork.count().desc(), artWork.createdDate.desc())
                 .fetch();
     }
 }

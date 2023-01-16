@@ -1,5 +1,6 @@
 package com.sptp.backend.memberkeyword.repository;
 
+import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberKeyword {
+public class MemberKeyword  extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_keyword_id")
