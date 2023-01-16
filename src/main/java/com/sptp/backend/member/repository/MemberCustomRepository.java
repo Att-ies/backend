@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface MemberCustomRepository {
 
-    List<ArtWork> findCustomizedArtWork(List<Integer> memberKeywordId);
+    List<ArtWork> findCustomizedArtWork(List<Integer> memberKeywordId, Integer page);
 }

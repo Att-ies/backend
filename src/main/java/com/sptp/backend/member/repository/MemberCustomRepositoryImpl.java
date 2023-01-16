@@ -14,13 +14,15 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ArtWork> findCustomizedArtWork(List<Integer> memberKeywordId){
+    public List<ArtWork> findCustomizedArtWork(List<Integer> memberKeywordId, Integer page){
         return queryFactory
                 .select(artWork)
                 .from(artWork, artWorkKeyword)
                 .where(artWork.id.eq(artWorkKeyword.artWork.id), artWorkKeyword.keywordId.in(memberKeywordId))
                 .groupBy(artWork.id)
                 .orderBy(artWork.count().desc(), artWork.createdDate.desc())
+                .limit(5)
+                .offset(5 * (page-1))
                 .fetch();
     }
 }
