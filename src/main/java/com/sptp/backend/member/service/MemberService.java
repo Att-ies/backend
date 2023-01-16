@@ -517,6 +517,7 @@ public class MemberService {
         MemberAsk findMemberAsk = memberAskRepository.findById(memberAskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUNT_ASK));
 
+        // 자신이 쓴 글이 맞는지 검증
         if (findMemberAsk.getMember().getId() != loginMemberId) {
             throw new CustomException(ErrorCode.PERMISSION_DENIED);
         }
