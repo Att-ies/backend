@@ -505,6 +505,7 @@ public class MemberService {
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .member(findMember)
+                .status("waiting")
                 .build();
 
         memberAskRepository.save(memberAsk);
@@ -557,6 +558,20 @@ public class MemberService {
             memberAskImageRepository.save(memberAskImage);
             awsService.uploadImage(file, imageUUID);
         }
+    }
+
+    public List<MemberAskResponse> getAskList(Long loginMemberId) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        List<MemberAsk> askList = memberAskRepository.findByMemberId(loginMemberId);
+
+        List<MemberAskResponse> memberAskResponseList = askList.stream()
+                .map(m -> new MemberAskResponse(m.getId(), m.getTitle(), m.getContent(), m.getAnswer(), m.getStatus()))
+                .collect(Collectors.toList());
+
+        return memberAskResponseList;
     }
 
     //이미지 처리

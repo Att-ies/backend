@@ -32,6 +32,7 @@ public class MemberAsk extends BaseEntity {
     private String title;
     private String content;
     private String answer;
+    private String status;
 
     public void updateMemberAsk(MemberAskRequestDto dto) {
 

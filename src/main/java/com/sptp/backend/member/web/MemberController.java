@@ -306,4 +306,12 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 일대일 문의 목록 조회
+    @GetMapping("/members/ask")
+    public ResponseEntity<List<MemberAskResponse>> getAskList(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        List<MemberAskResponse> memberAskResponsesList = memberService.getAskList(userDetails.getMember().getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(memberAskResponsesList);
+    }
 }
