@@ -511,6 +511,20 @@ public class MemberService {
         saveAskImages(dto.getImage(), memberAsk);
     }
 
+    @Transactional
+    public void updateAsk(Long loginMemberId, Long memberAskId, MemberAskRequestDto dto) throws IOException {
+
+        MemberAsk findMemberAsk = memberAskRepository.findById(memberAskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUNT_ASK));
+
+        if (findMemberAsk.getMember().getId() != loginMemberId) {
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
+        }
+
+        findMemberAsk.updateMemberAsk(dto);
+        saveAskImages(dto.getImage(), findMemberAsk);
+    }
+
     private void saveAskImages(MultipartFile[] files, MemberAsk memberAsk) throws IOException {
 
         if(files[0].isEmpty()) return;

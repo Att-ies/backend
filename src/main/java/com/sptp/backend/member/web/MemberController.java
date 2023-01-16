@@ -275,11 +275,23 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(preferredArtWorkResponse);
     }
 
+    // 일대일 문의
     @PostMapping("/members/ask")
     public ResponseEntity<Void> saveAsk(@AuthenticationPrincipal CustomUserDetails userDetails,
                                         MemberAskRequestDto memberAskRequestDto) throws IOException {
 
         memberService.saveAsk(userDetails.getMember().getId(), memberAskRequestDto);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 일대일 문의 수정
+    @PostMapping("/members/ask/{askId}")
+    public ResponseEntity<Void> updateAsk(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                          @PathVariable(value = "askId") Long askId,
+                                          MemberAskRequestDto memberAskRequestDto) throws IOException {
+
+        memberService.updateAsk(userDetails.getMember().getId(), askId, memberAskRequestDto);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

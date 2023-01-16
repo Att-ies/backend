@@ -2,6 +2,7 @@ package com.sptp.backend.member_ask.repository;
 
 import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
+import com.sptp.backend.member.web.dto.request.MemberAskRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class MemberAsk extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_keyword_id")
+    @Column(name = "member_ask_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,5 +32,11 @@ public class MemberAsk extends BaseEntity {
     private String title;
     private String content;
     private String answer;
+
+    public void updateMemberAsk(MemberAskRequestDto dto) {
+
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
+    }
 
 }
