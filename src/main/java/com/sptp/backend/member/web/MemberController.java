@@ -286,7 +286,7 @@ public class MemberController {
     }
 
     // 일대일 문의 수정
-    @PostMapping("/members/ask/{askId}")
+    @PatchMapping("/members/ask/{askId}")
     public ResponseEntity<Void> updateAsk(@AuthenticationPrincipal CustomUserDetails userDetails,
                                           @PathVariable(value = "askId") Long askId,
                                           MemberAskRequestDto memberAskRequestDto) throws IOException {
