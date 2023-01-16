@@ -17,6 +17,7 @@ import com.sptp.backend.member.web.dto.response.*;
 import com.sptp.backend.common.KeywordMap;
 import com.sptp.backend.member_ask.repository.MemberAsk;
 import com.sptp.backend.member_ask.repository.MemberAskRepository;
+import com.sptp.backend.member_ask.repository.MemberAskStatus;
 import com.sptp.backend.member_ask_image.repository.MemberAskImage;
 import com.sptp.backend.member_ask_image.repository.MemberAskImageRepository;
 import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtist;
@@ -505,7 +506,7 @@ public class MemberService {
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .member(findMember)
-                .status("waiting")
+                .status(MemberAskStatus.WAITING.name())
                 .build();
 
         memberAskRepository.save(memberAsk);
