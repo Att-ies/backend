@@ -47,23 +47,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
-//                .formLogin()
-//                .loginPage("login")
-//                .defaultSuccessUrl("/")
-//                .loginProcessingUrl("/login").permitAll()
-//                .and()
-                .authorizeRequests()
-//                .antMatchers("/login").permitAll()
-//                .anyRequest().authenticated();
-                .anyRequest().permitAll();
-//                .authorizeRequests() // 요청에 대한 사용권한 체크
-//                .and()
-//                .antMatchers("/members/join", "/members/login", "/oauth2/*", "/members/token",
-//                        "/artists/join", "/members/id", "/members/new-password", "/members/check-email",
-//                        "/members/check-id", "/members/check-nickname").permitAll()
-//                .antMatchers(HttpMethod.PATCH, "/members").hasRole("USER")
-//                .antMatchers(HttpMethod.PATCH, "/artists").hasRole("ARTIST")
-//                .anyRequest().authenticated(); // 그외 나머지 요청은 인증 필요
+                .authorizeRequests() // 요청에 대한 사용권한 체크
+                .antMatchers("/members/join", "/members/login", "/oauth2/*", "/members/token",
+                        "/artists/join", "/members/id", "/members/new-password", "/members/check-email",
+                        "/members/check-id", "/members/check-nickname").permitAll()
+                .antMatchers(HttpMethod.PATCH, "/members").hasRole("USER")
+                .antMatchers(HttpMethod.PATCH, "/artists").hasRole("ARTIST")
+                .anyRequest().authenticated(); // 그외 나머지 요청은 인증 필요
 
         http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 실행
