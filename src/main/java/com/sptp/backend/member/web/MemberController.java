@@ -274,4 +274,13 @@ public class MemberController {
 
         return ResponseEntity.status(HttpStatus.OK).body(preferredArtWorkResponse);
     }
+
+    @PostMapping("/members/ask")
+    public ResponseEntity<Void> saveAsk(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                        MemberAskRequestDto memberAskRequestDto) throws IOException {
+
+        memberService.saveAsk(userDetails.getMember().getId(), memberAskRequestDto);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

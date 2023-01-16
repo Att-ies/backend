@@ -15,6 +15,10 @@ import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.response.*;
 import com.sptp.backend.common.KeywordMap;
+import com.sptp.backend.member_ask.repository.MemberAsk;
+import com.sptp.backend.member_ask.repository.MemberAskRepository;
+import com.sptp.backend.member_ask_image.repository.MemberAskImage;
+import com.sptp.backend.member_ask_image.repository.MemberAskImageRepository;
 import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtist;
 import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtistRepository;
 import com.sptp.backend.member_preffereed_art_work.repository.MemberPreferredArtWork;
@@ -53,6 +57,8 @@ public class MemberService {
     private final MemberPreferredArtistRepository memberPreferredArtistRepository;
     private final ArtWorkRepository artWorkRepository;
     private final MemberPreferredArtWorkRepository memberPreferredArtWorkRepository;
+    private final MemberAskRepository memberAskRepository;
+    private final MemberAskImageRepository memberAskImageRepository;
     private final int PREFERRED_ARTIST_MAXIMUM = 100;
     private final int PREFERRED_ART_WORK_MAXIMUM = 100;
 
@@ -487,6 +493,39 @@ public class MemberService {
                 .collect(Collectors.toList());
 
         return preferredArtWorkResponse;
+    }
+
+    @Transactional
+    public void saveAsk(Long loginMemberId, MemberAskRequestDto dto) throws IOException {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        MemberAsk memberAsk = MemberAsk.builder()
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .member(findMember)
+                .build();
+
+        memberAskRepository.save(memberAsk);
+        saveAskImages(dto.getImage(), memberAsk);
+    }
+
+    private void saveAskImages(MultipartFile[] files, MemberAsk memberAsk) throws IOException {
+
+        for (MultipartFile file : files) {
+
+            String imageUUID = UUID.randomUUID().toString();
+            String imageEXT = fileService.extractExt(file.getOriginalFilename());
+
+            MemberAskImage memberAskImage = MemberAskImage.builder()
+                    .memberAsk(memberAsk)
+                    .image(imageUUID + "." + imageEXT)
+                    .build();
+
+            memberAskImageRepository.save(memberAskImage);
+            awsService.uploadImage(file, imageUUID);
+        }
     }
 
     //이미지 처리
