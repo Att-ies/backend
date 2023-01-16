@@ -435,6 +435,25 @@ public class MemberService {
         return preferredArtistResponse;
     }
 
+    @Transactional(readOnly = true)
+    public ArtistDetailResponse getArtistDetail(Long artistId) {
+
+        Member artist = memberRepository.findById(artistId)
+                .orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
+        if (!Objects.equals(artist.getRoles().get(0), "ROLE_ARTIST")) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ARTIST);
+        }
+
+        List<ArtWork> artworks = artWorkRepository.findArtWorkByMember(artist);
+
+        return ArtistDetailResponse.builder()
+                .member(ArtistDetailResponse.MemberDto.from(artist))
+                .artworks(artworks.stream()
+                        .map(ArtistDetailResponse.ArtWorkDto::from)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
     @Transactional
     public void pickArtWork(Long loginMemberId, Long artWorkId) {
 
