@@ -513,6 +513,8 @@ public class MemberService {
 
     private void saveAskImages(MultipartFile[] files, MemberAsk memberAsk) throws IOException {
 
+        if(files[0].isEmpty()) return;
+
         for (MultipartFile file : files) {
 
             String imageUUID = UUID.randomUUID().toString();
