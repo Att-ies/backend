@@ -32,4 +32,5 @@ public class Message extends BaseEntity {
     private ChatRoom chatRoom;
 
     private String message;
+    private Boolean isRead;
 }
