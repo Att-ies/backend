@@ -1,8 +1,8 @@
-package com.sptp.backend.member_preffereed_art_work.repository;
+package com.sptp.backend.member_ask.repository;
 
-import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
+import com.sptp.backend.member.web.dto.request.MemberAskRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,11 +17,11 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberPreferredArtWork extends BaseEntity {
+public class MemberAsk extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_preferred_art_work_id")
+    @Column(name = "member_ask_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,8 +29,15 @@ public class MemberPreferredArtWork extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "art_work_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private ArtWork artWork;
+    private String title;
+    private String content;
+    private String answer;
+    private String status;
+
+    public void updateMemberAsk(MemberAskRequestDto dto) {
+
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
+    }
+
 }
