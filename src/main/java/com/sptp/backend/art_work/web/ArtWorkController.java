@@ -22,7 +22,7 @@ public class ArtWorkController {
     private final ArtWorkService artWorkService;
 
     // 작품 등록
-    @PostMapping("/art-work")
+    @PostMapping("/art-works")
     public ResponseEntity<Void> saveArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                              ArtWorkSaveRequestDto artWorkSaveRequestDto) throws IOException {
 
@@ -32,7 +32,7 @@ public class ArtWorkController {
     }
 
     // 작품 상세 조회
-    @GetMapping("/art-work/{artWorkId}")
+    @GetMapping("/art-works/{artWorkId}")
     public ResponseEntity<ArtWorkInfoResponseDto> getArtWork(@PathVariable("artWorkId") Long artWorkId) {
 
         ArtWorkInfoResponseDto artWorkInfoResponseDto = artWorkService.getArtWork(artWorkId);
