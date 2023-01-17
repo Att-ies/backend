@@ -279,7 +279,15 @@ public class MemberController {
     public ResponseEntity<List<CustomizedArtWorkResponse>> customizedArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                                  @PathVariable(value = "page") Integer page) {
 
-        List<CustomizedArtWorkResponse> customizedArtWorkResponse = memberService.getCustomizedArtWorkList(userDetails.getMember().getId(), page);
+        List<CustomizedArtWorkResponse> customizedArtWorkResponse = memberService.getCustomizedArtWorkList(userDetails.getMember().getId(), page, 20);
+
+        return ResponseEntity.status(HttpStatus.OK).body(customizedArtWorkResponse);
+    }
+
+    @GetMapping("/members/customized-artworks/home")
+    public ResponseEntity<List<CustomizedArtWorkResponse>> customizedArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        List<CustomizedArtWorkResponse> customizedArtWorkResponse = memberService.getCustomizedArtWorkList(userDetails.getMember().getId(), 1, 5);
 
         return ResponseEntity.status(HttpStatus.OK).body(customizedArtWorkResponse);
     }
