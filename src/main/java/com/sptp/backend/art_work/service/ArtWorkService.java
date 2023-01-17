@@ -2,6 +2,7 @@ package com.sptp.backend.art_work.service;
 
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
+import com.sptp.backend.art_work.repository.ArtWorkSize;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
 import com.sptp.backend.art_work_image.repository.ArtWorkImage;
@@ -62,10 +63,7 @@ public class ArtWorkService extends BaseEntity {
                 .guaranteeImage(GuaranteeImageUUID + "." + GuaranteeImageEXT)
                 .mainImage(mainImageUUID + "." + mainImageEXT)
                 .genre(dto.getGenre())
-                .size(dto.getSize())
-                .height(dto.getHeight())
-                .length(dto.getLength())
-                .width(dto.getWidth())
+                .artWorkSize(ArtWorkSize.builder().size(dto.getSize()).length(dto.getLength()).width(dto.getWidth()).height(dto.getHeight()).build())
                 .frame(dto.isFrame())
                 .description(dto.getDescription())
                 .productionYear(dto.getProductionYear())
@@ -127,26 +125,9 @@ public class ArtWorkService extends BaseEntity {
         List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorkId(artWorkId);
         List<ArtWorkKeyword> artWorkKeywords = artWorkKeywordRepository.findByArtWorkId(artWorkId);
 
-        ArtWorkInfoResponseDto artWorkInfoResponseDto = ArtWorkInfoResponseDto.builder()
-                .title(findArtWork.getTitle())
-                .artistName(findArtist.getNickname())
-                .artistEducation(findArtist.getEducation())
-                .productionYear(findArtWork.getProductionYear())
-                .material(findArtWork.getMaterial())
-                .genre(findArtWork.getGenre())
-                .frame(findArtWork.isFrame())
-                .width(findArtWork.getWidth())
-                .height(findArtWork.getHeight())
-                .length(findArtWork.getLength())
-                .size(findArtWork.getSize())
-                .description(findArtWork.getDescription())
-                .guaranteeImage(findArtWork.getGuaranteeImage())
-                .mainImage(findArtWork.getMainImage())
-                .artistImage(findArtist.getImage())
-                .images(artWorkImages.stream().map(m -> m.getImage()).collect(Collectors.toList()))
-                .keywords(artWorkKeywords.stream().map(m->KeywordMap.getKeywordName(m.getKeywordId())).collect(Collectors.toList()))
+        return ArtWorkInfoResponseDto.builder()
+                .artist(ArtWorkInfoResponseDto.ArtistDto.from(findArtist))
+                .artWork(ArtWorkInfoResponseDto.ArtWorkDto.from(findArtWork, artWorkImages, artWorkKeywords))
                 .build();
-
-        return artWorkInfoResponseDto;
     }
 }

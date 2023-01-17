@@ -44,18 +44,13 @@ public class ArtWork extends BaseEntity {
 
     private String mainImage;
 
-    private Integer width;
-
-    private Integer length;
-
-    private Integer height;
-
-    private Integer size;
-
     private boolean frame;
 
     private String genre;
 
     private String description;
+
+    @Embedded
+    private ArtWorkSize artWorkSize;
 
 }
