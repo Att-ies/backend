@@ -1,26 +1,21 @@
 package com.sptp.backend.member.web;
 import com.sptp.backend.common.BaseControllerTest;
-import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.service.MemberService;
 import com.sptp.backend.member.web.dto.request.MemberLoginRequestDto;
 import com.sptp.backend.member.web.dto.request.MemberSaveRequestDto;
+import com.sptp.backend.member.web.dto.response.MemberLoginResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.transaction.annotation.Transactional;
 
-
-import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -127,33 +122,36 @@ class MemberControllerTest extends BaseControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-//    @Test
-//    @DisplayName("회원 정보 조회 테스트")
-//    @WithUserDetails(value = "test2")
-//    public void getUserInfo() throws Exception {
-//
-//        //when
-//        ResultActions resultActions = mockMvc.perform(
-//                MockMvcRequestBuilders.get("/members/me")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .accept(MediaType.APPLICATION_JSON)
-//        )
-//                .andDo(MockMvcResultHandlers.print());
-//
-//        //then
-//        resultActions
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.jsonPath("nickname").value("nickname2"))
-//                .andExpect(MockMvcResultMatchers.jsonPath("userId").value("test2"))
-//                .andExpect(MockMvcResultMatchers.jsonPath("email").value("test2@gmail.com"))
-//                .andExpect(MockMvcResultMatchers.jsonPath("telephone").value("01012341234"))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.keywords[0]").value("사진"))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.keywords[1]").value("파스텔"))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.keywords[2]").value("유화"))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.keywords[3]").value("미디어아트"))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.keywords[4]").value("세련된"));
-//    }
+    @Test
+    @DisplayName("회원 정보 조회 테스트")
+    public void getUserInfo() throws Exception {
 
+        //given
+        MemberLoginRequestDto dto = MemberLoginRequestDto.builder().userId("test2").password("test1234").build();
+        MemberLoginResponseDto token = memberService.login(dto);
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get("/members/me")
+                        .header("Authorization", token.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .accept(MediaType.APPLICATION_JSON)
+        )
+                .andDo(MockMvcResultHandlers.print());
+
+        //then
+        resultActions
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("nickname").value("nickname2"))
+                .andExpect(MockMvcResultMatchers.jsonPath("userId").value("test2"))
+                .andExpect(MockMvcResultMatchers.jsonPath("email").value("test2@gmail.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("telephone").value("01012341234"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.keywords[0]").value("사진"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.keywords[1]").value("파스텔"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.keywords[2]").value("유화"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.keywords[3]").value("미디어아트"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.keywords[4]").value("세련된"));
+    }
 
 }
