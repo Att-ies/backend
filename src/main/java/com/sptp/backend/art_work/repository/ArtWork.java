@@ -32,6 +32,8 @@ public class ArtWork extends BaseEntity {
 
     private String material;
 
+    private Integer productionYear;
+
     private Integer price;
 
     private String status;
@@ -50,7 +52,7 @@ public class ArtWork extends BaseEntity {
 
     private Integer size;
 
-    private boolean isFrame;
+    private boolean frame;
 
     private String genre;
 

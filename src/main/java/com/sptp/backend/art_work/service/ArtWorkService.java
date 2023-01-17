@@ -3,6 +3,7 @@ package com.sptp.backend.art_work.service;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
+import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
 import com.sptp.backend.art_work_image.repository.ArtWorkImage;
 import com.sptp.backend.art_work_image.repository.ArtWorkImageRepository;
 import com.sptp.backend.art_work_keyword.repository.ArtWorkKeyword;
@@ -21,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -62,8 +65,9 @@ public class ArtWorkService extends BaseEntity {
                 .height(dto.getHeight())
                 .length(dto.getLength())
                 .width(dto.getWidth())
-                .isFrame(dto.isFrame())
+                .frame(dto.isFrame())
                 .description(dto.getDescription())
+                .productionYear(dto.getProductionYear())
                 .build();
 
         artWorkRepository.save(artWork);
@@ -109,5 +113,33 @@ public class ArtWorkService extends BaseEntity {
         if (dto.getGuaranteeImage().isEmpty() || dto.getImage()[0].isEmpty()) {
             throw new CustomException(ErrorCode.SHOULD_EXIST_IMAGE);
         }
+    }
+
+    public ArtWorkInfoResponseDto getArtWork(Long artWorkId) {
+
+        ArtWork findArtWork = artWorkRepository.findById(artWorkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+
+        Member findArtist = memberRepository.findById(findArtWork.getMember().getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
+
+        ArtWorkInfoResponseDto artWorkInfoResponseDto = ArtWorkInfoResponseDto.builder()
+                .title(findArtWork.getTitle())
+                .artistName(findArtist.getNickname())
+                .artistEducation(findArtist.getEducation())
+                .productionYear(findArtWork.getProductionYear())
+                .material(findArtWork.getMaterial())
+                .genre(findArtWork.getGenre())
+                .frame(findArtWork.isFrame())
+                .width(findArtWork.getWidth())
+                .height(findArtWork.getHeight())
+                .length(findArtWork.getLength())
+                .size(findArtWork.getSize())
+                .description(findArtWork.getDescription())
+                .artWorkImage(findArtWork.getMainImage())
+                .artistImage(findArtist.getImage())
+                .build();
+
+        return artWorkInfoResponseDto;
     }
 }
