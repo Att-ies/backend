@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -123,6 +124,9 @@ public class ArtWorkService extends BaseEntity {
         Member findArtist = memberRepository.findById(findArtWork.getMember().getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
 
+        List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorkId(artWorkId);
+        List<ArtWorkKeyword> artWorkKeywords = artWorkKeywordRepository.findByArtWorkId(artWorkId);
+
         ArtWorkInfoResponseDto artWorkInfoResponseDto = ArtWorkInfoResponseDto.builder()
                 .title(findArtWork.getTitle())
                 .artistName(findArtist.getNickname())
@@ -136,8 +140,11 @@ public class ArtWorkService extends BaseEntity {
                 .length(findArtWork.getLength())
                 .size(findArtWork.getSize())
                 .description(findArtWork.getDescription())
+                .guaranteeImage(findArtWork.getGuaranteeImage())
                 .artWorkImage(findArtWork.getMainImage())
                 .artistImage(findArtist.getImage())
+                .images(artWorkImages.stream().map(m -> m.getImage()).collect(Collectors.toList()))
+                .keywords(artWorkKeywords.stream().map(m->KeywordMap.getKeywordName(m.getKeywordId())).collect(Collectors.toList()))
                 .build();
 
         return artWorkInfoResponseDto;

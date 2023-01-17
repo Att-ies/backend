@@ -3,6 +3,8 @@ package com.sptp.backend.art_work.web.dto.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,7 +25,10 @@ public class ArtWorkInfoResponseDto {
     private Integer size;
     private String description;
 
+    private String guaranteeImage;
     private String artWorkImage;
     private String artistImage;
+    private List<String> keywords;
+    private List<String> images;
 
 }
