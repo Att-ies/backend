@@ -16,7 +16,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberKeyword  extends BaseEntity {
+public class MemberKeyword extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_keyword_id")
