@@ -52,12 +52,18 @@ public class ArtWorkService extends BaseEntity {
                 .member(findMember)
                 .title(dto.getTitle())
                 .material(dto.getMaterial())
-                .size(dto.getSize())
                 .price(dto.getPrice())
                 .status(dto.getStatus())
                 .statusDescription(dto.getStatusDescription())
                 .guaranteeImage(GuaranteeImageUUID + "." + GuaranteeImageEXT)
                 .mainImage(mainImageUUID + "." + mainImageEXT)
+                .genre(dto.getGenre())
+                .size(dto.getSize())
+                .height(dto.getHeight())
+                .length(dto.getLength())
+                .width(dto.getWidth())
+                .isFrame(dto.isFrame())
+                .description(dto.getDescription())
                 .build();
 
         artWorkRepository.save(artWork);

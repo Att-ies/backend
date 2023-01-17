@@ -16,8 +16,15 @@ public class ArtWorkSaveRequestDto {
     private String[] keywords;
     private String productionYear;
     private String material;
-    private String size;
-    private Integer price;
     private String status;
     private String statusDescription;
+    private Integer width;
+    private Integer length;
+    private Integer height;
+    private Integer size;
+    private boolean isFrame;
+    private String genre;
+    private Integer price;
+    private String description;
+
 }
