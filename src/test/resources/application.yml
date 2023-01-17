@@ -3,6 +3,12 @@ spring:
     host: localhost
     port: ${application.spring.redis.port}
 
+  datasource:
+    url: ${application.spring.datasource.url}
+    username: ${application.spring.datasource.username}
+    password: ${application.spring.datasource.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: create
