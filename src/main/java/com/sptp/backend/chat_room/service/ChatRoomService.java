@@ -65,4 +65,10 @@ public class ChatRoomService {
                 .build();
     }
 
+    public void leaveChatRoom(Long chatRoomId) {
+
+        if (chatRoomRepository.existsById(chatRoomId)) {
+            chatRoomRepository.deleteById(chatRoomId);
+        }
+    }
 }
