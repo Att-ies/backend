@@ -25,7 +25,6 @@ public class JwtService {
         RefreshToken refreshToken = RefreshToken.builder().keyUserId(tokenDto.getKey()).refreshToken(tokenDto.getRefreshToken()).build();
         String userId = refreshToken.getKeyUserId();
         if(refreshTokenRepository.existsByKeyUserId(userId)){
-            log.info("기존의 존재하는 refresh 토큰 삭제");
             refreshTokenRepository.deleteByKeyUserId(userId);
         }
         refreshTokenRepository.save(refreshToken);

@@ -94,4 +94,11 @@ public class ChatRoomService {
     private Message getLastMessage(ChatRoom chatRoom) {
         return messageRepository.findFirstByChatRoomOrderByIdDesc(chatRoom);
     }
+
+    public void leaveChatRoom(Long chatRoomId) {
+
+        if (chatRoomRepository.existsById(chatRoomId)) {
+            chatRoomRepository.deleteById(chatRoomId);
+        }
+    }
 }

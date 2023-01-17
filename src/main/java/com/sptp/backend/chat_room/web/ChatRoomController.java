@@ -47,4 +47,13 @@ public class ChatRoomController {
 
         return ResponseEntity.ok(chatRoomService.getChatRooms(userDetails.getMember().getId()));
     }
+
+    // 채팅방 나가기
+    @DeleteMapping("/{chatRoomId}")
+    public ResponseEntity<Void> leaveChatRoom(@PathVariable Long chatRoomId) {
+
+        chatRoomService.leaveChatRoom(chatRoomId);
+
+        return ResponseEntity.ok().build();
+    }
 }
