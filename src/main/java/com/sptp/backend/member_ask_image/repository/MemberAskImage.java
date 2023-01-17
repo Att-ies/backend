@@ -1,8 +1,7 @@
-package com.sptp.backend.member_preffereed_art_work.repository;
+package com.sptp.backend.member_ask_image.repository;
 
-import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.common.entity.BaseEntity;
-import com.sptp.backend.member.repository.Member;
+import com.sptp.backend.member_ask.repository.MemberAsk;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,20 +16,17 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberPreferredArtWork extends BaseEntity {
+public class MemberAskImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_preferred_art_work_id")
+    @Column(name = "member_ask_image_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_ask_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Member member;
+    private MemberAsk memberAsk;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "art_work_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private ArtWork artWork;
+    private String image;
 }
