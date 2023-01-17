@@ -23,7 +23,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-connection")
-                .setAllowedOrigins("*")
+                .setAllowedOrigins("http://localhost:3000", "http://localhost:8080")
                 .withSockJS(); // websocket 미지원 브라우저를 위해 추가
     }
 }
