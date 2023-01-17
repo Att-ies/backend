@@ -26,7 +26,7 @@ public class ArtWorkInfoResponseDto {
     private String description;
 
     private String guaranteeImage;
-    private String artWorkImage;
+    private String mainImage;
     private String artistImage;
     private List<String> keywords;
     private List<String> images;

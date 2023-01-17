@@ -141,7 +141,7 @@ public class ArtWorkService extends BaseEntity {
                 .size(findArtWork.getSize())
                 .description(findArtWork.getDescription())
                 .guaranteeImage(findArtWork.getGuaranteeImage())
-                .artWorkImage(findArtWork.getMainImage())
+                .mainImage(findArtWork.getMainImage())
                 .artistImage(findArtist.getImage())
                 .images(artWorkImages.stream().map(m -> m.getImage()).collect(Collectors.toList()))
                 .keywords(artWorkKeywords.stream().map(m->KeywordMap.getKeywordName(m.getKeywordId())).collect(Collectors.toList()))
