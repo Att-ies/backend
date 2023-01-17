@@ -490,7 +490,7 @@ public class MemberService {
         List<ArtWork> findPreferredArtWorkList = memberPreferredArtWorkRepository.findPreferredArtWork(loginMemberId);
 
         List<PreferredArtWorkResponse> preferredArtWorkResponse = findPreferredArtWorkList.stream()
-                .map(m -> new PreferredArtWorkResponse(m.getTitle(), m.getPrice(), processImage(m.getMainImage())))
+                .map(m -> new PreferredArtWorkResponse(m.getId(), m.getTitle(), m.getPrice(), processImage(m.getMainImage())))
                 .collect(Collectors.toList());
 
         return preferredArtWorkResponse;
