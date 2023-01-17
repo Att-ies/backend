@@ -36,4 +36,12 @@ public class ChatRoom extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "art_work_id")
     private ArtWork artWork;
+
+    public Member getOtherMember(Long memberId) {
+        if (member.getId().equals(memberId)) {
+            return artist;
+        }
+
+        return member;
+    }
 }

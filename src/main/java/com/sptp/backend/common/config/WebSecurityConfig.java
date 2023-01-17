@@ -53,6 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/members/check-id", "/members/check-nickname").permitAll()
                 .antMatchers(HttpMethod.PATCH, "/members").hasRole("USER")
                 .antMatchers(HttpMethod.PATCH, "/artists").hasRole("ARTIST")
+                .antMatchers(HttpMethod.POST, "/art-work").hasRole("ARTIST")
                 .anyRequest().authenticated(); // 그외 나머지 요청은 인증 필요
 
         http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
