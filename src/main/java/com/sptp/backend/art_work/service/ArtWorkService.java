@@ -5,6 +5,7 @@ import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.art_work.repository.ArtWorkSize;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
+import com.sptp.backend.art_work.web.dto.response.ArtWorkMyListResponseDto;
 import com.sptp.backend.art_work_image.repository.ArtWorkImage;
 import com.sptp.backend.art_work_image.repository.ArtWorkImageRepository;
 import com.sptp.backend.art_work_keyword.repository.ArtWorkKeyword;
@@ -114,6 +115,7 @@ public class ArtWorkService extends BaseEntity {
         }
     }
 
+    @Transactional(readOnly = true)
     public ArtWorkInfoResponseDto getArtWork(Long artWorkId) {
 
         ArtWork findArtWork = artWorkRepository.findById(artWorkId)
@@ -129,5 +131,20 @@ public class ArtWorkService extends BaseEntity {
                 .artist(ArtWorkInfoResponseDto.ArtistDto.from(findArtist))
                 .artWork(ArtWorkInfoResponseDto.ArtWorkDto.from(findArtWork, artWorkImages, artWorkKeywords))
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ArtWorkMyListResponseDto> getMyArtWorkList(Long loginMemberId) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        List<ArtWork> findArtWorkList = artWorkRepository.findByMemberId(findMember.getId());
+
+        List<ArtWorkMyListResponseDto> artWorkMyListResponseDto = findArtWorkList.stream()
+                .map(m -> new ArtWorkMyListResponseDto(m.getId(), m.getTitle(), findMember.getNickname()))
+                .collect(Collectors.toList());
+
+        return artWorkMyListResponseDto;
     }
 }
