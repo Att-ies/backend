@@ -2,7 +2,10 @@ package com.sptp.backend.art_work.service;
 
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
+import com.sptp.backend.art_work.repository.ArtWorkSize;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
+import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
+import com.sptp.backend.art_work.web.dto.response.ArtWorkMyListResponseDto;
 import com.sptp.backend.art_work_image.repository.ArtWorkImage;
 import com.sptp.backend.art_work_image.repository.ArtWorkImageRepository;
 import com.sptp.backend.art_work_keyword.repository.ArtWorkKeyword;
@@ -21,7 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,12 +58,16 @@ public class ArtWorkService extends BaseEntity {
                 .member(findMember)
                 .title(dto.getTitle())
                 .material(dto.getMaterial())
-                .size(dto.getSize())
                 .price(dto.getPrice())
                 .status(dto.getStatus())
                 .statusDescription(dto.getStatusDescription())
                 .guaranteeImage(GuaranteeImageUUID + "." + GuaranteeImageEXT)
                 .mainImage(mainImageUUID + "." + mainImageEXT)
+                .genre(dto.getGenre())
+                .artWorkSize(ArtWorkSize.builder().size(dto.getSize()).length(dto.getLength()).width(dto.getWidth()).height(dto.getHeight()).build())
+                .frame(dto.isFrame())
+                .description(dto.getDescription())
+                .productionYear(dto.getProductionYear())
                 .build();
 
         artWorkRepository.save(artWork);
@@ -103,5 +113,38 @@ public class ArtWorkService extends BaseEntity {
         if (dto.getGuaranteeImage().isEmpty() || dto.getImage()[0].isEmpty()) {
             throw new CustomException(ErrorCode.SHOULD_EXIST_IMAGE);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public ArtWorkInfoResponseDto getArtWork(Long artWorkId) {
+
+        ArtWork findArtWork = artWorkRepository.findById(artWorkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+
+        Member findArtist = memberRepository.findById(findArtWork.getMember().getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
+
+        List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorkId(artWorkId);
+        List<ArtWorkKeyword> artWorkKeywords = artWorkKeywordRepository.findByArtWorkId(artWorkId);
+
+        return ArtWorkInfoResponseDto.builder()
+                .artist(ArtWorkInfoResponseDto.ArtistDto.from(findArtist))
+                .artWork(ArtWorkInfoResponseDto.ArtWorkDto.from(findArtWork, artWorkImages, artWorkKeywords))
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ArtWorkMyListResponseDto> getMyArtWorkList(Long loginMemberId) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        List<ArtWork> findArtWorkList = artWorkRepository.findByMemberId(findMember.getId());
+
+        List<ArtWorkMyListResponseDto> artWorkMyListResponseDto = findArtWorkList.stream()
+                .map(m -> new ArtWorkMyListResponseDto(m.getId(), m.getTitle(), findMember.getNickname()))
+                .collect(Collectors.toList());
+
+        return artWorkMyListResponseDto;
     }
 }
