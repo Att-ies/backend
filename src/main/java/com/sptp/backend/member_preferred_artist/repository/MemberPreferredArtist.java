@@ -1,5 +1,6 @@
 package com.sptp.backend.member_preferred_artist.repository;
 
+import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,8 @@ import javax.persistence.*;
 @Table(name="MEMBER_PREFERRED_ARTIST", uniqueConstraints = {@UniqueConstraint(
         name = "MEMBER_ARTIST_UNIQUE",
         columnNames = {"MEMBER_ID", "ARTIST_ID"} )})
-public class MemberPreferredArtist {
+public class MemberPreferredArtist  extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_preferred_artist_id")

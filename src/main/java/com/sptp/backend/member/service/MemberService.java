@@ -602,4 +602,18 @@ public class MemberService {
         }
         return awsStorageUrl + image;
     }
+
+    @Transactional(readOnly = true)
+    public List<CustomizedArtWorkResponse> getCustomizedArtWorkList (Long loginMemberId, Integer page, Integer limit) {
+
+        List<Integer> findMemberKeywordIdList = memberKeywordRepository.findKeywordIdByMemberId(loginMemberId); // 콜렉터의 keywordId 리스트 반환
+
+        List<ArtWork> findCustomizedArtWorkList = memberRepository.findCustomizedArtWork(findMemberKeywordIdList, page, limit); // 콜렉터 취향과 일치하는 keywordId 개수에 따라 작품 나열해 반환
+
+        List<CustomizedArtWorkResponse> customizedArtWorkResponse = findCustomizedArtWorkList.stream()
+                .map(m -> new CustomizedArtWorkResponse(m.getTitle(), m.getMember().getEducation(), processImage(m.getMainImage())))
+                .collect(Collectors.toList());
+
+        return customizedArtWorkResponse;
+    }
 }
