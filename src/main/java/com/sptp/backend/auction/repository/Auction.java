@@ -1,6 +1,8 @@
 package com.sptp.backend.auction.repository;
 
 import com.sptp.backend.common.entity.BaseEntity;
+import com.sptp.backend.common.exception.CustomException;
+import com.sptp.backend.common.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,4 +26,8 @@ public class Auction extends BaseEntity {
     private Integer turn;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+
+    public boolean isValidPeriod(LocalDateTime currentTime) {
+        return currentTime.isAfter(startDate) && currentTime.isBefore(endDate);
+    }
 }
