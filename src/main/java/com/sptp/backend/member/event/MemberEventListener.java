@@ -24,7 +24,7 @@ public class MemberEventListener {
 
         Member member = memberToArtistEvent.getMember();
         log.info(member.getNickname() + " becomes artist.");
-        // DB에 Notification 정보 저장
+
         saveNotification(member);
     }
 
