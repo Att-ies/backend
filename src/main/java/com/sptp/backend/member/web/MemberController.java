@@ -21,7 +21,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -280,6 +279,16 @@ public class MemberController {
         List<PreferredArtWorkResponse> preferredArtWorkResponse = memberService.getPreferredArtWorkList(userDetails.getMember().getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(preferredArtWorkResponse);
+    }
+
+    // 회원-작품 취향 맞춤 추천 목록 조회
+    @GetMapping("/members/customized-artworks")
+    public ResponseEntity<List<CustomizedArtWorkResponse>> customizedArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                                 @RequestParam("page") Integer page, @RequestParam("limit") Integer limit) {
+
+        List<CustomizedArtWorkResponse> customizedArtWorkResponse = memberService.getCustomizedArtWorkList(userDetails.getMember().getId(), page, limit);
+
+        return ResponseEntity.status(HttpStatus.OK).body(customizedArtWorkResponse);
     }
 
     // 일대일 문의
