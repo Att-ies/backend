@@ -442,6 +442,25 @@ public class MemberService {
         return preferredArtistResponse;
     }
 
+    @Transactional(readOnly = true)
+    public ArtistDetailResponse getArtistDetail(Long artistId) {
+
+        Member artist = memberRepository.findById(artistId)
+                .orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
+        if (!Objects.equals(artist.getRoles().get(0), "ROLE_ARTIST")) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ARTIST);
+        }
+
+        List<ArtWork> artworks = artWorkRepository.findArtWorkByMember(artist);
+
+        return ArtistDetailResponse.builder()
+                .member(ArtistDetailResponse.MemberDto.from(artist))
+                .artworks(artworks.stream()
+                        .map(ArtistDetailResponse.ArtWorkDto::from)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
     @Transactional
     public void pickArtWork(Long loginMemberId, Long artWorkId) {
 
@@ -582,5 +601,19 @@ public class MemberService {
             return null;
         }
         return awsStorageUrl + image;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CustomizedArtWorkResponse> getCustomizedArtWorkList (Long loginMemberId, Integer page, Integer limit) {
+
+        List<Integer> findMemberKeywordIdList = memberKeywordRepository.findKeywordIdByMemberId(loginMemberId); // 콜렉터의 keywordId 리스트 반환
+
+        List<ArtWork> findCustomizedArtWorkList = memberRepository.findCustomizedArtWork(findMemberKeywordIdList, page, limit); // 콜렉터 취향과 일치하는 keywordId 개수에 따라 작품 나열해 반환
+
+        List<CustomizedArtWorkResponse> customizedArtWorkResponse = findCustomizedArtWorkList.stream()
+                .map(m -> new CustomizedArtWorkResponse(m.getTitle(), m.getMember().getEducation(), processImage(m.getMainImage())))
+                .collect(Collectors.toList());
+
+        return customizedArtWorkResponse;
     }
 }

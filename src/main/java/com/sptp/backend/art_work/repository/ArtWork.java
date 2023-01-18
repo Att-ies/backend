@@ -1,5 +1,6 @@
 package com.sptp.backend.art_work.repository;
 
+import com.sptp.backend.auction.repository.Auction;
 import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,11 @@ public class ArtWork extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "auction_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Auction Auction;
+
     private String title;
 
     private String material;
@@ -53,4 +59,5 @@ public class ArtWork extends BaseEntity {
     @Embedded
     private ArtWorkSize artWorkSize;
 
+    private String sale_status;
 }
