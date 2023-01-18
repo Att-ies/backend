@@ -22,7 +22,7 @@ public class ChatRoomDetailResponse {
     public static class MemberDto {
         private Long id;
         private String name;
-//        private String responseTime; 추후 구현 예정
+//        TODO private String responseTime; 추후 구현 예정
 
         public static MemberDto from(Member member) {
             return MemberDto.builder()
