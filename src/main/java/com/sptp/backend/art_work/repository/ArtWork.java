@@ -32,7 +32,7 @@ public class ArtWork extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Auction Auction;
+    private Auction auction;
 
     private String title;
 
