@@ -1,6 +1,7 @@
 package com.sptp.backend.bidding.repository;
 
 import com.sptp.backend.art_work.repository.ArtWork;
+import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Bidding {
+public class Bidding extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
