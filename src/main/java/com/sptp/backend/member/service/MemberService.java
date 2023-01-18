@@ -5,6 +5,7 @@ import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
+import com.sptp.backend.member.event.MemberToArtistEvent;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
@@ -29,6 +30,7 @@ import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -60,8 +62,10 @@ public class MemberService {
     private final MemberPreferredArtWorkRepository memberPreferredArtWorkRepository;
     private final MemberAskRepository memberAskRepository;
     private final MemberAskImageRepository memberAskImageRepository;
+    private final ApplicationEventPublisher eventPublisher;
     private final int PREFERRED_ARTIST_MAXIMUM = 100;
     private final int PREFERRED_ART_WORK_MAXIMUM = 100;
+
 
     @Value("${aws.storage.url}")
     private String awsStorageUrl;
@@ -307,6 +311,7 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         findMember.changeToArtist();
+        eventPublisher.publishEvent(new MemberToArtistEvent(findMember));
 
         return findMember.getRoles().get(0);
     }
