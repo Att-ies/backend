@@ -21,11 +21,12 @@ public class MemberEventListener {
     private final NotificationRepository notificationRepository;
 
     @EventListener
-    public void handleMemberToArtistEvent(MemberToArtistEvent memberToArtistEvent){
+    public void handleMemberUpdateEvent(MemberUpdateEvent memberUpdateEvent){
 
-        Member member = memberToArtistEvent.getMember();
+        Member member = memberUpdateEvent.getMember();
+        NotificationCode notificationCode = memberUpdateEvent.getNotificationCode();
 
-        saveNotification(member, NotificationCode.MEMBER_TO_ARTIST);
+        saveNotification(member, notificationCode);
     }
 
     private void saveNotification(Member member, NotificationCode notificationCode){
