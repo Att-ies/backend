@@ -44,7 +44,8 @@ public enum ErrorCode {
 
     //경매 예외
     EXIST_AUCTION_TURN(HttpStatus.CONFLICT, "해당 경매 회차가 이미 존재합니다."),
-    NOT_FOUND_AUCTION_TURN(HttpStatus.NOT_FOUND, "해당 경매 회차가 존재하지 않습니다.");
+    NOT_FOUND_AUCTION_TURN(HttpStatus.NOT_FOUND, "해당 경매 회차가 존재하지 않습니다."),
+    NOT_FOUND_AUCTION_SCHEDULED(HttpStatus.NOT_FOUND, "현재 예정된 경매가 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String detail;

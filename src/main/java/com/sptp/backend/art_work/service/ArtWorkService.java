@@ -10,6 +10,9 @@ import com.sptp.backend.art_work_image.repository.ArtWorkImage;
 import com.sptp.backend.art_work_image.repository.ArtWorkImageRepository;
 import com.sptp.backend.art_work_keyword.repository.ArtWorkKeyword;
 import com.sptp.backend.art_work_keyword.repository.ArtWorkKeywordRepository;
+import com.sptp.backend.auction.repository.Auction;
+import com.sptp.backend.auction.repository.AuctionRepository;
+import com.sptp.backend.auction.repository.AuctionStatus;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.common.KeywordMap;
@@ -39,9 +42,15 @@ public class ArtWorkService extends BaseEntity {
     private final MemberRepository memberRepository;
     private final AwsService awsService;
     private final FileService fileService;
+    private final AuctionRepository auctionRepository;
 
     @Transactional
     public Long saveArtWork(Long loginMemberId, ArtWorkSaveRequestDto dto) throws IOException {
+
+        List<Auction> latestScheduledAuction = auctionRepository.findLatestScheduledAuction();
+        if (latestScheduledAuction.size() == 0) {
+            throw new CustomException(ErrorCode.NOT_FOUND_AUCTION_SCHEDULED);
+        }
 
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
@@ -68,6 +77,8 @@ public class ArtWorkService extends BaseEntity {
                 .frame(dto.isFrame())
                 .description(dto.getDescription())
                 .productionYear(dto.getProductionYear())
+                .Auction(latestScheduledAuction.get(0))
+                .saleStatus(AuctionStatus.SCHEDULED.getType())
                 .build();
 
         ArtWork savedArtWork = artWorkRepository.save(artWork);

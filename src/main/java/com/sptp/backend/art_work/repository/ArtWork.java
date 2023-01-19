@@ -59,5 +59,5 @@ public class ArtWork extends BaseEntity {
     @Embedded
     private ArtWorkSize artWorkSize;
 
-    private String sale_status;
+    private String saleStatus;
 }
