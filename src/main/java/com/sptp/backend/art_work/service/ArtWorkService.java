@@ -28,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -155,7 +154,7 @@ public class ArtWorkService extends BaseEntity {
         List<ArtWork> findArtWorkList = artWorkRepository.findByMemberId(findMember.getId());
 
         List<ArtWorkMyListResponseDto> artWorkMyListResponseDto = findArtWorkList.stream()
-                .map(m -> new ArtWorkMyListResponseDto(m.getId(), m.getTitle(), findMember.getNickname()))
+                .map(m -> new ArtWorkMyListResponseDto(m.getId(), m.getTitle(), findMember.getNickname(), m.getSaleStatus(), null, m.getAuction().getTurn(), m.getMainImage()))
                 .collect(Collectors.toList());
 
         return artWorkMyListResponseDto;
