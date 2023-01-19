@@ -26,15 +26,16 @@ public enum NotificationCode {
     private final String details;
     private final String link;
 
-    public static String addArtWorkTitle(String title, NotificationCode notificationCode){
+//    public static String addMessageTitle(String title, NotificationCode notificationCode){
+//
+//        return title + notificationCode.message; // SAVE+ARTWORK,
+//    }
+    // .message(NotificationCode.addMessageTitle(artWork.getTitle(), notificationCode))
 
-        return title + notificationCode.message; // SAVE+ARTWORK,
-    }
-
-    public static String addMessageNum(Integer num, NotificationCode notificationCode) {
-
-        return num + notificationCode.message; // CHATTING
-    }
+//    public static String addMessageNum(Integer num, NotificationCode notificationCode) {
+//
+//        return num + notificationCode.message; // CHATTING
+//    }
 
 
 }

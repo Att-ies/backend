@@ -22,26 +22,13 @@ import java.util.stream.Collectors;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    @Transactional
-    public void saveNotification(Member member, NotificationCode notificationCode){
-
-        Notification notification = Notification.builder()
-                .member(member)
-                .title(notificationCode.getTitle())
-                .message(notificationCode.getMessage())
-                .details(notificationCode.getDetails())
-                .link(notificationCode.getLink())
-                .build();
-
-        notificationRepository.save(notification);
-    }
 
     @Transactional(readOnly = true)
     public List<NotificationResponse> getNotificationList(Long loginMember){
 
         List<Notification> findNotificationList = notificationRepository.findByMemberId(loginMember);
 
-        List<NotificationResponse> notificationResponses =findNotificationList.stream()
+        List<NotificationResponse> notificationResponses = findNotificationList.stream()
                 .map(m -> new NotificationResponse(m.getId(), m.getTitle(), m.getMessage(), m.getLink(), m.getCreatedDate()))
                 .collect(Collectors.toList());
 

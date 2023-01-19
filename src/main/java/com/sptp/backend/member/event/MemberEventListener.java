@@ -4,7 +4,6 @@ import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.notification.repository.Notification;
 import com.sptp.backend.notification.repository.NotificationRepository;
-import com.sptp.backend.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -20,14 +19,27 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberEventListener {
 
     private final NotificationRepository notificationRepository;
-    private final NotificationService notificationService;
 
+    // 작가 등록 완료, 1대1 문의 알림
     @EventListener
-    public void handleMemberUpdateEvent(MemberUpdateEvent memberUpdateEvent){
+    public void handleMemberEvent(MemberEvent memberEvent){
 
-        Member member = memberUpdateEvent.getMember();
-        NotificationCode notificationCode = memberUpdateEvent.getNotificationCode();
+        Member member = memberEvent.getMember();
+        NotificationCode notificationCode = memberEvent.getNotificationCode();
 
-        notificationService.saveNotification(member, notificationCode);
+        saveNotification(member, notificationCode);
+    }
+
+    public void saveNotification(Member member, NotificationCode notificationCode){
+
+        Notification notification = Notification.builder()
+                .member(member)
+                .title(notificationCode.getTitle())
+                .message(notificationCode.getMessage())
+                .details(notificationCode.getDetails())
+                .link(notificationCode.getLink())
+                .build();
+
+        notificationRepository.save(notification);
     }
 }

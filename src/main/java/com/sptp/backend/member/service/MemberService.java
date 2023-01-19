@@ -6,7 +6,7 @@ import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.common.NotificationCode;
-import com.sptp.backend.member.event.MemberUpdateEvent;
+import com.sptp.backend.member.event.MemberEvent;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
@@ -312,7 +312,7 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         findMember.changeToArtist();
-        eventPublisher.publishEvent(new MemberUpdateEvent(findMember, NotificationCode.MEMBER_TO_ARTIST));
+        eventPublisher.publishEvent(new MemberEvent(findMember, NotificationCode.MEMBER_TO_ARTIST));
 
         return findMember.getRoles().get(0);
     }

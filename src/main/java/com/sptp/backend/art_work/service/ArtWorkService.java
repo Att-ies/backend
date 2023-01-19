@@ -1,6 +1,6 @@
 package com.sptp.backend.art_work.service;
 
-import com.sptp.backend.art_work.event.ArtWorkCreateEvent;
+import com.sptp.backend.art_work.event.ArtWorkEvent;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.art_work.repository.ArtWorkSize;
@@ -28,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -79,7 +78,7 @@ public class ArtWorkService extends BaseEntity {
         awsService.uploadImage(dto.getImage()[0], mainImageUUID);
         saveArtImages(dto.getImage(), artWork);
         saveArtKeywords(dto.getKeywords(), artWork);
-        eventPublisher.publishEvent(new ArtWorkCreateEvent(findMember, artWork, NotificationCode.SAVE_ARTWORK));
+        eventPublisher.publishEvent(new ArtWorkEvent(findMember, artWork, NotificationCode.SAVE_ARTWORK));
     }
 
     public void saveArtImages(MultipartFile[] files, ArtWork artWork) throws IOException {
