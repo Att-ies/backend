@@ -1,4 +1,7 @@
 spring:
+#  profiles:
+#    active: prod
+
   servlet:
     multipart:
       max-file-size: 10MB
@@ -66,3 +69,14 @@ cloud:
 jwt:
   secret: ${application.jwt.secret}
   secret_refresh: ${application.jwt.secret_refresh}
+
+---
+
+spring:
+  profiles: prod
+
+  datasource:
+    url: ${application.spring.prod.datasource.url}
+    username: ${application.spring.prod.datasource.username}
+    password: ${application.spring.prod.datasource.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
