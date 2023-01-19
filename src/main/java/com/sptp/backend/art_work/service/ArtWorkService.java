@@ -41,7 +41,7 @@ public class ArtWorkService extends BaseEntity {
     private final FileService fileService;
 
     @Transactional
-    public void saveArtWork(Long loginMemberId, ArtWorkSaveRequestDto dto) throws IOException {
+    public Long saveArtWork(Long loginMemberId, ArtWorkSaveRequestDto dto) throws IOException {
 
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
@@ -70,11 +70,13 @@ public class ArtWorkService extends BaseEntity {
                 .productionYear(dto.getProductionYear())
                 .build();
 
-        artWorkRepository.save(artWork);
+        ArtWork savedArtWork = artWorkRepository.save(artWork);
         awsService.uploadImage(dto.getGuaranteeImage(), GuaranteeImageUUID);
         awsService.uploadImage(dto.getImage()[0], mainImageUUID);
         saveArtImages(dto.getImage(), artWork);
         saveArtKeywords(dto.getKeywords(), artWork);
+
+        return savedArtWork.getId();
     }
 
     public void saveArtImages(MultipartFile[] files, ArtWork artWork) throws IOException {

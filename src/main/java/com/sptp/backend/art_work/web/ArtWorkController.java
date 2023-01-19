@@ -25,12 +25,14 @@ public class ArtWorkController {
 
     // 작품 등록
     @PostMapping("/art-works")
-    public ResponseEntity<Void> saveArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<ArtWorkInfoResponseDto> saveArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                              ArtWorkSaveRequestDto artWorkSaveRequestDto) throws IOException {
 
-        artWorkService.saveArtWork(userDetails.getMember().getId(), artWorkSaveRequestDto);
+        Long savedArtWorkId = artWorkService.saveArtWork(userDetails.getMember().getId(), artWorkSaveRequestDto);
 
-        return new ResponseEntity(HttpStatus.OK);
+        ArtWorkInfoResponseDto artWorkInfoResponseDto = artWorkService.getArtWork(savedArtWorkId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(artWorkInfoResponseDto);
     }
 
     // 작품 상세 조회
