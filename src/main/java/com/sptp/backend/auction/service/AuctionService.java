@@ -21,10 +21,6 @@ public class AuctionService {
     @Transactional
     public void saveAuction(AuctionSaveRequestDto dto) {
 
-        System.out.println("dto.getTurn() = " + dto.getTurn());
-        System.out.println("dto.getStartDate() = " + dto.getStartDate());
-        System.out.println("dto.getEndDate() = " + dto.getEndDate());
-
         if (auctionRepository.existsByTurn(dto.getTurn())) {
             throw new CustomException(ErrorCode.EXIST_AUCTION_TURN);
         }
@@ -33,7 +29,7 @@ public class AuctionService {
                 .turn(dto.getTurn())
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
-                .status(AuctionStatus.NOT_PROCESSING.getType())
+                .status(AuctionStatus.SCHEDULED.getType())
                 .build();
 
         auctionRepository.save(auction);

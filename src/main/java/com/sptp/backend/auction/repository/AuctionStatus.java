@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 public enum AuctionStatus {
 
+    SCHEDULED("scheduled","예정"),
     PROCESSING("processing","진행중"),
-    NOT_PROCESSING("notProcessing","등록 완료"),
     TERMINATED("terminated","종료");
 
     private String type;
