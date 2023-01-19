@@ -37,7 +37,7 @@ public class ArtWorkEventListener {
         Notification notification = Notification.builder()
                 .member(member)
                 .title(notificationCode.getTitle())
-                .message(artWork.getTitle() + notificationCode.getTitle())
+                .message(artWork.getTitle() + notificationCode.getMessage())
                 .details(notificationCode.getDetails())
                 .link(notificationCode.getLink())
                 .build();

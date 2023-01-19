@@ -25,19 +25,6 @@ public enum NotificationCode {
     private final String message;
     private final String details;
     private final String link;
-
-//    public static String addMessageTitle(String title, NotificationCode notificationCode){
-//
-//        return title + notificationCode.message; // SAVE+ARTWORK,
-//    }
-    // .message(NotificationCode.addMessageTitle(artWork.getTitle(), notificationCode))
-
-//    public static String addMessageNum(Integer num, NotificationCode notificationCode) {
-//
-//        return num + notificationCode.message; // CHATTING
-//    }
-
-
 }
 
 
