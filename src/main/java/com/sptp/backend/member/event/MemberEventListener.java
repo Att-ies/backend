@@ -1,5 +1,6 @@
 package com.sptp.backend.member.event;
 
+import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.notification.repository.Notification;
 import com.sptp.backend.notification.repository.NotificationRepository;
@@ -23,17 +24,16 @@ public class MemberEventListener {
     public void handleMemberToArtistEvent(MemberToArtistEvent memberToArtistEvent){
 
         Member member = memberToArtistEvent.getMember();
-        log.info(member.getNickname() + " becomes artist.");
 
-        saveNotification(member);
+        saveNotification(member, NotificationCode.MEMBER_TO_ARTIST);
     }
 
-    private void saveNotification(Member member){
+    private void saveNotification(Member member, NotificationCode notificationCode){
 
         Notification notification = Notification.builder()
                 .member(member)
-                .title("작가 등록 완료")
-                .message("아띠즈 공식 작가로 등록되었어요")
+                .title(notificationCode.getTitle())
+                .message(notificationCode.getMessage())
                 .build();
 
         notificationRepository.save(notification);
