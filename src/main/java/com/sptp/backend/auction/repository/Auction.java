@@ -26,4 +26,8 @@ public class Auction extends BaseEntity {
     private LocalDateTime endDate;
 
     private String status;
+
+    public void statusToProcessing() {
+        this.status = AuctionStatus.PROCESSING.getType();
+    }
 }
