@@ -115,9 +115,9 @@ public class ArtWorkService extends BaseEntity {
 
         Long topPrice = getTopPrice(artWork);
         Bidding bidding = biddingRepository.findByArtWorkAndMember(artWork, member)
-                .orElse(saveBidding(price, artWork, member));
+                .orElse(saveBidding(artWork, member));
 
-        bidding.validatePrice(topPrice);
+        bidding.raisePrice(topPrice, price);
     }
 
     private ArtWork getArtWork(Long artWorkId) {
@@ -141,11 +141,10 @@ public class ArtWorkService extends BaseEntity {
         return topPriceBiddingOptional.get().getPrice();
     }
 
-    private Bidding saveBidding(Long price, ArtWork artWork, Member member) {
+    private Bidding saveBidding(ArtWork artWork, Member member) {
         Bidding bidding = biddingRepository.save(Bidding.builder()
                 .artWork(artWork)
                 .member(member)
-                .price(price)
                 .build());
 
         bidding.validateAuctionPeriod();

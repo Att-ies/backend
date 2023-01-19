@@ -15,8 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static org.assertj.core.api.Assertions.assertThatNoException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 class BiddingTest {
 
@@ -93,13 +92,12 @@ class BiddingTest {
             bidding = Bidding.builder()
                     .artWork(artWork)
                     .member(Member.builder().build())
-                    .price(bid)
                     .build();
 
             //when
             //then
-            assertThatNoException().isThrownBy(() -> bidding.validatePrice(topPrice));
-
+            assertThatNoException().isThrownBy(() -> bidding.raisePrice(topPrice, bid));
+            assertThat(bidding.getPrice()).isEqualTo(bid);
         }
 
         @ParameterizedTest
@@ -115,7 +113,7 @@ class BiddingTest {
 
             //when
             //then
-            assertThatThrownBy(() -> bidding.validatePrice(topPrice))
+            assertThatThrownBy(() -> bidding.raisePrice(topPrice, bid))
                     .isInstanceOf(CustomException.class)
                     .message().isEqualTo(ErrorCode.NOT_VALID_BID.getDetail());
         }

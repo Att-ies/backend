@@ -40,13 +40,15 @@ public class Bidding extends BaseEntity {
         }
     }
 
-    public void validatePrice(Long topPrice) {
-        if (!isValidPrice(topPrice)) {
+    public void raisePrice(long topPrice, long price) {
+        if (!isValidPrice(topPrice, price)) {
             throw new CustomException(ErrorCode.NOT_VALID_BID);
         }
+
+        this.price = price;
     }
 
-    private boolean isValidPrice(Long topPrice) {
+    private boolean isValidPrice(Long topPrice, Long price) {
 
         long priceDifference = price - topPrice;
 
