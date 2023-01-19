@@ -1,5 +1,9 @@
 package com.sptp.backend.notification.service;
 
+import com.sptp.backend.common.exception.CustomException;
+import com.sptp.backend.common.exception.ErrorCode;
+import com.sptp.backend.member.repository.Member;
+import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.notification.repository.Notification;
 import com.sptp.backend.notification.repository.NotificationRepository;
 import com.sptp.backend.notification.web.dto.response.NotificationResponse;
@@ -17,6 +21,7 @@ import java.util.stream.Collectors;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
     public List<NotificationResponse> getNotificationList(Long loginMember){
@@ -24,9 +29,15 @@ public class NotificationService {
         List<Notification> findNotificationList = notificationRepository.findByMemberId(loginMember);
 
         List<NotificationResponse> notificationResponses =findNotificationList.stream()
-                .map(m -> new NotificationResponse(m.getTitle(), m.getMessage(), m.getLink(), m.getCreatedDate()))
+                .map(m -> new NotificationResponse(m.getId(), m.getTitle(), m.getMessage(), m.getLink(), m.getCreatedDate()))
                 .collect(Collectors.toList());
 
         return notificationResponses;
+    }
+
+    @Transactional
+    public void deleteNotification(Long notificationId) {
+
+        notificationRepository.deleteById(notificationId);
     }
 }
