@@ -24,4 +24,6 @@ public class Auction extends BaseEntity {
     private Integer turn;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+
+    private String status;
 }
