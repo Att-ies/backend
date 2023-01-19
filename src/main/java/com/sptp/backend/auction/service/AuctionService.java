@@ -8,6 +8,7 @@ import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class AuctionService {
 
     private final AuctionRepository auctionRepository;
 
+    @Transactional
     public void saveAuction(AuctionSaveRequestDto dto) {
 
         System.out.println("dto.getTurn() = " + dto.getTurn());
