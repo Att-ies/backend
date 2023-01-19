@@ -5,6 +5,7 @@ import com.sptp.backend.auction.repository.AuctionRepository;
 import com.sptp.backend.auction.repository.AuctionStatus;
 import com.sptp.backend.auction.web.dto.request.AuctionSaveRequestDto;
 import com.sptp.backend.auction.web.dto.request.AuctionStartRequestDto;
+import com.sptp.backend.auction.web.dto.request.AuctionTerminateRequestDto;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -46,5 +47,15 @@ public class AuctionService {
         });
 
         auction.statusToProcessing();
+    }
+
+    @Transactional
+    public void terminateAuction(AuctionTerminateRequestDto dto) {
+
+        Auction auction = auctionRepository.findByTurn(dto.getTurn()).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_AUCTION_TURN);
+        });
+
+        auction.statusToTerminate();
     }
 }

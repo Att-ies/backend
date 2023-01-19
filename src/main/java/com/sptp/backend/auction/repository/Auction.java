@@ -30,4 +30,8 @@ public class Auction extends BaseEntity {
     public void statusToProcessing() {
         this.status = AuctionStatus.PROCESSING.getType();
     }
+
+    public void statusToTerminate() {
+        this.status = AuctionStatus.TERMINATED.getType();
+    }
 }
