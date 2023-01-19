@@ -3,7 +3,10 @@ package com.sptp.backend.auction.repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.sptp.backend.auction.repository.QAuction.*;
 
 @RequiredArgsConstructor
 public class AuctionCustomRepositoryImpl implements AuctionCustomRepository{
@@ -13,10 +16,11 @@ public class AuctionCustomRepositoryImpl implements AuctionCustomRepository{
     @Override
     public List<Auction> findLatestScheduledAuction() {
         return queryFactory
-                .select(QAuction.auction)
-                .from(QAuction.auction)
-                .where(QAuction.auction.status.eq(AuctionStatus.SCHEDULED.getType()))
-                .orderBy(QAuction.auction.startDate.asc())
+                .select(auction)
+                .from(auction)
+                .where(auction.status.eq(AuctionStatus.SCHEDULED.getType())
+                        .and(auction.startDate.goe(LocalDateTime.now())))
+                .orderBy(auction.startDate.asc())
                 .fetch();
     }
 }
