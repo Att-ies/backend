@@ -1,5 +1,6 @@
 package com.sptp.backend.notification.service;
 
+import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.member.repository.Member;
@@ -21,7 +22,19 @@ import java.util.stream.Collectors;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final MemberRepository memberRepository;
+    @Transactional
+    public void saveNotification(Member member, NotificationCode notificationCode){
+
+        Notification notification = Notification.builder()
+                .member(member)
+                .title(notificationCode.getTitle())
+                .message(notificationCode.getMessage())
+                .details(notificationCode.getDetails())
+                .link(notificationCode.getLink())
+                .build();
+
+        notificationRepository.save(notification);
+    }
 
     @Transactional(readOnly = true)
     public List<NotificationResponse> getNotificationList(Long loginMember){

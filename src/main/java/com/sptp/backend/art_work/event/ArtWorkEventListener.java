@@ -21,7 +21,7 @@ public class ArtWorkEventListener {
 
         ArtWork artwork = artworkCreateEvent.getArtwork();
         NotificationCode notificationCode = artworkCreateEvent.getNotificationCode();
-        log.info(NotificationCode.addArtWorkTitle(artwork.getTitle(), notificationCode));
+        //log.info(NotificationCode.addArtWorkTitle(artwork.getTitle(), notificationCode));
 
 
     }
