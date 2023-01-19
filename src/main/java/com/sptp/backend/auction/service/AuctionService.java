@@ -1,5 +1,6 @@
 package com.sptp.backend.auction.service;
 
+import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.auction.repository.Auction;
 import com.sptp.backend.auction.repository.AuctionRepository;
 import com.sptp.backend.auction.repository.AuctionStatus;
@@ -12,11 +13,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AuctionService {
 
     private final AuctionRepository auctionRepository;
+    private final ArtWorkRepository artWorkRepository;
 
     @Transactional
     public void saveAuction(AuctionSaveRequestDto dto) {
@@ -43,6 +47,8 @@ public class AuctionService {
         });
 
         auction.statusToProcessing();
+
+        artWorkRepository.updateStatusToProcessing(auction.getId());
     }
 
     @Transactional
@@ -53,5 +59,7 @@ public class AuctionService {
         });
 
         auction.statusToTerminate();
+
+        artWorkRepository.updateStatusToTerminated(auction.getId());
     }
 }

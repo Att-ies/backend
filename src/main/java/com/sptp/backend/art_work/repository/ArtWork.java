@@ -1,6 +1,7 @@
 package com.sptp.backend.art_work.repository;
 
 import com.sptp.backend.auction.repository.Auction;
+import com.sptp.backend.auction.repository.AuctionStatus;
 import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
@@ -32,7 +33,7 @@ public class ArtWork extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Auction Auction;
+    private Auction auction;
 
     private String title;
 
@@ -60,4 +61,12 @@ public class ArtWork extends BaseEntity {
     private ArtWorkSize artWorkSize;
 
     private String saleStatus;
+
+    public void statusToProcessing() {
+        this.saleStatus= AuctionStatus.PROCESSING.getType();
+    }
+
+    public void statusToTerminate() {
+        this.saleStatus = AuctionStatus.TERMINATED.getType();
+    }
 }

@@ -76,7 +76,7 @@ public class ArtWorkService extends BaseEntity {
                 .frame(dto.isFrame())
                 .description(dto.getDescription())
                 .productionYear(dto.getProductionYear())
-                .Auction(latestScheduledAuction.get(0))
+                .auction(latestScheduledAuction.get(0))
                 .saleStatus(AuctionStatus.SCHEDULED.getType())
                 .build();
 
