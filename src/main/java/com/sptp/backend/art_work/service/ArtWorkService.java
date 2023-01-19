@@ -1,5 +1,6 @@
 package com.sptp.backend.art_work.service;
 
+import com.sptp.backend.art_work.event.ArtWorkCreateEvent;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.art_work.repository.ArtWorkSize;
@@ -13,12 +14,14 @@ import com.sptp.backend.art_work_keyword.repository.ArtWorkKeywordRepository;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.common.KeywordMap;
+import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +42,7 @@ public class ArtWorkService extends BaseEntity {
     private final MemberRepository memberRepository;
     private final AwsService awsService;
     private final FileService fileService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void saveArtWork(Long loginMemberId, ArtWorkSaveRequestDto dto) throws IOException {
@@ -75,6 +79,7 @@ public class ArtWorkService extends BaseEntity {
         awsService.uploadImage(dto.getImage()[0], mainImageUUID);
         saveArtImages(dto.getImage(), artWork);
         saveArtKeywords(dto.getKeywords(), artWork);
+        eventPublisher.publishEvent(new ArtWorkCreateEvent(findMember, artWork, NotificationCode.SAVE_ARTWORK));
     }
 
     public void saveArtImages(MultipartFile[] files, ArtWork artWork) throws IOException {
