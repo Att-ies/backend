@@ -441,7 +441,7 @@ public class MemberService {
         List<Member> findPreferredArtistList = memberPreferredArtistRepository.findPreferredArtist(loginMemberId);
 
         List<PreferredArtistResponse> preferredArtistResponse = findPreferredArtistList.stream()
-                .map(m -> new PreferredArtistResponse(m.getNickname(), m.getEducation(), processImage(m.getImage())))
+                .map(m -> new PreferredArtistResponse(m.getId(), m.getNickname(), m.getEducation(), processImage(m.getImage())))
                 .collect(Collectors.toList());
 
         return preferredArtistResponse;
@@ -616,7 +616,7 @@ public class MemberService {
         List<ArtWork> findCustomizedArtWorkList = memberRepository.findCustomizedArtWork(findMemberKeywordIdList, page, limit); // 콜렉터 취향과 일치하는 keywordId 개수에 따라 작품 나열해 반환
 
         List<CustomizedArtWorkResponse> customizedArtWorkResponse = findCustomizedArtWorkList.stream()
-                .map(m -> new CustomizedArtWorkResponse(m.getTitle(), m.getMember().getEducation(), processImage(m.getMainImage())))
+                .map(m -> new CustomizedArtWorkResponse(m.getId(), m.getTitle(), m.getMember().getEducation(), processImage(m.getMainImage())))
                 .collect(Collectors.toList());
 
         return customizedArtWorkResponse;
