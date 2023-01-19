@@ -29,6 +29,7 @@ public class Notification extends BaseEntity {
     private Member member;
 
     private String title;
-    private String link;
     private String message;
+    private String details;
+    private String link;
 }
