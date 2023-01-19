@@ -33,7 +33,7 @@ public class ArtWorkController {
     // 응찰하기
     @PutMapping("/{artWorkId}/bidding")
     public ResponseEntity<Void> bid(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                    @PathVariable Long artWorkId, @Valid ArtWorkBidRequest artWorkBidRequest){
+                                    @PathVariable Long artWorkId, @Valid @RequestBody ArtWorkBidRequest artWorkBidRequest){
 
         artWorkService.bid(userDetails.getMember().getId(), artWorkId, artWorkBidRequest.getPrice());
 
