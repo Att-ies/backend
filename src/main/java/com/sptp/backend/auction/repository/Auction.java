@@ -28,6 +28,7 @@ public class Auction extends BaseEntity {
     private LocalDateTime endDate;
 
     public boolean isValidPeriod(LocalDateTime currentTime) {
-        return currentTime.isAfter(startDate) && currentTime.isBefore(endDate);
+        return (currentTime.equals(startDate) || currentTime.isAfter(startDate))
+                && (currentTime.equals(endDate) || currentTime.isBefore(endDate));
     }
 }
