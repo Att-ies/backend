@@ -7,6 +7,7 @@ import com.sptp.backend.art_work.repository.ArtWorkSize;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkMyListResponseDto;
+import com.sptp.backend.art_work.web.dto.response.BiddingListResponse;
 import com.sptp.backend.art_work_image.repository.ArtWorkImage;
 import com.sptp.backend.art_work_image.repository.ArtWorkImageRepository;
 import com.sptp.backend.art_work_keyword.repository.ArtWorkKeyword;
@@ -33,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -47,10 +49,10 @@ public class ArtWorkService extends BaseEntity {
     private final MemberRepository memberRepository;
     private final AwsService awsService;
     private final FileService fileService;
-    
+
     private final BiddingRepository biddingRepository;
     private final ApplicationEventPublisher eventPublisher;
-   
+
     private final AuctionRepository auctionRepository;
 
     @Transactional
@@ -96,7 +98,7 @@ public class ArtWorkService extends BaseEntity {
         saveArtKeywords(dto.getKeywords(), artWork);
 
         eventPublisher.publishEvent(new ArtWorkEvent(findMember, artWork, NotificationCode.SAVE_ARTWORK));
-        
+
         return savedArtWork.getId();
     }
 
@@ -213,5 +215,20 @@ public class ArtWorkService extends BaseEntity {
                 .collect(Collectors.toList());
 
         return artWorkMyListResponseDto;
+    }
+
+    @Transactional(readOnly = true)
+    public BiddingListResponse getBiddingList(Long artWorkId) {
+
+        ArtWork artWork = getArtWorkOrThrow(artWorkId);
+        List<Bidding> biddingList = biddingRepository.findAllByArtWorkOrderByPriceDesc(artWork);
+
+        return BiddingListResponse.builder()
+                .artWork(BiddingListResponse.ArtWorkDto.of(artWork, getTopPrice(artWork)))
+                .auction(BiddingListResponse.AuctionDto.from(artWork.getAuction()))
+                .biddingList(biddingList.stream().map(BiddingListResponse.BiddingDto::from)
+                        .collect(Collectors.toList()))
+                .totalBiddingCount(biddingList.size())
+                .build();
     }
 }
