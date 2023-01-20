@@ -1,5 +1,6 @@
 package com.sptp.backend.art_work.service;
 
+import com.sptp.backend.art_work.event.ArtWorkEvent;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.art_work.repository.ArtWorkSize;
@@ -15,13 +16,17 @@ import com.sptp.backend.auction.repository.AuctionRepository;
 import com.sptp.backend.auction.repository.AuctionStatus;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
+import com.sptp.backend.bidding.repository.Bidding;
+import com.sptp.backend.bidding.repository.BiddingRepository;
 import com.sptp.backend.common.KeywordMap;
+import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +38,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ArtWorkService extends BaseEntity {
 
     private final ArtWorkRepository artWorkRepository;
@@ -41,6 +47,10 @@ public class ArtWorkService extends BaseEntity {
     private final MemberRepository memberRepository;
     private final AwsService awsService;
     private final FileService fileService;
+    
+    private final BiddingRepository biddingRepository;
+    private final ApplicationEventPublisher eventPublisher;
+   
     private final AuctionRepository auctionRepository;
 
     @Transactional
@@ -51,8 +61,7 @@ public class ArtWorkService extends BaseEntity {
             throw new CustomException(ErrorCode.NOT_FOUND_AUCTION_SCHEDULED);
         }
 
-        Member findMember = memberRepository.findById(loginMemberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Member findMember = getMemberOrThrow(loginMemberId);
 
         checkExistsImage(dto);
 
@@ -86,6 +95,8 @@ public class ArtWorkService extends BaseEntity {
         saveArtImages(dto.getImage(), artWork);
         saveArtKeywords(dto.getKeywords(), artWork);
 
+        eventPublisher.publishEvent(new ArtWorkEvent(findMember, artWork, NotificationCode.SAVE_ARTWORK));
+        
         return savedArtWork.getId();
     }
 
@@ -125,6 +136,50 @@ public class ArtWorkService extends BaseEntity {
         if (dto.getGuaranteeImage().isEmpty() || dto.getImage()[0].isEmpty()) {
             throw new CustomException(ErrorCode.SHOULD_EXIST_IMAGE);
         }
+    }
+
+    public void bid(Long loginMemberId, Long artWorkId, Long price) {
+
+        ArtWork artWork = getArtWorkOrThrow(artWorkId);
+        Member member = getMemberOrThrow(loginMemberId);
+
+        Long topPrice = getTopPrice(artWork);
+        Bidding bidding = biddingRepository.findByArtWorkAndMember(artWork, member)
+                .orElse(saveBidding(artWork, member));
+
+        bidding.raisePrice(topPrice, price);
+    }
+
+    private ArtWork getArtWorkOrThrow(Long artWorkId) {
+        return artWorkRepository.findById(artWorkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+    }
+
+    private Member getMemberOrThrow(Long loginMemberId) {
+        return memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+    }
+
+    private Long getTopPrice(ArtWork artWork) {
+
+        Optional<Bidding> topPriceBiddingOptional = biddingRepository.getFirstByArtWorkOrderByPriceDesc(artWork);
+
+        if (topPriceBiddingOptional.isEmpty()) {
+            return Long.valueOf(artWork.getPrice());
+        }
+
+        return topPriceBiddingOptional.get().getPrice();
+    }
+
+    private Bidding saveBidding(ArtWork artWork, Member member) {
+        Bidding bidding = biddingRepository.save(Bidding.builder()
+                .artWork(artWork)
+                .member(member)
+                .build());
+
+        bidding.validateAuctionPeriod();
+
+        return bidding;
     }
 
     @Transactional(readOnly = true)

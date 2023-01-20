@@ -1,6 +1,8 @@
 package com.sptp.backend.auction.repository;
 
 import com.sptp.backend.common.entity.BaseEntity;
+import com.sptp.backend.common.exception.CustomException;
+import com.sptp.backend.common.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,6 +27,7 @@ public class Auction extends BaseEntity {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 
+
     private String status;
 
     public void statusToProcessing() {
@@ -33,5 +36,11 @@ public class Auction extends BaseEntity {
 
     public void statusToTerminate() {
         this.status = AuctionStatus.TERMINATED.getType();
+    }
+
+    public boolean isValidPeriod(LocalDateTime currentTime) {
+        return (currentTime.equals(startDate) || currentTime.isAfter(startDate))
+                && (currentTime.equals(endDate) || currentTime.isBefore(endDate));
+
     }
 }
