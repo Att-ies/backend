@@ -12,6 +12,7 @@ import java.util.List;
 @SuperBuilder
 public class MemberResponse {
 
+    private Long id;
     private String nickname;
     private String userId;
     private String email;
