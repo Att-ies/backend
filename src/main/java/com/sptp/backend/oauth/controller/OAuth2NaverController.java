@@ -28,6 +28,7 @@ public class OAuth2NaverController {
         TokenResponseDto tokenResponseDto = TokenResponseDto.builder()
                 .accessToken(tokenDto.getAccessToken())
                 .refreshToken(tokenDto.getRefreshToken())
+                .roles(tokenDto.getGrantType())
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(tokenResponseDto);

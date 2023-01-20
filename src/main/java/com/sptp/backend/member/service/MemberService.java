@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.Collections;
 import java.util.UUID;
@@ -596,7 +597,7 @@ public class MemberService {
         List<MemberAsk> askList = memberAskRepository.findByMemberId(loginMemberId);
 
         List<MemberAskResponse> memberAskResponseList = askList.stream()
-                .map(m -> new MemberAskResponse(m.getId(), m.getTitle(), m.getContent(), m.getAnswer(), m.getStatus()))
+                .map(m -> new MemberAskResponse(m.getId(), m.getTitle(), m.getContent(), m.getAnswer(), m.getStatus(), m.getCreatedDate()))
                 .collect(Collectors.toList());
 
         return memberAskResponseList;
