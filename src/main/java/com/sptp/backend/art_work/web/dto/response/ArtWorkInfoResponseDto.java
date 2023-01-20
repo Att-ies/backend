@@ -25,12 +25,15 @@ public class ArtWorkInfoResponseDto {
     @Data
     @Builder
     public static class ArtistDto {
+
+        private Long id;
         private String artistEducation;
         private String artistName;
         private String artistImage;
 
         public static ArtistDto from(Member member) {
             return ArtistDto.builder()
+                    .id(member.getId())
                     .artistName(member.getNickname())
                     .artistEducation(member.getEducation())
                     .artistImage(member.getImage())
@@ -43,6 +46,7 @@ public class ArtWorkInfoResponseDto {
     @Builder
     public static class ArtWorkDto {
 
+        private Long id;
         private String title;
         private Integer productionYear;
         private String material;
@@ -57,6 +61,7 @@ public class ArtWorkInfoResponseDto {
 
         public static ArtWorkDto from(ArtWork artWork, List<ArtWorkImage> artWorkImages, List<ArtWorkKeyword> artWorkKeywords) {
             return ArtWorkDto.builder()
+                    .id(artWork.getId())
                     .title(artWork.getTitle())
                     .productionYear(artWork.getProductionYear())
                     .material(artWork.getMaterial())

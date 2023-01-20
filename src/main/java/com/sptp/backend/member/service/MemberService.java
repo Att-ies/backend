@@ -338,6 +338,7 @@ public class MemberService {
 
         if(Objects.equals(findMember.getRoles().get(0), "ROLE_ARTIST")) {
             MemberResponse artistResponse = ArtistResponse.builder()
+                    .id(findMember.getId())
                     .nickname(findMember.getNickname())
                     .userId(findMember.getUserId())
                     .email(findMember.getEmail())
@@ -355,6 +356,7 @@ public class MemberService {
         }
 
         MemberResponse memberResponse = MemberResponse.builder()
+                .id(findMember.getId())
                 .nickname(findMember.getNickname())
                 .userId(findMember.getUserId())
                 .email(findMember.getEmail())

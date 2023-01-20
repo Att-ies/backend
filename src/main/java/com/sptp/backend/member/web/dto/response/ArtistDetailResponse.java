@@ -17,6 +17,8 @@ public class ArtistDetailResponse {
     @Data
     @Builder
     public static class MemberDto {
+
+        private Long id;
         private String nickname;
         private String image;
         private String education;
@@ -26,7 +28,9 @@ public class ArtistDetailResponse {
         private String behance;
 
         public static MemberDto from(Member member) {
+
             return MemberDto.builder()
+                    .id(member.getId())
                     .nickname(member.getNickname())
                     .image(member.getImage())
                     .education(member.getEducation())
@@ -41,17 +45,18 @@ public class ArtistDetailResponse {
     @Data
     @Builder
     public static class ArtWorkDto {
+
+        private Long id;
         private String title;
         private String image;
         // 경매 상태 추후 구현 예정
 
         public static ArtWorkDto from(ArtWork artwork) {
             return ArtWorkDto.builder()
+                    .id(artwork.getId())
                     .title(artwork.getTitle())
                     .image(artwork.getMainImage())
                     .build();
         }
     }
-
-
 }
