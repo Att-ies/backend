@@ -9,10 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberUpdateRequest {
+public class MemberUpdateKeywordsRequestDto {
 
-    private String nickname;
-    private String email;
-    private String address;
-    private Boolean isChanged;
+    private List<String> keywords;
 }
