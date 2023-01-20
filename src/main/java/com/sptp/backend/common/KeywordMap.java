@@ -7,12 +7,22 @@ import java.util.*;
 
 public class KeywordMap {
 
-    public static void checkExistsKeyword(String key) {
-        if (!KeywordMap.map.containsKey(key)) {
-            throw new CustomException(ErrorCode.NOT_FOUND_KEYWORD);
+    public static final HashMap<String, Integer> map = new HashMap<>();
+
+    private static final String[] keywordNames = {null,
+            "유화", "심플한", "세련된", "모던한", "화려한",
+            "변화의", "비판적인", "젊은", "자유로운", "다양한",
+            "개성적인","소박한", "율동적인", "편안한", "포근한",
+            "자연적인","강한", "다이나믹한", "차가운", "새로운",
+            "소박한", "안정된", "고급수러운", "수수한", "탁한",
+            "우울한", "여유있는", "우아한", "단순한", "선명한",
+            "투명한", "단순한"};
+
+    static {
+        for (int keywordId = 1; keywordId <= keywordNames.length; keywordId++) {
+            map.put(keywordNames[keywordId], keywordId);
         }
     }
-
     public static String getKeywordName(Integer keywordId) {
         if (keywordId <= 0 || keywordId >= keywordNames.length) {
             return "";
@@ -21,19 +31,9 @@ public class KeywordMap {
         return keywordNames[keywordId];
     }
 
-    public static final HashMap<String, Integer> map = new HashMap<>();
-    private static final String[] keywordNames = {null,
-            "유화", "심플한", "세련된", "모던한", "화려한",
-            "변화의", "비판적인", "젊은", "자유로운", "다양한",
-            "개성적인","소박한", "율동적인", "편안한", "포근한",
-            "자연적인","강한", "다이나믹한", "차가운", "새로운",
-            "소박한", "안정된", "고급수러운", "수수한", "탁한",
-            "우울한", "여유있는", "우아한", "단순한", "선명한",
-            "투명한", "단순한",};
-
-    static {
-        for (int keywordId = 1; keywordId <= keywordNames.length; keywordId++) {
-            map.put(keywordNames[keywordId], keywordId);
+    public static void checkExistsKeyword(String key) {
+        if (!KeywordMap.map.containsKey(key)) {
+            throw new CustomException(ErrorCode.NOT_FOUND_KEYWORD);
         }
     }
 }
