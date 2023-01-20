@@ -11,6 +11,9 @@ import com.sptp.backend.art_work_image.repository.ArtWorkImage;
 import com.sptp.backend.art_work_image.repository.ArtWorkImageRepository;
 import com.sptp.backend.art_work_keyword.repository.ArtWorkKeyword;
 import com.sptp.backend.art_work_keyword.repository.ArtWorkKeywordRepository;
+import com.sptp.backend.auction.repository.Auction;
+import com.sptp.backend.auction.repository.AuctionRepository;
+import com.sptp.backend.auction.repository.AuctionStatus;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.bidding.repository.Bidding;
@@ -30,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -45,10 +47,19 @@ public class ArtWorkService extends BaseEntity {
     private final MemberRepository memberRepository;
     private final AwsService awsService;
     private final FileService fileService;
+    
     private final BiddingRepository biddingRepository;
     private final ApplicationEventPublisher eventPublisher;
+   
+    private final AuctionRepository auctionRepository;
 
-    public void saveArtWork(Long loginMemberId, ArtWorkSaveRequestDto dto) throws IOException {
+    @Transactional
+    public Long saveArtWork(Long loginMemberId, ArtWorkSaveRequestDto dto) throws IOException {
+
+        List<Auction> latestScheduledAuction = auctionRepository.findLatestScheduledAuction();
+        if (latestScheduledAuction.size() == 0) {
+            throw new CustomException(ErrorCode.NOT_FOUND_AUCTION_SCHEDULED);
+        }
 
         Member findMember = getMemberOrThrow(loginMemberId);
 
@@ -74,14 +85,19 @@ public class ArtWorkService extends BaseEntity {
                 .frame(dto.isFrame())
                 .description(dto.getDescription())
                 .productionYear(dto.getProductionYear())
+                .auction(latestScheduledAuction.get(0))
+                .saleStatus(AuctionStatus.SCHEDULED.getType())
                 .build();
 
-        artWorkRepository.save(artWork);
+        ArtWork savedArtWork = artWorkRepository.save(artWork);
         awsService.uploadImage(dto.getGuaranteeImage(), GuaranteeImageUUID);
         awsService.uploadImage(dto.getImage()[0], mainImageUUID);
         saveArtImages(dto.getImage(), artWork);
         saveArtKeywords(dto.getKeywords(), artWork);
+
         eventPublisher.publishEvent(new ArtWorkEvent(findMember, artWork, NotificationCode.SAVE_ARTWORK));
+        
+        return savedArtWork.getId();
     }
 
     public void saveArtImages(MultipartFile[] files, ArtWork artWork) throws IOException {
@@ -193,7 +209,7 @@ public class ArtWorkService extends BaseEntity {
         List<ArtWork> findArtWorkList = artWorkRepository.findByMemberId(findMember.getId());
 
         List<ArtWorkMyListResponseDto> artWorkMyListResponseDto = findArtWorkList.stream()
-                .map(m -> new ArtWorkMyListResponseDto(m.getId(), m.getTitle(), findMember.getNickname()))
+                .map(m -> new ArtWorkMyListResponseDto(m.getId(), m.getTitle(), findMember.getNickname(), m.getSaleStatus(), null, m.getAuction().getTurn(), m.getMainImage()))
                 .collect(Collectors.toList());
 
         return artWorkMyListResponseDto;

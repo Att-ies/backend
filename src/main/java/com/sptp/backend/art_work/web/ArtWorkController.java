@@ -29,12 +29,14 @@ public class ArtWorkController {
 
     // 작품 등록
     @PostMapping
-    public ResponseEntity<Void> saveArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<ArtWorkInfoResponseDto> saveArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                              ArtWorkSaveRequestDto artWorkSaveRequestDto) throws IOException {
 
-        artWorkService.saveArtWork(userDetails.getMember().getId(), artWorkSaveRequestDto);
+        Long savedArtWorkId = artWorkService.saveArtWork(userDetails.getMember().getId(), artWorkSaveRequestDto);
 
-        return new ResponseEntity(HttpStatus.OK);
+        ArtWorkInfoResponseDto artWorkInfoResponseDto = artWorkService.getArtWork(savedArtWorkId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(artWorkInfoResponseDto);
     }
 
     // 응찰하기
@@ -48,7 +50,7 @@ public class ArtWorkController {
     }
 
     // 작품 상세 조회
-    @GetMapping("/art-works/{artWorkId}")
+    @GetMapping("/{artWorkId}")
     public ResponseEntity<ArtWorkInfoResponseDto> getArtWork(@PathVariable("artWorkId") Long artWorkId) {
 
         ArtWorkInfoResponseDto artWorkInfoResponseDto = artWorkService.getArtWork(artWorkId);
@@ -57,7 +59,7 @@ public class ArtWorkController {
     }
 
     // 내 등록 작품 조회
-    @GetMapping("/art-works/me")
+    @GetMapping("/me")
     public ResponseEntity<List<ArtWorkMyListResponseDto>> getMyArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
         List<ArtWorkMyListResponseDto> artWorkMyListResponseDto = artWorkService.getMyArtWorkList(userDetails.getMember().getId());

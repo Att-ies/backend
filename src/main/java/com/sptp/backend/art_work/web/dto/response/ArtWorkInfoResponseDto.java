@@ -48,10 +48,6 @@ public class ArtWorkInfoResponseDto {
         private String material;
         private String genre;
         private boolean frame;
-//        private Integer width;
-//        private Integer length;
-//        private Integer height;
-//        private Integer size;
         private String description;
         private ArtWorkSize artWorkSize;
         private String guaranteeImage;
@@ -69,6 +65,7 @@ public class ArtWorkInfoResponseDto {
                     .artWorkSize(artWork.getArtWorkSize())
                     .guaranteeImage(artWork.getGuaranteeImage())
                     .mainImage(artWork.getMainImage())
+                    .description(artWork.getDescription())
                     .images(artWorkImages.stream().map(m -> m.getImage()).collect(Collectors.toList()))
                     .keywords(artWorkKeywords.stream().map(m-> KeywordMap.getKeywordName(m.getKeywordId())).collect(Collectors.toList()))
                     .build();

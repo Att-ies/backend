@@ -2,5 +2,11 @@ package com.sptp.backend.auction.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AuctionRepository extends JpaRepository<Auction, Long> {
+import java.util.Optional;
+
+public interface AuctionRepository extends JpaRepository<Auction, Long>, AuctionCustomRepository {
+
+    boolean existsByTurn(Integer turn);
+
+    Optional<Auction> findByTurn(Integer turn);
 }
