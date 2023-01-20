@@ -595,7 +595,7 @@ public class MemberService {
         List<MemberAsk> askList = memberAskRepository.findByMemberId(loginMemberId);
 
         List<MemberAskResponse> memberAskResponseList = askList.stream()
-                .map(m -> new MemberAskResponse(m.getId(), m.getTitle(), m.getContent(), m.getAnswer(), m.getStatus(), m.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))))
+                .map(m -> new MemberAskResponse(m.getId(), m.getTitle(), m.getContent(), m.getAnswer(), m.getStatus(), m.getCreatedDate()))
                 .collect(Collectors.toList());
 
         return memberAskResponseList;

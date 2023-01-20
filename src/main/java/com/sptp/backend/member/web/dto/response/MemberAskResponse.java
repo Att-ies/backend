@@ -1,6 +1,9 @@
 package com.sptp.backend.member.web.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -14,5 +17,7 @@ public class MemberAskResponse {
     private String content;
     private String answer;
     private String status;
-    private String date;
+
+    @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
+    private LocalDateTime date;
 }
