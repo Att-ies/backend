@@ -13,6 +13,8 @@ import com.sptp.backend.art_work_keyword.repository.ArtWorkKeyword;
 import com.sptp.backend.art_work_keyword.repository.ArtWorkKeywordRepository;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
+import com.sptp.backend.bidding.repository.Bidding;
+import com.sptp.backend.bidding.repository.BiddingRepository;
 import com.sptp.backend.common.KeywordMap;
 import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.common.entity.BaseEntity;
@@ -28,11 +30,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ArtWorkService extends BaseEntity {
 
     private final ArtWorkRepository artWorkRepository;
@@ -41,13 +45,12 @@ public class ArtWorkService extends BaseEntity {
     private final MemberRepository memberRepository;
     private final AwsService awsService;
     private final FileService fileService;
+    private final BiddingRepository biddingRepository;
     private final ApplicationEventPublisher eventPublisher;
 
-    @Transactional
     public void saveArtWork(Long loginMemberId, ArtWorkSaveRequestDto dto) throws IOException {
 
-        Member findMember = memberRepository.findById(loginMemberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+        Member findMember = getMemberOrThrow(loginMemberId);
 
         checkExistsImage(dto);
 
@@ -117,6 +120,50 @@ public class ArtWorkService extends BaseEntity {
         if (dto.getGuaranteeImage().isEmpty() || dto.getImage()[0].isEmpty()) {
             throw new CustomException(ErrorCode.SHOULD_EXIST_IMAGE);
         }
+    }
+
+    public void bid(Long loginMemberId, Long artWorkId, Long price) {
+
+        ArtWork artWork = getArtWorkOrThrow(artWorkId);
+        Member member = getMemberOrThrow(loginMemberId);
+
+        Long topPrice = getTopPrice(artWork);
+        Bidding bidding = biddingRepository.findByArtWorkAndMember(artWork, member)
+                .orElse(saveBidding(artWork, member));
+
+        bidding.raisePrice(topPrice, price);
+    }
+
+    private ArtWork getArtWorkOrThrow(Long artWorkId) {
+        return artWorkRepository.findById(artWorkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+    }
+
+    private Member getMemberOrThrow(Long loginMemberId) {
+        return memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+    }
+
+    private Long getTopPrice(ArtWork artWork) {
+
+        Optional<Bidding> topPriceBiddingOptional = biddingRepository.getFirstByArtWorkOrderByPriceDesc(artWork);
+
+        if (topPriceBiddingOptional.isEmpty()) {
+            return Long.valueOf(artWork.getPrice());
+        }
+
+        return topPriceBiddingOptional.get().getPrice();
+    }
+
+    private Bidding saveBidding(ArtWork artWork, Member member) {
+        Bidding bidding = biddingRepository.save(Bidding.builder()
+                .artWork(artWork)
+                .member(member)
+                .build());
+
+        bidding.validateAuctionPeriod();
+
+        return bidding;
     }
 
     @Transactional(readOnly = true)

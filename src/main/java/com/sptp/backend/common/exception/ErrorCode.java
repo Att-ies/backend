@@ -40,7 +40,11 @@ public enum ErrorCode {
     //작품 예외
     SHOULD_EXIST_IMAGE(HttpStatus.BAD_REQUEST, "이미지가 존재하지 않습니다."),
     EXIST_USER_PREFERRED_ARTWORK(HttpStatus.CONFLICT, "이미 찜한 작품입니다."),
-    NOT_FOUND_ARTWORK(HttpStatus.NOT_FOUND, "해당 작품을 찾을 수 없습니다.");
+    NOT_FOUND_ARTWORK(HttpStatus.NOT_FOUND, "해당 작품을 찾을 수 없습니다."),
+
+    //경매 예외
+    NOT_VALID_AUCTION_PERIOD(HttpStatus.BAD_REQUEST, "경매 기간이 아닙니다."),
+    NOT_VALID_BID(HttpStatus.BAD_REQUEST, "유효한 입찰가가 아닙니다. 호가 단위를 확인해주세요.");
 
     private final HttpStatus httpStatus;
     private final String detail;
