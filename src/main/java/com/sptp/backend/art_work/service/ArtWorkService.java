@@ -1,8 +1,12 @@
 package com.sptp.backend.art_work.service;
 
+import com.sptp.backend.art_work.event.ArtWorkEvent;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
+import com.sptp.backend.art_work.repository.ArtWorkSize;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
+import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
+import com.sptp.backend.art_work.web.dto.response.ArtWorkMyListResponseDto;
 import com.sptp.backend.art_work_image.repository.ArtWorkImage;
 import com.sptp.backend.art_work_image.repository.ArtWorkImageRepository;
 import com.sptp.backend.art_work_keyword.repository.ArtWorkKeyword;
@@ -12,19 +16,23 @@ import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.bidding.repository.Bidding;
 import com.sptp.backend.bidding.repository.BiddingRepository;
 import com.sptp.backend.common.KeywordMap;
+import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,10 +46,11 @@ public class ArtWorkService extends BaseEntity {
     private final AwsService awsService;
     private final FileService fileService;
     private final BiddingRepository biddingRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void saveArtWork(Long loginMemberId, ArtWorkSaveRequestDto dto) throws IOException {
 
-        Member findMember = getMember(loginMemberId);
+        Member findMember = getMemberOrThrow(loginMemberId);
 
         checkExistsImage(dto);
 
@@ -55,12 +64,16 @@ public class ArtWorkService extends BaseEntity {
                 .member(findMember)
                 .title(dto.getTitle())
                 .material(dto.getMaterial())
-                .size(dto.getSize())
                 .price(dto.getPrice())
                 .status(dto.getStatus())
                 .statusDescription(dto.getStatusDescription())
                 .guaranteeImage(GuaranteeImageUUID + "." + GuaranteeImageEXT)
                 .mainImage(mainImageUUID + "." + mainImageEXT)
+                .genre(dto.getGenre())
+                .artWorkSize(ArtWorkSize.builder().size(dto.getSize()).length(dto.getLength()).width(dto.getWidth()).height(dto.getHeight()).build())
+                .frame(dto.isFrame())
+                .description(dto.getDescription())
+                .productionYear(dto.getProductionYear())
                 .build();
 
         artWorkRepository.save(artWork);
@@ -68,6 +81,7 @@ public class ArtWorkService extends BaseEntity {
         awsService.uploadImage(dto.getImage()[0], mainImageUUID);
         saveArtImages(dto.getImage(), artWork);
         saveArtKeywords(dto.getKeywords(), artWork);
+        eventPublisher.publishEvent(new ArtWorkEvent(findMember, artWork, NotificationCode.SAVE_ARTWORK));
     }
 
     public void saveArtImages(MultipartFile[] files, ArtWork artWork) throws IOException {
@@ -110,8 +124,8 @@ public class ArtWorkService extends BaseEntity {
 
     public void bid(Long loginMemberId, Long artWorkId, Long price) {
 
-        ArtWork artWork = getArtWork(artWorkId);
-        Member member = getMember(loginMemberId);
+        ArtWork artWork = getArtWorkOrThrow(artWorkId);
+        Member member = getMemberOrThrow(loginMemberId);
 
         Long topPrice = getTopPrice(artWork);
         Bidding bidding = biddingRepository.findByArtWorkAndMember(artWork, member)
@@ -120,12 +134,12 @@ public class ArtWorkService extends BaseEntity {
         bidding.raisePrice(topPrice, price);
     }
 
-    private ArtWork getArtWork(Long artWorkId) {
+    private ArtWork getArtWorkOrThrow(Long artWorkId) {
         return artWorkRepository.findById(artWorkId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
     }
 
-    private Member getMember(Long loginMemberId) {
+    private Member getMemberOrThrow(Long loginMemberId) {
         return memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
     }
@@ -152,4 +166,36 @@ public class ArtWorkService extends BaseEntity {
         return bidding;
     }
 
+    @Transactional(readOnly = true)
+    public ArtWorkInfoResponseDto getArtWork(Long artWorkId) {
+
+        ArtWork findArtWork = artWorkRepository.findById(artWorkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+
+        Member findArtist = memberRepository.findById(findArtWork.getMember().getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
+
+        List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorkId(artWorkId);
+        List<ArtWorkKeyword> artWorkKeywords = artWorkKeywordRepository.findByArtWorkId(artWorkId);
+
+        return ArtWorkInfoResponseDto.builder()
+                .artist(ArtWorkInfoResponseDto.ArtistDto.from(findArtist))
+                .artWork(ArtWorkInfoResponseDto.ArtWorkDto.from(findArtWork, artWorkImages, artWorkKeywords))
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ArtWorkMyListResponseDto> getMyArtWorkList(Long loginMemberId) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        List<ArtWork> findArtWorkList = artWorkRepository.findByMemberId(findMember.getId());
+
+        List<ArtWorkMyListResponseDto> artWorkMyListResponseDto = findArtWorkList.stream()
+                .map(m -> new ArtWorkMyListResponseDto(m.getId(), m.getTitle(), findMember.getNickname()))
+                .collect(Collectors.toList());
+
+        return artWorkMyListResponseDto;
+    }
 }

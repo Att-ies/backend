@@ -6,5 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ArtWorkRepository extends JpaRepository<ArtWork, Long> {
+
+    List<ArtWork> findByMemberId(Long memberId);
     List<ArtWork> findArtWorkByMember(Member member);
 }

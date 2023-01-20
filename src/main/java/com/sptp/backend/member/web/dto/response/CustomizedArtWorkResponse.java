@@ -9,6 +9,7 @@ import lombok.*;
 @Builder
 public class CustomizedArtWorkResponse {
 
+    private Long id;
     private String title;
     private String education;
     private String image;
