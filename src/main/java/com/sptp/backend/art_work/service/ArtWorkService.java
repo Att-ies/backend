@@ -4,6 +4,7 @@ import com.sptp.backend.art_work.event.ArtWorkEvent;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.art_work.repository.ArtWorkSize;
+import com.sptp.backend.art_work.repository.ArtWorkStatus;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkMyListResponseDto;
@@ -87,7 +88,7 @@ public class ArtWorkService extends BaseEntity {
                 .description(dto.getDescription())
                 .productionYear(dto.getProductionYear())
                 .auction(latestScheduledAuction.get(0))
-                .saleStatus(AuctionStatus.SCHEDULED.getType())
+                .saleStatus(ArtWorkStatus.REGISTERED.getType())
                 .build();
 
         ArtWork savedArtWork = artWorkRepository.save(artWork);
