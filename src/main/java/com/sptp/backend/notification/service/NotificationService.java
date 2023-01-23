@@ -23,7 +23,7 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<NotificationResponse> getNotificationList(Long loginMember){
 
         List<Notification> findNotificationList = notificationRepository.findByMemberId(loginMember);
@@ -32,7 +32,13 @@ public class NotificationService {
                 .map(m -> new NotificationResponse(m.getId(), m.getTitle(), m.getMessage(), m.getLink(), m.getCreatedDate()))
                 .collect(Collectors.toList());
 
+        markAsRead(findNotificationList);
+
         return notificationResponses;
+    }
+
+    private void markAsRead(List<Notification> notifications) {
+        notifications.forEach(Notification::read);
     }
 
     @Transactional

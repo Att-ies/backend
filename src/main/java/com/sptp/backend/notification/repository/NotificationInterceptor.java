@@ -24,8 +24,8 @@ public class NotificationInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (modelAndView != null && !isRedirectView(modelAndView) // 리다렉트 아님 && 인증정보 존재 && User
-                && authentication != null && isTypeOfMember(authentication)) { // Member 타입일 때
+        if (modelAndView != null && !isRedirectView(modelAndView) // 리다렉트 아님 && 인증정보 존재 && UserDetails 타입일 때
+                && authentication != null && isTypeOfMember(authentication)) {
             Member member = ((CustomUserDetails) authentication.getPrincipal()).getMember(); // Member 정보 획득
             long count = notificationRepository.countByMemberAndChecked(member, false); // 알림 정보 조회
             modelAndView.addObject("hasNotification", count > 0); // Model로 전달
