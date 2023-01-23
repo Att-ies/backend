@@ -1,5 +1,6 @@
 package com.sptp.backend.auction.service;
 
+import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.auction.repository.Auction;
 import com.sptp.backend.auction.repository.AuctionRepository;
@@ -7,6 +8,7 @@ import com.sptp.backend.auction.repository.AuctionStatus;
 import com.sptp.backend.auction.web.dto.request.AuctionSaveRequestDto;
 import com.sptp.backend.auction.web.dto.request.AuctionStartRequestDto;
 import com.sptp.backend.auction.web.dto.request.AuctionTerminateRequestDto;
+import com.sptp.backend.bidding.repository.BiddingRepository;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class AuctionService {
 
     private final AuctionRepository auctionRepository;
     private final ArtWorkRepository artWorkRepository;
+    private final BiddingRepository biddingRepository;
 
     @Transactional
     public void saveAuction(AuctionSaveRequestDto dto) {
@@ -58,8 +61,23 @@ public class AuctionService {
             throw new CustomException(ErrorCode.NOT_FOUND_AUCTION_TURN);
         });
 
+        List<ArtWork> artWorks = artWorkRepository.findByAuctionId(auction.getId());
+
         auction.statusToTerminate();
 
-        artWorkRepository.updateStatusToTerminated(auction.getId());
+        updateStatusToTerminated(artWorks);
+    }
+
+    private void updateStatusToTerminated(List<ArtWork> artWorks) {
+
+        System.out.println("artWorks.size() = " + artWorks.size());
+
+        for (ArtWork artWork : artWorks) {
+            if (biddingRepository.existsByArtWorkId(artWork.getId())) {
+                artWork.statusToSalesSuccess();
+            }else {
+                artWork.statusToSalesFailed();
+            }
+        }
     }
 }

@@ -63,10 +63,14 @@ public class ArtWork extends BaseEntity {
     private String saleStatus;
 
     public void statusToProcessing() {
-        this.saleStatus= AuctionStatus.PROCESSING.getType();
+        this.saleStatus= ArtWorkStatus.PROCESSING.getType();
     }
 
-    public void statusToTerminate() {
-        this.saleStatus = AuctionStatus.TERMINATED.getType();
+    public void statusToSalesSuccess() {
+        this.saleStatus = ArtWorkStatus.SALES_SUCCESS.getType();
+    }
+
+    public void statusToSalesFailed() {
+        this.saleStatus = ArtWorkStatus.SALES_FAILED.getType();
     }
 }
