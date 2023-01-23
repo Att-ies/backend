@@ -32,4 +32,5 @@ public class Notification extends BaseEntity {
     private String message;
     private String details;
     private String link;
+    private Boolean checked;
 }
