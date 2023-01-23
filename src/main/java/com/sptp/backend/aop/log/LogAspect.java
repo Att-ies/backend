@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LogAspect {
 
-    @Around("execution(* *..*Controller.*(..))")
+    @Around("execution(* *..*Controller.*(..))" + "&& !@annotation(com.sptp.backend.aop.annotation.NoLogging)")
     public Object logging(ProceedingJoinPoint joinPoint) throws Throwable {
         log.info("==================");
         log.info("[log] Controller={}, Method={}", joinPoint.getSignature().getDeclaringType().getName(), joinPoint.getSignature().getName());
