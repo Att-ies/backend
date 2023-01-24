@@ -7,6 +7,7 @@ import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.notification.repository.Notification;
 import com.sptp.backend.notification.repository.NotificationRepository;
+import com.sptp.backend.notification.web.dto.response.NotificationNewResponse;
 import com.sptp.backend.notification.web.dto.response.NotificationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,5 +46,13 @@ public class NotificationService {
     public void deleteNotification(Long notificationId) {
 
         notificationRepository.deleteById(notificationId);
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean getNotificationNew(Member member) {
+
+        long count = notificationRepository.countByMemberAndChecked(member, false);
+
+        return (count > 0);
     }
 }

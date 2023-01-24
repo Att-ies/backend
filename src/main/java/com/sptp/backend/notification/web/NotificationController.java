@@ -2,6 +2,7 @@ package com.sptp.backend.notification.web;
 
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import com.sptp.backend.notification.service.NotificationService;
+import com.sptp.backend.notification.web.dto.response.NotificationNewResponse;
 import com.sptp.backend.notification.web.dto.response.NotificationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,19 @@ public class NotificationController {
         notificationService.deleteNotification(notificationId);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 새로운 알림 유무 조회
+    @GetMapping("/notifications/new")
+    public ResponseEntity<NotificationNewResponse> getNotificationNew(@AuthenticationPrincipal CustomUserDetails userDetails){
+
+        Boolean checked = notificationService.getNotificationNew(userDetails.getMember());
+
+        NotificationNewResponse notificationNewResponse = NotificationNewResponse.builder()
+                .newNotification(checked)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(notificationNewResponse);
     }
 
 }
