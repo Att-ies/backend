@@ -39,7 +39,7 @@ public class ArtWorkEventListener {
                 .title(notificationCode.getTitle())
                 .message(artWork.getTitle() + notificationCode.getMessage())
                 .details(notificationCode.getDetails())
-                .link(notificationCode.getLink())
+                .data(notificationCode.getData())
                 .build();
 
         notificationRepository.save(notification);

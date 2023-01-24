@@ -29,7 +29,7 @@ public class NotificationService {
         List<Notification> findNotificationList = notificationRepository.findByMemberId(loginMember);
 
         List<NotificationResponse> notificationResponses = findNotificationList.stream()
-                .map(m -> new NotificationResponse(m.getId(), m.getTitle(), m.getMessage(), m.getLink(), m.getCreatedDate()))
+                .map(m -> new NotificationResponse(m.getId(), m.getTitle(), m.getMessage(), m.getData(), m.getCreatedDate()))
                 .collect(Collectors.toList());
 
         return notificationResponses;

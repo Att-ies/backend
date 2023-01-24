@@ -50,12 +50,12 @@ public enum NotificationCode {
     CHATTING("채팅",
             "건의 읽지 않은 채팅이 있습니다.",
             "클릭 시, 채팅 목록 페이지 이동",
-            "/chat-rooms");
+            null);
 
     private final String title;
     private final String message;
     private final String details;
-    private final String link;
+    private final String data;
 }
 
 
