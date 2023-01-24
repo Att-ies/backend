@@ -21,7 +21,7 @@ public class ArtWorkEventListener {
 
     private final NotificationRepository notificationRepository;
 
-    // 작품 등록 완료 알림, 경매 등록 알림, 전시회 등록 알림, 낙찰 알림
+    // 작품 등록 완료, 경매 등록 알림, 전시회 등록 알림, 작품 낙찰 성공
     @EventListener
     public void handleArtWorkEvent(ArtWorkEvent artWorkEvent){
 
