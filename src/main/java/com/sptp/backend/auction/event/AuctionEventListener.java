@@ -36,11 +36,9 @@ public class AuctionEventListener {
 
         Iterable<ArtWork> artWorks = artWorkRepository.findByAuctionId(auction.getId());
         for(ArtWork artWork : artWorks) {
-            if(notificationCode.equals(NotificationCode.SAVE_AUCTION) || notificationCode.equals(NotificationCode.SAVE_DISPLAY)) {
-                sendToSeller(artWork.getMember(), artWork, notificationCode);
-            }
+            sendToSeller(artWork.getMember(), artWork, notificationCode);
+
             if(notificationCode.equals(NotificationCode.SUCCESSFUL_BID)) {
-                sendToSeller(artWork.getMember(), artWork, notificationCode);
                 sendToBuyer(artWork, notificationCode);
             }
             if(notificationCode.equals(NotificationCode.FAILED_BID)) {
