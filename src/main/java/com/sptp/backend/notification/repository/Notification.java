@@ -31,5 +31,5 @@ public class Notification extends BaseEntity {
     private String title;
     private String message;
     private String details;
-    private String data;
+    private Long data;
 }

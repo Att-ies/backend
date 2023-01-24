@@ -37,7 +37,7 @@ public class MemberEventListener {
                 .title(notificationCode.getTitle())
                 .message(notificationCode.getMessage())
                 .details(notificationCode.getDetails())
-                .data(notificationCode.getData())
+                .data(null)
                 .build();
 
         notificationRepository.save(notification);

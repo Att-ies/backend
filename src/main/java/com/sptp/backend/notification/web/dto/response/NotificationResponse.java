@@ -14,6 +14,6 @@ public class NotificationResponse {
     private Long id;
     private String title;
     private String message;
-    private String data;
+    private Long data;
     private LocalDateTime createdDate;
 }
