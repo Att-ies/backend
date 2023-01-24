@@ -1,15 +1,19 @@
 package com.sptp.backend.auction.service;
 
+import com.sptp.backend.art_work.event.ArtWorkEvent;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
+import com.sptp.backend.auction.event.AuctionEvent;
 import com.sptp.backend.auction.repository.Auction;
 import com.sptp.backend.auction.repository.AuctionRepository;
 import com.sptp.backend.auction.repository.AuctionStatus;
 import com.sptp.backend.auction.web.dto.request.AuctionSaveRequestDto;
 import com.sptp.backend.auction.web.dto.request.AuctionStartRequestDto;
 import com.sptp.backend.auction.web.dto.request.AuctionTerminateRequestDto;
+import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +25,7 @@ public class AuctionService {
 
     private final AuctionRepository auctionRepository;
     private final ArtWorkRepository artWorkRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void saveAuction(AuctionSaveRequestDto dto) {
@@ -47,6 +52,8 @@ public class AuctionService {
         });
 
         auction.statusToProcessing();
+
+        eventPublisher.publishEvent(new AuctionEvent(auction, NotificationCode.SAVE_AUCTION));
 
         artWorkRepository.updateStatusToProcessing(auction.getId());
     }
