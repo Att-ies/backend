@@ -54,6 +54,7 @@ public class AuctionService {
         auction.statusToProcessing();
 
         eventPublisher.publishEvent(new AuctionEvent(auction, NotificationCode.SAVE_AUCTION));
+        eventPublisher.publishEvent(new AuctionEvent(auction, NotificationCode.SAVE_DISPLAY));
 
         artWorkRepository.updateStatusToProcessing(auction.getId());
     }
@@ -66,6 +67,9 @@ public class AuctionService {
         });
 
         auction.statusToTerminate();
+
+        eventPublisher.publishEvent(new AuctionEvent(auction, NotificationCode.SUCCESSFUL_BID));
+        eventPublisher.publishEvent(new AuctionEvent(auction, NotificationCode.FAILED_BID));
 
         artWorkRepository.updateStatusToTerminated(auction.getId());
     }

@@ -1,12 +1,12 @@
 package com.sptp.backend.auction.event;
 
-import com.sptp.backend.art_work.event.ArtWorkEvent;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.auction.repository.Auction;
+import com.sptp.backend.bidding.repository.Bidding;
+import com.sptp.backend.bidding.repository.BiddingRepository;
 import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.member.repository.Member;
-import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.notification.repository.Notification;
 import com.sptp.backend.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,21 +25,57 @@ public class AuctionEventListener {
 
     private final NotificationRepository notificationRepository;
     private final ArtWorkRepository artWorkRepository;
-    private final MemberRepository memberRepository;
+    private final BiddingRepository biddingRepository;
 
+    // 경매 등록 알림, 전시회 등록 알림, 작품 낙찰 성공, 작품 유찰 알림
     @EventListener
-    public void handleAuctionEvent(AuctionEvent auctionEvent){
+    public void handleAuctionEvent(AuctionEvent auctionEvent) {
 
         NotificationCode notificationCode = auctionEvent.getNotificationCode();
         Auction auction = auctionEvent.getAuction();
 
         Iterable<ArtWork> artWorks = artWorkRepository.findByAuctionId(auction.getId());
-        for(ArtWork artWork: artWorks){
-            saveNotification(artWork.getMember(), artWork, notificationCode);
+        for(ArtWork artWork : artWorks) {
+            if(notificationCode.equals(NotificationCode.SAVE_AUCTION) || notificationCode.equals(NotificationCode.SAVE_DISPLAY)) {
+                sendToSeller(artWork.getMember(), artWork, notificationCode);
+            }
+            if(notificationCode.equals(NotificationCode.SUCCESSFUL_BID)) {
+                sendToSeller(artWork.getMember(), artWork, notificationCode);
+                sendToBuyer(artWork, notificationCode);
+            }
+            if(notificationCode.equals(NotificationCode.FAILED_BID)) {
+                sendToFailure(artWork, notificationCode);
+            }
         }
     }
 
-    public void saveNotification(Member member, ArtWork artWork, NotificationCode notificationCode){
+    // 판매자
+    public void sendToSeller(Member member, ArtWork artWork, NotificationCode notificationCode) {
+
+        saveNotification(member, artWork, notificationCode);
+    }
+
+    // 구매자
+    public void sendToBuyer(ArtWork artWork, NotificationCode notificationCode) {
+
+        Member member = biddingRepository.getFirstByArtWorkOrderByPriceDesc(artWork).get().getMember();
+        saveNotification(member, artWork, notificationCode);
+    }
+
+    // 구매실패자
+    public void sendToFailure(ArtWork artWork, NotificationCode notificationCode) {
+
+        Iterable<Bidding> biddings = biddingRepository.findAllByArtWorkOrderByPriceDesc(artWork);
+        int index=0;
+        for(Bidding bidding : biddings) {
+            if(index!=0){
+                saveNotification(bidding.getMember(), artWork, notificationCode);
+            }
+            index++;
+        }
+    }
+
+    public void saveNotification(Member member, ArtWork artWork, NotificationCode notificationCode) {
 
         Notification notification = Notification.builder()
                 .member(member)
