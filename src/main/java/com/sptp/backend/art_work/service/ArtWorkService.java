@@ -8,6 +8,7 @@ import com.sptp.backend.art_work.repository.ArtWorkStatus;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkMyListResponseDto;
+import com.sptp.backend.art_work.web.dto.response.BiddingListResponse;
 import com.sptp.backend.art_work_image.repository.ArtWorkImage;
 import com.sptp.backend.art_work_image.repository.ArtWorkImageRepository;
 import com.sptp.backend.art_work_keyword.repository.ArtWorkKeyword;
@@ -50,10 +51,10 @@ public class ArtWorkService extends BaseEntity {
     private final MemberRepository memberRepository;
     private final AwsService awsService;
     private final FileService fileService;
-    
+
     private final BiddingRepository biddingRepository;
     private final ApplicationEventPublisher eventPublisher;
-   
+
     private final AuctionRepository auctionRepository;
 
     @Value("${aws.storage.url}")
@@ -102,7 +103,7 @@ public class ArtWorkService extends BaseEntity {
         saveArtKeywords(dto.getKeywords(), artWork);
 
         eventPublisher.publishEvent(new ArtWorkEvent(findMember, artWork, NotificationCode.SAVE_ARTWORK));
-        
+
         return savedArtWork.getId();
     }
 
@@ -151,7 +152,7 @@ public class ArtWorkService extends BaseEntity {
 
         Long topPrice = getTopPrice(artWork);
         Bidding bidding = biddingRepository.findByArtWorkAndMember(artWork, member)
-                .orElse(saveBidding(artWork, member));
+                .orElseGet(() -> saveBidding(artWork, member));
 
         bidding.raisePrice(topPrice, price);
     }
@@ -201,8 +202,8 @@ public class ArtWorkService extends BaseEntity {
         List<ArtWorkKeyword> artWorkKeywords = artWorkKeywordRepository.findByArtWorkId(artWorkId);
 
         return ArtWorkInfoResponseDto.builder()
-                .artist(ArtWorkInfoResponseDto.ArtistDto.from(findArtist))
-                .artWork(ArtWorkInfoResponseDto.ArtWorkDto.from(findArtWork, artWorkImages, artWorkKeywords))
+                .artist(ArtWorkInfoResponseDto.ArtistDto.from(findArtist, storageUrl))
+                .artWork(ArtWorkInfoResponseDto.ArtWorkDto.from(findArtWork, artWorkImages, artWorkKeywords, storageUrl))
                 .build();
     }
 
@@ -245,4 +246,28 @@ public class ArtWorkService extends BaseEntity {
                 .biddingStatus(topPrice)
                 .build();
     }
+
+    @Transactional(readOnly = true)
+    public BiddingListResponse getBiddingList(Long artWorkId) {
+
+        ArtWork artWork = getArtWorkOrThrow(artWorkId);
+        List<Bidding> biddingList = biddingRepository.findAllByArtWorkOrderByPriceDesc(artWork);
+
+        return BiddingListResponse.builder()
+                .artWork(BiddingListResponse.ArtWorkDto.of(artWork, getTopPrice(artWork)))
+                .auction(BiddingListResponse.AuctionDto.from(artWork.getAuction()))
+                .biddingList(biddingList.stream().map(BiddingListResponse.BiddingDto::from)
+                        .collect(Collectors.toList()))
+                .totalBiddingCount(biddingList.size())
+                .build();
+    }
+
+//    private ArtWorkMyListResponseDto classifyArtWork(ArtWork artWork) {
+//
+//        Long topPrice = 0L;
+//
+//        if (artWork.getSaleStatus().equals(ArtWorkStatus.PROCESSING.getType())) {
+//
+//        }
+//    }
 }

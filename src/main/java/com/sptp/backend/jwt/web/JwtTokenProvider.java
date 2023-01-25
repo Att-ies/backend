@@ -4,10 +4,7 @@ import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.repository.RefreshToken;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -111,8 +108,16 @@ public class JwtTokenProvider {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
-        } catch (Exception e) {
-            return false;
+        } catch (SecurityException e) {
+            throw new JwtException("TOKEN_INVALID");
+        } catch (MalformedJwtException e) {
+            throw new JwtException("TOKEN_INVALID");
+        } catch (ExpiredJwtException e) {
+            throw new JwtException("TOKEN_EXPIRED");
+        } catch (UnsupportedJwtException e) {
+            throw new JwtException("TOKEN_INVALID");
+        } catch (IllegalArgumentException e) {
+            throw new JwtException("TOKEN_INVALID");
         }
     }
 
