@@ -5,6 +5,7 @@ import com.sptp.backend.art_work.web.dto.request.ArtWorkBidRequest;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkMyListResponseDto;
+import com.sptp.backend.art_work.web.dto.response.BiddingListResponse;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,25 @@ public class ArtWorkController {
         return ResponseEntity.status(HttpStatus.OK).body(artWorkInfoResponseDto);
     }
 
+    // 작품 상세 조회
+
+    @GetMapping("/{artWorkId}")
+    public ResponseEntity<ArtWorkInfoResponseDto> getArtWork(@PathVariable("artWorkId") Long artWorkId) {
+
+        ArtWorkInfoResponseDto artWorkInfoResponseDto = artWorkService.getArtWork(artWorkId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(artWorkInfoResponseDto);
+    }
+    // 내 등록 작품 조회
+
+    @GetMapping("/me")
+    public ResponseEntity<List<ArtWorkMyListResponseDto>> getMyArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        List<ArtWorkMyListResponseDto> artWorkMyListResponseDto = artWorkService.getMyArtWorkList(userDetails.getMember().getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(artWorkMyListResponseDto);
+    }
+
     // 응찰하기
     @PutMapping("/{artWorkId}/bidding")
     public ResponseEntity<Void> bid(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -49,21 +69,10 @@ public class ArtWorkController {
         return ResponseEntity.ok().build();
     }
 
-    // 작품 상세 조회
-    @GetMapping("/{artWorkId}")
-    public ResponseEntity<ArtWorkInfoResponseDto> getArtWork(@PathVariable("artWorkId") Long artWorkId) {
+    // 응찰 내역 조회
+    @GetMapping("/{artWorkId}/bidding")
+    public ResponseEntity<BiddingListResponse> getBiddingList(@PathVariable Long artWorkId) {
 
-        ArtWorkInfoResponseDto artWorkInfoResponseDto = artWorkService.getArtWork(artWorkId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(artWorkInfoResponseDto);
-    }
-
-    // 내 등록 작품 조회
-    @GetMapping("/me")
-    public ResponseEntity<List<ArtWorkMyListResponseDto>> getMyArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        List<ArtWorkMyListResponseDto> artWorkMyListResponseDto = artWorkService.getMyArtWorkList(userDetails.getMember().getId());
-
-        return ResponseEntity.status(HttpStatus.OK).body(artWorkMyListResponseDto);
+        return ResponseEntity.ok(artWorkService.getBiddingList(artWorkId));
     }
 }
