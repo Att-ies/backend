@@ -32,4 +32,9 @@ public class Notification extends BaseEntity {
     private String message;
     private String details;
     private Long data;
+    private Boolean checked;
+
+    public void read() {
+        this.checked = true;
+    }
 }
