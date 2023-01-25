@@ -263,12 +263,4 @@ public class ArtWorkService extends BaseEntity {
                 .build();
     }
 
-//    private ArtWorkMyListResponseDto classifyArtWork(ArtWork artWork) {
-//
-//        Long topPrice = 0L;
-//
-//        if (artWork.getSaleStatus().equals(ArtWorkStatus.PROCESSING.getType())) {
-//
-//        }
-//    }
 }
