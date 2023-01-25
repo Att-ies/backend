@@ -32,6 +32,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     public void setErrorResponse(HttpServletRequest req, HttpServletResponse res, Throwable ex) throws IOException {
 
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        res.setStatus(HttpStatus.UNAUTHORIZED.value());
         Map<String, Object> body = new HashMap<>();
 
         if (ex.getMessage().equals("TOKEN_EXPIRED")) {
@@ -47,6 +48,5 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         body.put("error", "UNAUTHORIZED");
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(res.getOutputStream(), body);
-        res.setStatus(HttpStatus.UNAUTHORIZED.value());
     }
 }
