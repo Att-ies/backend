@@ -70,8 +70,6 @@ public class AuctionService {
 
     private void updateStatusToTerminated(List<ArtWork> artWorks) {
 
-        System.out.println("artWorks.size() = " + artWorks.size());
-
         for (ArtWork artWork : artWorks) {
             if (biddingRepository.existsByArtWorkId(artWork.getId())) {
                 artWork.statusToSalesSuccess();
