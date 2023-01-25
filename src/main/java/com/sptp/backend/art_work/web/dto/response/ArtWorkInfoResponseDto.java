@@ -1,6 +1,5 @@
 package com.sptp.backend.art_work.web.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkSize;
 import com.sptp.backend.art_work_image.repository.ArtWorkImage;
@@ -31,12 +30,19 @@ public class ArtWorkInfoResponseDto {
         private String artistName;
         private String artistImage;
 
-        public static ArtistDto from(Member member) {
+        public static ArtistDto from(Member member, String storageUrl) {
+            if (member.getImage() != null) {
+                return ArtistDto.builder()
+                        .id(member.getId())
+                        .artistName(member.getNickname())
+                        .artistEducation(member.getEducation())
+                        .artistImage(storageUrl + member.getImage())
+                        .build();
+            }
             return ArtistDto.builder()
                     .id(member.getId())
                     .artistName(member.getNickname())
                     .artistEducation(member.getEducation())
-                    .artistImage(member.getImage())
                     .build();
         }
 
@@ -59,7 +65,8 @@ public class ArtWorkInfoResponseDto {
         private List<String> keywords;
         private List<String> images;
 
-        public static ArtWorkDto from(ArtWork artWork, List<ArtWorkImage> artWorkImages, List<ArtWorkKeyword> artWorkKeywords) {
+        public static ArtWorkDto from(ArtWork artWork, List<ArtWorkImage> artWorkImages, List<ArtWorkKeyword> artWorkKeywords, String storageUrl) {
+
             return ArtWorkDto.builder()
                     .id(artWork.getId())
                     .title(artWork.getTitle())
@@ -68,11 +75,11 @@ public class ArtWorkInfoResponseDto {
                     .genre(artWork.getGenre())
                     .frame(artWork.isFrame())
                     .artWorkSize(artWork.getArtWorkSize())
-                    .guaranteeImage(artWork.getGuaranteeImage())
-                    .mainImage(artWork.getMainImage())
+                    .guaranteeImage(storageUrl + artWork.getGuaranteeImage())
+                    .mainImage(storageUrl + artWork.getMainImage())
                     .description(artWork.getDescription())
-                    .images(artWorkImages.stream().map(m -> m.getImage()).collect(Collectors.toList()))
-                    .keywords(artWorkKeywords.stream().map(m-> KeywordMap.getKeywordName(m.getKeywordId())).collect(Collectors.toList()))
+                    .images(artWorkImages.stream().map(m -> storageUrl + m.getImage()).collect(Collectors.toList()))
+                    .keywords(artWorkKeywords.stream().map(m -> KeywordMap.getKeywordName(m.getKeywordId())).collect(Collectors.toList()))
                     .build();
         }
     }

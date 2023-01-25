@@ -27,6 +27,7 @@ import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +55,9 @@ public class ArtWorkService extends BaseEntity {
     private final ApplicationEventPublisher eventPublisher;
 
     private final AuctionRepository auctionRepository;
+
+    @Value("${aws.storage.url}")
+    private String storageUrl;
 
     @Transactional
     public Long saveArtWork(Long loginMemberId, ArtWorkSaveRequestDto dto) throws IOException {
@@ -197,8 +201,8 @@ public class ArtWorkService extends BaseEntity {
         List<ArtWorkKeyword> artWorkKeywords = artWorkKeywordRepository.findByArtWorkId(artWorkId);
 
         return ArtWorkInfoResponseDto.builder()
-                .artist(ArtWorkInfoResponseDto.ArtistDto.from(findArtist))
-                .artWork(ArtWorkInfoResponseDto.ArtWorkDto.from(findArtWork, artWorkImages, artWorkKeywords))
+                .artist(ArtWorkInfoResponseDto.ArtistDto.from(findArtist, storageUrl))
+                .artWork(ArtWorkInfoResponseDto.ArtWorkDto.from(findArtWork, artWorkImages, artWorkKeywords, storageUrl))
                 .build();
     }
 
@@ -231,4 +235,13 @@ public class ArtWorkService extends BaseEntity {
                 .totalBiddingCount(biddingList.size())
                 .build();
     }
+
+//    private ArtWorkMyListResponseDto classifyArtWork(ArtWork artWork) {
+//
+//        Long topPrice = 0L;
+//
+//        if (artWork.getSaleStatus().equals(ArtWorkStatus.PROCESSING.getType())) {
+//
+//        }
+//    }
 }
