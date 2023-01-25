@@ -14,8 +14,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Slf4j
 @Async
 @Transactional
@@ -64,6 +62,7 @@ public class ArtWorkEventListener {
                     .message(artWork.getTitle() + "을 " + bidding.getPrice() + notificationCode.getMessage())
                     .details(notificationCode.getDetails())
                     .data(artWork.getId())
+                    .checked(false)
                     .build();
 
             notificationRepository.save(notification);
@@ -76,6 +75,7 @@ public class ArtWorkEventListener {
                 .message(artWork.getTitle() + notificationCode.getMessage())
                 .details(notificationCode.getDetails())
                 .data(artWork.getId())
+                .checked(false)
                 .build();
 
         notificationRepository.save(notification);

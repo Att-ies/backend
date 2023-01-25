@@ -81,6 +81,7 @@ public class AuctionEventListener {
                 .message(artWork.getTitle() + notificationCode.getMessage())
                 .details(notificationCode.getDetails())
                 .data(artWork.getId())
+                .checked(false)
                 .build();
 
         notificationRepository.save(notification);
