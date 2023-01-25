@@ -27,7 +27,7 @@ public class AuctionEventListener {
     private final ArtWorkRepository artWorkRepository;
     private final BiddingRepository biddingRepository;
 
-    // 경매 등록 알림, 전시회 등록 알림, 작품 낙찰 성공, 작품 유찰 알림
+    // 경매 등록 알림(판매자), 전시회 등록 알림(판매자), 작품 낙찰 성공(판매자,구매자), 작품 유찰 알림(판매자,구매실패자)
     @EventListener
     public void handleAuctionEvent(AuctionEvent auctionEvent) {
 

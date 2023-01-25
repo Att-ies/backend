@@ -149,6 +149,8 @@ public class ArtWorkService extends BaseEntity {
         Bidding bidding = biddingRepository.findByArtWorkAndMember(artWork, member)
                 .orElse(saveBidding(artWork, member));
 
+        eventPublisher.publishEvent(new ArtWorkEvent(member, artWork, NotificationCode.SUGGEST_BID));
+        eventPublisher.publishEvent(new ArtWorkEvent(member, artWork, NotificationCode.STILL_BID));
         bidding.raisePrice(topPrice, price);
     }
 
