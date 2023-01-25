@@ -78,6 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedOrigin("https://atties.vercel.app");
+        configuration.addAllowedOrigin("https://attiess.netlify.app");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
