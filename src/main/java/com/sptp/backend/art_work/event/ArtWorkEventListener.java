@@ -48,7 +48,6 @@ public class ArtWorkEventListener {
         for(Bidding bidding : biddings) {
             if(!member.getId().equals(bidding.getMember().getId())) {
                 saveNotification(bidding.getMember(), artWork, bidding, notificationCode);
-                System.out.println("뺏김"+bidding.getMember().getId());
             }
         }
     }
