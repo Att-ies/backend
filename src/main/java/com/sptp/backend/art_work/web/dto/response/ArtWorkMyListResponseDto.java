@@ -14,7 +14,7 @@ public class ArtWorkMyListResponseDto {
     private String artistName;
 
     private String auctionStatus;
-    private String biddingStatus;
+    private Long biddingStatus;
     private Integer turn;
     private String image;
 }

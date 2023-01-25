@@ -27,16 +27,17 @@ import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +55,9 @@ public class ArtWorkService extends BaseEntity {
     private final ApplicationEventPublisher eventPublisher;
    
     private final AuctionRepository auctionRepository;
+
+    @Value("${aws.storage.url}")
+    private String storageUrl;
 
     @Transactional
     public Long saveArtWork(Long loginMemberId, ArtWorkSaveRequestDto dto) throws IOException {
@@ -210,10 +214,35 @@ public class ArtWorkService extends BaseEntity {
 
         List<ArtWork> findArtWorkList = artWorkRepository.findByMemberId(findMember.getId());
 
-        List<ArtWorkMyListResponseDto> artWorkMyListResponseDto = findArtWorkList.stream()
-                .map(m -> new ArtWorkMyListResponseDto(m.getId(), m.getTitle(), findMember.getNickname(), m.getSaleStatus(), null, m.getAuction().getTurn(), m.getMainImage()))
-                .collect(Collectors.toList());
+        List<ArtWorkMyListResponseDto> artWorkMyListResponseDtoList = new ArrayList<>();
 
-        return artWorkMyListResponseDto;
+        for (ArtWork artWork : findArtWorkList) {
+            ArtWorkMyListResponseDto artWorkMyListResponseDto = classifyArtWork(artWork);
+            artWorkMyListResponseDtoList.add(artWorkMyListResponseDto);
+        }
+
+        return artWorkMyListResponseDtoList;
+    }
+
+    private ArtWorkMyListResponseDto classifyArtWork(ArtWork artWork) {
+
+        Long topPrice = null;
+
+        if (!artWork.getSaleStatus().equals(ArtWorkStatus.REGISTERED.getType())) {
+
+            if (biddingRepository.existsByArtWorkId(artWork.getId())) {
+                topPrice = getTopPrice(artWork);
+            }
+        }
+
+        return ArtWorkMyListResponseDto.builder()
+                .id(artWork.getId())
+                .title(artWork.getTitle())
+                .turn(artWork.getAuction().getTurn())
+                .image(storageUrl + artWork.getMainImage())
+                .artistName(artWork.getMember().getNickname())
+                .auctionStatus(artWork.getSaleStatus())
+                .biddingStatus(topPrice)
+                .build();
     }
 }
