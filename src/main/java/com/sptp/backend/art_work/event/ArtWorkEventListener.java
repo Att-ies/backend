@@ -33,36 +33,37 @@ public class ArtWorkEventListener {
         NotificationCode notificationCode = artWorkEvent.getNotificationCode();
         ArtWork artWork = artWorkEvent.getArtwork();
         Member member = artWorkEvent.getMember();
+        Bidding bidding = artWorkEvent.getBidding();
 
         if(notificationCode.equals(NotificationCode.SAVE_ARTWORK) || notificationCode.equals(NotificationCode.SUGGEST_BID)){
-            saveNotification(member, artWork, notificationCode);
+            saveNotification(member, artWork, bidding, notificationCode);
         }
         if(notificationCode.equals(NotificationCode.STILL_BID)) {
-            sendToFailure(artWork, notificationCode);
+            sendToFailure(member, artWork, notificationCode);
         }
     }
 
-    public void sendToFailure(ArtWork artWork, NotificationCode notificationCode) {
+    public void sendToFailure(Member member, ArtWork artWork, NotificationCode notificationCode) {
 
         Iterable<Bidding> biddings = biddingRepository.findAllByArtWorkOrderByPriceDesc(artWork);
-        int index=0;
+
         for(Bidding bidding : biddings) {
-            if(index!=0){
-                saveNotification(bidding.getMember(), artWork, notificationCode);
+            if(!member.getId().equals(bidding.getMember().getId())) {
+                saveNotification(bidding.getMember(), artWork, bidding, notificationCode);
+                System.out.println("뺏김"+bidding.getMember().getId());
             }
-            index++;
         }
     }
 
-    public void saveNotification(Member member, ArtWork artWork, NotificationCode notificationCode){
+    public void saveNotification(Member member, ArtWork artWork, Bidding bidding, NotificationCode notificationCode){
 
         if(notificationCode.equals(NotificationCode.SUGGEST_BID)) {
-            Optional<Bidding> bidding = biddingRepository.findByArtWorkAndMember(artWork, member);
             Notification notification = Notification.builder()
                     .member(member)
                     .title(notificationCode.getTitle())
-                    .message(artWork.getTitle() + "을 " + bidding.get().getPrice() + notificationCode.getMessage())
+                    .message(artWork.getTitle() + "을 " + bidding.getPrice() + notificationCode.getMessage())
                     .details(notificationCode.getDetails())
+                    .data(artWork.getId())
                     .build();
 
             notificationRepository.save(notification);
@@ -74,6 +75,7 @@ public class ArtWorkEventListener {
                 .title(notificationCode.getTitle())
                 .message(artWork.getTitle() + notificationCode.getMessage())
                 .details(notificationCode.getDetails())
+                .data(artWork.getId())
                 .build();
 
         notificationRepository.save(notification);
