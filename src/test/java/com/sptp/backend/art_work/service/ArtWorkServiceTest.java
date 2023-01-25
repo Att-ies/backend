@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -91,28 +92,27 @@ class ArtWorkServiceTest {
                     .build();
         }
 
-//        @ParameterizedTest(name = )
-//        void bid() {
-//            //given
-//            when(memberRepository.findById(memberId))
-//                    .thenReturn(Optional.of(member));
-//
-//            when(artWorkRepository.findById(artWorkId))
-//                    .thenReturn(Optional.of(artWork));
-//
-//            Long biddingId = 4L;
-//            Bidding.builder()
-//                            .id(biddingId)
-//                                    .artWork(artWork)
-//                                            .price()
-//            when(biddingRepository.save(any(Bidding.class)))
-//                    .thenReturn()
-//
-//
-//            //when
-//
-//            //then
-//        }
+        @Test
+        void bid() {
+            //given
+            bidding = Bidding.builder()
+                    .artWork(artWork)
+                    .createdDate(startDate)
+                    .build();
+
+            when(artWorkRepository.findById(anyLong()))
+                    .thenReturn(Optional.of(artWork));
+
+            when(memberRepository.findById(anyLong()))
+                    .thenReturn(Optional.of(member));
+
+            when(biddingRepository.save(any(Bidding.class)))
+                    .thenReturn(bidding);
+
+            //when
+            //then
+            assertThatNoException().isThrownBy(() -> artWorkService.bid(memberId, artWorkId, (long) (startPrice * 2)));
+        }
 
         @Test
         void failByNotFoundArtWork() {
@@ -229,9 +229,6 @@ class ArtWorkServiceTest {
 
             when(biddingRepository.findByArtWorkAndMember(any(ArtWork.class), any(Member.class)))
                     .thenReturn(Optional.of(bidding));
-
-            when(biddingRepository.save(any(Bidding.class)))
-                    .thenReturn(bidding);
 
             //when
             //then
