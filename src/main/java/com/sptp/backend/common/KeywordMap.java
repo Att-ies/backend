@@ -19,7 +19,7 @@ public class KeywordMap {
             "투명한", "단순한"};
 
     static {
-        for (int keywordId = 1; keywordId <= keywordNames.length; keywordId++) {
+        for (int keywordId = 1; keywordId < keywordNames.length; keywordId++) {
             map.put(keywordNames[keywordId], keywordId);
         }
     }
