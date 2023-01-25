@@ -12,6 +12,7 @@ public interface BiddingRepository extends JpaRepository<Bidding, Long> {
 
     Optional<Bidding> findByArtWorkAndMember(ArtWork artWork, Member member);
     Optional<Bidding> getFirstByArtWorkOrderByPriceDesc(ArtWork artWork);
+
     @EntityGraph(attributePaths = {"member"})
     List<Bidding> findAllByArtWorkOrderByPriceDesc(ArtWork artWork);
 }

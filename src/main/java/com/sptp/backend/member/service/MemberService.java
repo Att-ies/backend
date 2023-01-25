@@ -231,21 +231,34 @@ public class MemberService {
         }
     }
 
-    private void updateKeyword(Member member, List<String> keywordList) {
+    @Transactional
+    public List<MemberUpdateKeywordsResponseDto> updateKeyword(Long loginMemberId, MemberUpdateKeywordsRequestDto dto) {
 
-        memberKeywordRepository.deleteByMember(member);
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        for (String keywordName : keywordList) {
+        memberKeywordRepository.deleteByMember(findMember);
+
+        List<MemberKeyword> memberKeywords = new ArrayList<>();
+
+        for (String keywordName : dto.getKeywords()) {
 
             KeywordMap.checkExistsKeyword(keywordName);
 
             MemberKeyword memberKeyword = MemberKeyword.builder()
-                    .member(member)
+                    .member(findMember)
                     .keywordId(KeywordMap.map.get(keywordName))
                     .build();
 
             memberKeywordRepository.save(memberKeyword);
+            memberKeywords.add(memberKeyword);
         }
+
+        List<MemberUpdateKeywordsResponseDto> memberUpdateKeywordsResponseDto = memberKeywords.stream()
+                .map(m -> new MemberUpdateKeywordsResponseDto(m.getId(), KeywordMap.getKeywordName(m.getKeywordId())))
+                .collect(Collectors.toList());
+
+        return memberUpdateKeywordsResponseDto;
     }
 
     @Transactional
@@ -273,7 +286,6 @@ public class MemberService {
             checkDuplicateMemberNickname(dto.getNickname());
         }
 
-        updateKeyword(findMember, dto.getKeywords());
         findMember.updateUser(dto, imageUrl);
     }
 
@@ -302,7 +314,6 @@ public class MemberService {
             checkDuplicateMemberNickname(dto.getNickname());
         }
 
-        updateKeyword(findMember, dto.getKeywords());
         findMember.updateArtist(dto, imageUrl);
     }
 

@@ -329,4 +329,14 @@ public class MemberController {
 
         return ResponseEntity.status(HttpStatus.OK).body(memberAskResponsesList);
     }
+
+    // 관심 키워드 수정
+    @PatchMapping("/members/keywords")
+    public ResponseEntity<List<MemberUpdateKeywordsResponseDto>> updateKeywords(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                         @RequestBody MemberUpdateKeywordsRequestDto memberUpdateKeywordsRequestDto) {
+
+        List<MemberUpdateKeywordsResponseDto> memberUpdateKeywordsResponseDto = memberService.updateKeyword(userDetails.getMember().getId(), memberUpdateKeywordsRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(memberUpdateKeywordsResponseDto);
+    }
 }
