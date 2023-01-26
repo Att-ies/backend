@@ -22,8 +22,10 @@ public class MessageController {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @MessageMapping("/send")
-    public void chat(@Valid MessageRequest messageRequest, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        messageService.saveMessage(userDetails.getMember().getId(), messageRequest);
+    public void chat(@Valid MessageRequest messageRequest) {
+
+        messageService.saveMessage(messageRequest);
+
         MessageResponse messageResponse = MessageResponse.builder()
                 .chatRoomId(messageRequest.getChatRoomId())
                 .message(messageRequest.getMessage())
