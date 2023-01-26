@@ -16,6 +16,7 @@ import com.sptp.backend.art_work_keyword.repository.ArtWorkKeywordRepository;
 import com.sptp.backend.auction.repository.Auction;
 import com.sptp.backend.auction.repository.AuctionRepository;
 import com.sptp.backend.auction.repository.AuctionStatus;
+import com.sptp.backend.auction.web.dto.response.AuctionArtWorkListResponseDto;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.bidding.repository.Bidding;
@@ -35,10 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -95,6 +93,7 @@ public class ArtWorkService extends BaseEntity {
                 .productionYear(dto.getProductionYear())
                 .auction(latestScheduledAuction.get(0))
                 .saleStatus(ArtWorkStatus.REGISTERED.getType())
+                .biddingList(new ArrayList<>())
                 .build();
 
         ArtWork savedArtWork = artWorkRepository.save(artWork);
@@ -185,6 +184,7 @@ public class ArtWorkService extends BaseEntity {
                 .member(member)
                 .build());
 
+        bidding.setArtWork(artWork);
         bidding.validateAuctionPeriod();
 
         return bidding;
@@ -263,4 +263,43 @@ public class ArtWorkService extends BaseEntity {
                 .build();
     }
 
+    public AuctionArtWorkListResponseDto getProcessingArtWorkList() {
+
+        Auction auction = auctionRepository.findCurrentlyProcessingAuction();
+
+        if (Objects.isNull(auction)) {
+            throw new CustomException(ErrorCode.NOT_FOUND_AUCTION_PROCESSING);
+        }
+
+        List<ArtWork> artWorkList = artWorkRepository.findByAuctionIdAndSaleStatus(auction.getId(), ArtWorkStatus.PROCESSING.getType());
+
+        List<AuctionArtWorkListResponseDto.ArtWorkDto> artWorkDtoList = transferToArtWorkDto(artWorkList);
+
+        AuctionArtWorkListResponseDto auctionArtWorkListResponseDto = AuctionArtWorkListResponseDto.builder()
+                .turn(auction.getTurn())
+                .endDate(auction.getEndDate())
+                .artWorkList(artWorkDtoList)
+                .build();
+
+        return auctionArtWorkListResponseDto;
+    }
+
+    private List<AuctionArtWorkListResponseDto.ArtWorkDto> transferToArtWorkDto(List<ArtWork> artWorkList) {
+
+        List<AuctionArtWorkListResponseDto.ArtWorkDto> artWorkDtoList = new ArrayList<>();
+
+        for (ArtWork artWork : artWorkList) {
+
+            List<Long> priceList = artWork.getBiddingList().stream().map(m -> m.getPrice()).collect(Collectors.toList());
+            Long topPrice = Long.valueOf(artWork.getPrice());
+            if (!priceList.isEmpty()) {
+                topPrice = Collections.max(priceList);
+            }
+
+            AuctionArtWorkListResponseDto.ArtWorkDto artWorkDto = AuctionArtWorkListResponseDto.ArtWorkDto.from(artWork, topPrice);
+            artWorkDtoList.add(artWorkDto);
+        }
+
+        return artWorkDtoList;
+    }
 }
