@@ -1,9 +1,11 @@
 package com.sptp.backend.auction.web;
 
+import com.sptp.backend.art_work.service.ArtWorkService;
 import com.sptp.backend.auction.service.AuctionService;
 import com.sptp.backend.auction.web.dto.request.AuctionSaveRequestDto;
 import com.sptp.backend.auction.web.dto.request.AuctionStartRequestDto;
 import com.sptp.backend.auction.web.dto.request.AuctionTerminateRequestDto;
+import com.sptp.backend.auction.web.dto.response.AuctionArtWorkListResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuctionController {
 
     private final AuctionService auctionService;
+    private final ArtWorkService artWorkService;
 
     @PostMapping("/art-works/auction")
     public ResponseEntity<Void> saveAuction(@RequestBody AuctionSaveRequestDto auctionSaveRequestDto) {
@@ -37,5 +40,13 @@ public class AuctionController {
         auctionService.terminateAuction(auctionTerminateRequestDto);
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/art-works/auction")
+    public ResponseEntity<AuctionArtWorkListResponseDto> getProcessingAuction() {
+
+        AuctionArtWorkListResponseDto auctionArtWorkListResponseDto = artWorkService.getProcessingArtWorkList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(auctionArtWorkListResponseDto);
     }
 }
