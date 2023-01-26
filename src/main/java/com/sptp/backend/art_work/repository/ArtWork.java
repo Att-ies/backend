@@ -47,7 +47,7 @@ public class ArtWork extends BaseEntity {
 
     private Integer productionYear;
 
-    private Integer price; // TODO artWork 타입 Interger -> Long으로 변환 필요
+    private Long price;
 
     private String status;
 

@@ -291,7 +291,7 @@ public class ArtWorkService extends BaseEntity {
         for (ArtWork artWork : artWorkList) {
 
             List<Long> priceList = artWork.getBiddingList().stream().map(m -> m.getPrice()).collect(Collectors.toList());
-            Long topPrice = Long.valueOf(artWork.getPrice());
+            Long topPrice = artWork.getPrice();
             if (!priceList.isEmpty()) {
                 topPrice = Collections.max(priceList);
             }
