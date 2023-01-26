@@ -23,4 +23,16 @@ public class AuctionCustomRepositoryImpl implements AuctionCustomRepository{
                 .orderBy(auction.startDate.asc())
                 .fetch();
     }
+
+    @Override
+    public Auction findCurrentlyProcessingAuction() {
+        return queryFactory
+                .select(auction)
+                .from(auction)
+                .where(auction.status.eq(AuctionStatus.PROCESSING.getType())
+                        .and(auction.startDate.loe(LocalDateTime.now()))
+                        .and(auction.endDate.goe(LocalDateTime.now())))
+                .fetchOne();
+    }
+
 }
