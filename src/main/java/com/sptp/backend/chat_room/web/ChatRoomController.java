@@ -4,6 +4,7 @@ import com.sptp.backend.chat_room.service.ChatRoomService;
 import com.sptp.backend.chat_room.web.dto.ChatRoomCreateRequest;
 import com.sptp.backend.chat_room.web.dto.ChatRoomDetailResponse;
 import com.sptp.backend.chat_room.web.dto.ChatRoomResponse;
+import com.sptp.backend.chat_room.web.dto.ChatRoomsResponse;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHeaders;
@@ -43,9 +44,13 @@ public class ChatRoomController {
 
     // 채팅방 목록 조회
     @GetMapping
-    public ResponseEntity<List<ChatRoomResponse>> getChatRooms(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ChatRoomsResponse> getChatRooms(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        return ResponseEntity.ok(chatRoomService.getChatRooms(userDetails.getMember().getId()));
+        ChatRoomsResponse chatRoomsResponse = ChatRoomsResponse.builder()
+                .chatRooms(chatRoomService.getChatRooms(userDetails.getMember().getId()))
+                .build();
+
+        return ResponseEntity.ok(chatRoomsResponse);
     }
 
     // 채팅방 나가기
