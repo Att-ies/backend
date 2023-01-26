@@ -4,6 +4,7 @@ import com.sptp.backend.art_work.event.ArtWorkEvent;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.art_work.repository.ArtWorkSize;
+import com.sptp.backend.art_work.repository.ArtWorkStatus;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkMyListResponseDto;
@@ -34,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -92,7 +94,7 @@ public class ArtWorkService extends BaseEntity {
                 .description(dto.getDescription())
                 .productionYear(dto.getProductionYear())
                 .auction(latestScheduledAuction.get(0))
-                .saleStatus(AuctionStatus.SCHEDULED.getType())
+                .saleStatus(ArtWorkStatus.REGISTERED.getType())
                 .build();
 
         ArtWork savedArtWork = artWorkRepository.save(artWork);
@@ -214,11 +216,36 @@ public class ArtWorkService extends BaseEntity {
 
         List<ArtWork> findArtWorkList = artWorkRepository.findByMemberId(findMember.getId());
 
-        List<ArtWorkMyListResponseDto> artWorkMyListResponseDto = findArtWorkList.stream()
-                .map(m -> new ArtWorkMyListResponseDto(m.getId(), m.getTitle(), findMember.getNickname(), m.getSaleStatus(), null, m.getAuction().getTurn(), m.getMainImage()))
-                .collect(Collectors.toList());
+        List<ArtWorkMyListResponseDto> artWorkMyListResponseDtoList = new ArrayList<>();
 
-        return artWorkMyListResponseDto;
+        for (ArtWork artWork : findArtWorkList) {
+            ArtWorkMyListResponseDto artWorkMyListResponseDto = classifyArtWork(artWork);
+            artWorkMyListResponseDtoList.add(artWorkMyListResponseDto);
+        }
+
+        return artWorkMyListResponseDtoList;
+    }
+
+    private ArtWorkMyListResponseDto classifyArtWork(ArtWork artWork) {
+
+        Long topPrice = null;
+
+        if (!artWork.getSaleStatus().equals(ArtWorkStatus.REGISTERED.getType())) {
+
+            if (biddingRepository.existsByArtWorkId(artWork.getId())) {
+                topPrice = getTopPrice(artWork);
+            }
+        }
+
+        return ArtWorkMyListResponseDto.builder()
+                .id(artWork.getId())
+                .title(artWork.getTitle())
+                .turn(artWork.getAuction().getTurn())
+                .image(storageUrl + artWork.getMainImage())
+                .artistName(artWork.getMember().getNickname())
+                .auctionStatus(artWork.getSaleStatus())
+                .biddingStatus(topPrice)
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -236,12 +263,4 @@ public class ArtWorkService extends BaseEntity {
                 .build();
     }
 
-//    private ArtWorkMyListResponseDto classifyArtWork(ArtWork artWork) {
-//
-//        Long topPrice = 0L;
-//
-//        if (artWork.getSaleStatus().equals(ArtWorkStatus.PROCESSING.getType())) {
-//
-//        }
-//    }
 }
