@@ -35,16 +35,17 @@ public class ArtWorkController {
 
         Long savedArtWorkId = artWorkService.saveArtWork(userDetails.getMember().getId(), artWorkSaveRequestDto);
 
-        ArtWorkInfoResponseDto artWorkInfoResponseDto = artWorkService.getArtWork(savedArtWorkId);
+        ArtWorkInfoResponseDto artWorkInfoResponseDto = artWorkService.getArtWork(savedArtWorkId, userDetails.getMember());
 
         return ResponseEntity.status(HttpStatus.OK).body(artWorkInfoResponseDto);
     }
 
     // 작품 상세 조회
     @GetMapping("/{artWorkId}")
-    public ResponseEntity<ArtWorkInfoResponseDto> getArtWork(@PathVariable("artWorkId") Long artWorkId) {
+    public ResponseEntity<ArtWorkInfoResponseDto> getArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                             @PathVariable("artWorkId") Long artWorkId) {
 
-        ArtWorkInfoResponseDto artWorkInfoResponseDto = artWorkService.getArtWork(artWorkId);
+        ArtWorkInfoResponseDto artWorkInfoResponseDto = artWorkService.getArtWork(artWorkId, userDetails.getMember());
 
         return ResponseEntity.status(HttpStatus.OK).body(artWorkInfoResponseDto);
     }

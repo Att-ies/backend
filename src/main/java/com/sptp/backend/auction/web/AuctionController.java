@@ -19,7 +19,7 @@ public class AuctionController {
     private final ArtWorkService artWorkService;
 
     // 경매 생성
-    @PostMapping("/art-works/auction")
+    @PostMapping("/auction")
     public ResponseEntity<Void> saveAuction(@RequestBody AuctionSaveRequestDto auctionSaveRequestDto) {
 
         auctionService.saveAuction(auctionSaveRequestDto);
@@ -28,7 +28,7 @@ public class AuctionController {
     }
 
     // 경매 시작
-    @PatchMapping("/art-works/auction")
+    @PatchMapping("/auction")
     public ResponseEntity<Void> startAuction(@RequestBody AuctionStartRequestDto auctionStartRequestDto) {
 
         auctionService.startAuction(auctionStartRequestDto);
@@ -37,7 +37,7 @@ public class AuctionController {
     }
 
     // 경매 종료
-    @DeleteMapping("/art-works/auction")
+    @DeleteMapping("/auction")
     public ResponseEntity<Void> terminateAuction(@RequestBody AuctionTerminateRequestDto auctionTerminateRequestDto) {
 
         auctionService.terminateAuction(auctionTerminateRequestDto);
@@ -46,7 +46,7 @@ public class AuctionController {
     }
 
     // 현재 경매 작품 조회
-    @GetMapping("/art-works/auction")
+    @GetMapping("/auction/art-works")
     public ResponseEntity<AuctionArtWorkListResponseDto> getProcessingAuction() {
 
         AuctionArtWorkListResponseDto auctionArtWorkListResponseDto = artWorkService.getProcessingArtWorkList();

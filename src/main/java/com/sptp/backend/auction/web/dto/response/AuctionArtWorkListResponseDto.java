@@ -29,11 +29,11 @@ public class AuctionArtWorkListResponseDto {
         private Integer productionYear;
         private Long topPrice;
 
-        public static ArtWorkDto from(ArtWork artWork, Long topPrice) {
+        public static ArtWorkDto from(ArtWork artWork, Long topPrice, String storageUrl) {
             return ArtWorkDto.builder()
                     .id(artWork.getId())
                     .title(artWork.getTitle())
-                    .mainImage(artWork.getMainImage())
+                    .mainImage(storageUrl + artWork.getMainImage())
                     .artWorkSize(artWork.getArtWorkSize())
                     .productionYear(artWork.getProductionYear())
                     .topPrice(topPrice)

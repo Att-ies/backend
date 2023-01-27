@@ -20,6 +20,7 @@ public class ArtWorkInfoResponseDto {
 
     private ArtistDto artist;
     private ArtWorkDto artWork;
+    private boolean isPreferred;
 
     @Data
     @Builder
