@@ -53,11 +53,12 @@ public class ChatRoomService {
         return chatRoomRepository.save(chatRoom).getId();
     }
 
-    public ChatRoomDetailResponse getChatRoomDetail(Long chatRoomId) {
+    public ChatRoomDetailResponse getChatRoomDetail(Long loginMemberId, Long chatRoomId) {
 
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CHAT_ROOM));
         List<Message> messages = messageRepository.findAllByChatRoomOrderByIdAsc(chatRoom);
+        messages.forEach(message -> message.read(loginMemberId));
 
         return ChatRoomDetailResponse.builder()
                 .chatRoomId(chatRoomId)
