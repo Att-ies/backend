@@ -13,7 +13,7 @@ public class PreferredArtWorkResponse {
 
     private String title;
 
-    private Integer price;
+    private Long price;
 
     private String image;
 }

@@ -2,6 +2,7 @@ package com.sptp.backend.art_work.repository;
 
 import com.sptp.backend.auction.repository.Auction;
 import com.sptp.backend.auction.repository.AuctionStatus;
+import com.sptp.backend.bidding.repository.Bidding;
 import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -35,13 +38,16 @@ public class ArtWork extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Auction auction;
 
+    @OneToMany(mappedBy = "artWork")
+    private List<Bidding> biddingList = new ArrayList<>();
+
     private String title;
 
     private String material;
 
     private Integer productionYear;
 
-    private Integer price; // TODO artWork 타입 Interger -> Long으로 변환 필요
+    private Long price;
 
     private String status;
 

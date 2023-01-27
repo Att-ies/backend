@@ -25,7 +25,7 @@ public class ArtWorkSaveRequestDto {
     private Integer size;
     private boolean frame;
     private String genre;
-    private Integer price;
+    private Long price;
     private String description;
 
 }
