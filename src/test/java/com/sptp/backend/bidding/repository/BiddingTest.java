@@ -22,7 +22,7 @@ class BiddingTest {
     ArtWork artWork;
     Auction auction;
     Bidding bidding;
-    Integer startPrice = 100_000;
+    Long startPrice = 100_000L;
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @BeforeEach

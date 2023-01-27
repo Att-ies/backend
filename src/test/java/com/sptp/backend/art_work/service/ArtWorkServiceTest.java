@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -61,7 +62,7 @@ class ArtWorkServiceTest {
         Auction auction;
         ArtWork artWork;
         Bidding bidding;
-        Integer startPrice = 100_000;
+        long startPrice = 100_000L;
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime startDate = LocalDateTime.parse("2023-01-18 00:00:00", format);
 
@@ -81,6 +82,7 @@ class ArtWorkServiceTest {
                     .id(artWorkId)
                     .auction(auction)
                     .price(startPrice)
+                    .biddingList(new ArrayList<>())
                     .build();
 
             bidding = Bidding.builder()
@@ -167,12 +169,13 @@ class ArtWorkServiceTest {
         @Test
         void failByNotValidPriceWhenBiddingIsCreated() {
             //given
-            int topPrice = 299_999;
+            long topPrice = 299_999L;
             long bid = 319_998;
 
             artWork = ArtWork.builder()
                     .id(artWorkId)
                     .auction(auction)
+                    .biddingList(new ArrayList<>())
                     .price(topPrice)
                     .build();
 
@@ -197,7 +200,7 @@ class ArtWorkServiceTest {
 
             //when
             //then
-            assertThatThrownBy(() -> artWorkService.bid(memberId, artWorkId, Long.valueOf(startPrice)))
+            assertThatThrownBy(() -> artWorkService.bid(memberId, artWorkId, startPrice))
                     .isInstanceOf(CustomException.class)
                     .message().isEqualTo(ErrorCode.NOT_VALID_BID.getDetail());
         }
@@ -205,7 +208,7 @@ class ArtWorkServiceTest {
         @Test
         void failByNotValidPriceWhenBiddingIsNotCreated() {
             //given
-            int topPrice = 299_999;
+            long topPrice = 299_999L;
             long bid = 319_998;
 
             artWork = ArtWork.builder()
@@ -232,7 +235,7 @@ class ArtWorkServiceTest {
 
             //when
             //then
-            assertThatThrownBy(() -> artWorkService.bid(memberId, artWorkId, Long.valueOf(startPrice)))
+            assertThatThrownBy(() -> artWorkService.bid(memberId, artWorkId, startPrice))
                     .isInstanceOf(CustomException.class)
                     .message().isEqualTo(ErrorCode.NOT_VALID_BID.getDetail());
         }
