@@ -296,7 +296,7 @@ public class ArtWorkService extends BaseEntity {
                 topPrice = Collections.max(priceList);
             }
 
-            AuctionArtWorkListResponseDto.ArtWorkDto artWorkDto = AuctionArtWorkListResponseDto.ArtWorkDto.from(artWork, topPrice);
+            AuctionArtWorkListResponseDto.ArtWorkDto artWorkDto = AuctionArtWorkListResponseDto.ArtWorkDto.from(artWork, topPrice, storageUrl);
             artWorkDtoList.add(artWorkDto);
         }
 
