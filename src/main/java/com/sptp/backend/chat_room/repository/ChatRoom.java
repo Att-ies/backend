@@ -15,6 +15,9 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(uniqueConstraints = {@UniqueConstraint(
+        name = "CHAT_ROOM_UNIQUE",
+        columnNames = {"artist_id", "member_id", "art_work_id"})})
 public class ChatRoom extends BaseEntity {
 
     @Id
@@ -27,10 +30,18 @@ public class ChatRoom extends BaseEntity {
     private Member artist;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "collector_id")
-    private Member collector;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "art_work_id")
     private ArtWork artWork;
+
+    public Member getOtherMember(Long memberId) {
+        if (member.getId().equals(memberId)) {
+            return artist;
+        }
+
+        return member;
+    }
 }

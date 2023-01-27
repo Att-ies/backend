@@ -160,6 +160,7 @@ public class KakaoService {
             memberRepository.save(member);
 
             TokenDto tokenDto = jwtTokenProvider.createToken(email, member.getRoles());
+            tokenDto.setGrantType(member.getRoles().get(0));
             jwtService.saveRefreshToken(tokenDto);
 
             return tokenDto;
@@ -170,6 +171,7 @@ public class KakaoService {
 
             //DB에 해당 이메일 회원 정보 있을 경우 jwt token 생성해서 리턴
             TokenDto tokenDto = jwtTokenProvider.createToken(email, member.get().getRoles());
+            tokenDto.setGrantType(member.get().getRoles().get(0));
             jwtService.saveRefreshToken(tokenDto);
 
             return tokenDto;

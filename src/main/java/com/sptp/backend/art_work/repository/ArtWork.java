@@ -1,5 +1,8 @@
 package com.sptp.backend.art_work.repository;
 
+import com.sptp.backend.auction.repository.Auction;
+import com.sptp.backend.auction.repository.AuctionStatus;
+import com.sptp.backend.bidding.repository.Bidding;
 import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
@@ -10,6 +13,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,13 +33,21 @@ public class ArtWork extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "auction_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Auction auction;
+
+    @OneToMany(mappedBy = "artWork")
+    private List<Bidding> biddingList = new ArrayList<>();
+
     private String title;
 
     private String material;
 
-    private String size;
+    private Integer productionYear;
 
-    private Integer price;
+    private Long price;
 
     private String status;
 
@@ -43,4 +56,27 @@ public class ArtWork extends BaseEntity {
     private String guaranteeImage;
 
     private String mainImage;
+
+    private boolean frame;
+
+    private String genre;
+
+    private String description;
+
+    @Embedded
+    private ArtWorkSize artWorkSize;
+
+    private String saleStatus;
+
+    public void statusToProcessing() {
+        this.saleStatus= ArtWorkStatus.PROCESSING.getType();
+    }
+
+    public void statusToSalesSuccess() {
+        this.saleStatus = ArtWorkStatus.SALES_SUCCESS.getType();
+    }
+
+    public void statusToSalesFailed() {
+        this.saleStatus = ArtWorkStatus.SALES_FAILED.getType();
+    }
 }

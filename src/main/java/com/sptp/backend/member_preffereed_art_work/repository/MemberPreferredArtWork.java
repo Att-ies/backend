@@ -1,6 +1,7 @@
 package com.sptp.backend.member_preffereed_art_work.repository;
 
 import com.sptp.backend.art_work.repository.ArtWork;
+import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +17,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberPreferredArtWork {
+public class MemberPreferredArtWork extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

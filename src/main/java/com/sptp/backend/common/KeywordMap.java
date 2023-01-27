@@ -7,58 +7,33 @@ import java.util.*;
 
 public class KeywordMap {
 
+    public static final HashMap<String, Integer> map = new HashMap<>();
+
+    private static final String[] keywordNames = {null,
+            "유화", "심플한", "세련된", "모던한", "화려한",
+            "변화의", "비판적인", "젊은", "자유로운", "다양한",
+            "개성적인","소박한", "율동적인", "편안한", "포근한",
+            "자연적인","강한", "다이나믹한", "차가운", "새로운",
+            "소박한", "안정된", "고급수러운", "수수한", "탁한",
+            "우울한", "여유있는", "우아한", "단순한", "선명한",
+            "투명한", "단순한"};
+
+    static {
+        for (int keywordId = 1; keywordId < keywordNames.length; keywordId++) {
+            map.put(keywordNames[keywordId], keywordId);
+        }
+    }
+    public static String getKeywordName(Integer keywordId) {
+        if (keywordId <= 0 || keywordId >= keywordNames.length) {
+            return "";
+        }
+
+        return keywordNames[keywordId];
+    }
+
     public static void checkExistsKeyword(String key) {
         if (!KeywordMap.map.containsKey(key)) {
             throw new CustomException(ErrorCode.NOT_FOUND_KEYWORD);
         }
-    }
-
-    public static String getKeywordName(Integer keywordId) {
-
-        String keywordName = "";
-        Set<Map.Entry<String, Integer>> entrySet = KeywordMap.map.entrySet();
-
-        // KeywordName(key) 구하기
-        for (Map.Entry<String, Integer> entry : entrySet) {
-            if (entry.getValue().equals(keywordId)) {
-                keywordName = entry.getKey();
-                break;
-            }
-        }
-
-        return keywordName;
-    }
-
-    public static final HashMap<String, Integer> map = new HashMap<>();
-    static {
-        map.put("유화", 1);
-        map.put("심플한", 2);
-        map.put("세련된", 3);
-        map.put("모던한", 4);
-        map.put("서양화", 5);
-        map.put("변화의", 6);
-        map.put("비판적인", 7);
-        map.put("동양화", 8);
-        map.put("미디어아트", 9);
-        map.put("풍경화", 10);
-        map.put("화려한", 11);
-        map.put("판화", 12);
-        map.put("사진", 13);
-        map.put("소묘", 14);
-        map.put("파스텔", 15);
-        map.put("추상화", 16);
-        map.put("자유로운", 17);
-        map.put("다양한", 18);
-        map.put("개성적인", 19);
-        map.put("새로운", 20);
-        map.put("한국적인", 21);
-        map.put("강한", 22);
-        map.put("거친", 23);
-        map.put("율동적인", 24);
-        map.put("편안한", 25);
-        map.put("포근한", 26);
-        map.put("자연적인", 27);
-        map.put("다이나믹한", 28);
-        map.put("서양적인", 29);
     }
 }

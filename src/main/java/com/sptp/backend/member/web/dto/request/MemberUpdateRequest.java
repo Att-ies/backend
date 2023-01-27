@@ -14,6 +14,5 @@ public class MemberUpdateRequest {
     private String nickname;
     private String email;
     private String address;
-    private List<String> keywords;
     private Boolean isChanged;
 }

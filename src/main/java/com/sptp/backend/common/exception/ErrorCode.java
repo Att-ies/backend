@@ -27,10 +27,12 @@ public enum ErrorCode {
     NOT_FOUND_KEYWORD(HttpStatus.NOT_FOUND, "해당 키워드를 찾을 수 없습니다."),
     OVER_PREFERRED_ART_WORK_MAXIMUM(HttpStatus.BAD_REQUEST, "관심 작품은 최대 100개까지 등록할 수 있습니다."),
     OVER_PREFERRED_ARTIST_MAXIMUM(HttpStatus.BAD_REQUEST, "픽 작가는 최대 100개까지만 등록할 수 있습니다."),
+    NOT_FOUNT_ASK(HttpStatus.NOT_FOUND, "해당 문의 글이 존재하지 않습니다."),
+    PERMISSION_DENIED(HttpStatus.UNAUTHORIZED, "타인의 글은 수정 및 삭제할 수 없습니다"),
 
     //토큰 예외
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
-    TOKEN_INVALID(HttpStatus.NOT_FOUND, "토큰이 유효하지 않습니다."),
+    TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "토큰이 유효하지 않습니다."),
 
     //채팅 예외
     NOT_FOUND_CHAT_ROOM(HttpStatus.NOT_FOUND, "존재하지 않는 채팅방입니다."),
@@ -38,7 +40,17 @@ public enum ErrorCode {
     //작품 예외
     SHOULD_EXIST_IMAGE(HttpStatus.BAD_REQUEST, "이미지가 존재하지 않습니다."),
     EXIST_USER_PREFERRED_ARTWORK(HttpStatus.CONFLICT, "이미 찜한 작품입니다."),
-    NOT_FOUND_ARTWORK(HttpStatus.NOT_FOUND, "해당 작품을 찾을 수 없습니다.");
+    NOT_FOUND_ARTWORK(HttpStatus.NOT_FOUND, "해당 작품을 찾을 수 없습니다."),
+
+    //경매 예외
+    EXIST_AUCTION_TURN(HttpStatus.CONFLICT, "해당 경매 회차가 이미 존재합니다."),
+    NOT_FOUND_AUCTION_TURN(HttpStatus.NOT_FOUND, "해당 경매 회차가 존재하지 않습니다."),
+    NOT_FOUND_AUCTION_SCHEDULED(HttpStatus.NOT_FOUND, "현재 예정된 경매가 없습니다."),
+    NOT_FOUND_AUCTION_PROCESSING(HttpStatus.NOT_FOUND, "현재 진행중인 경매가 없습니다."),
+
+    NOT_VALID_AUCTION_PERIOD(HttpStatus.BAD_REQUEST, "경매 기간이 아닙니다."),
+    NOT_VALID_BID(HttpStatus.BAD_REQUEST, "유효한 입찰가가 아닙니다. 호가 단위를 확인해주세요.");
+
 
     private final HttpStatus httpStatus;
     private final String detail;

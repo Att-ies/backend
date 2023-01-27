@@ -5,6 +5,8 @@ import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
+import com.sptp.backend.common.NotificationCode;
+import com.sptp.backend.member.event.MemberEvent;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
@@ -15,6 +17,11 @@ import com.sptp.backend.jwt.web.dto.TokenDto;
 import com.sptp.backend.jwt.service.JwtService;
 import com.sptp.backend.member.web.dto.response.*;
 import com.sptp.backend.common.KeywordMap;
+import com.sptp.backend.member_ask.repository.MemberAsk;
+import com.sptp.backend.member_ask.repository.MemberAskRepository;
+import com.sptp.backend.member_ask.repository.MemberAskStatus;
+import com.sptp.backend.member_ask_image.repository.MemberAskImage;
+import com.sptp.backend.member_ask_image.repository.MemberAskImageRepository;
 import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtist;
 import com.sptp.backend.member_preferred_artist.repository.MemberPreferredArtistRepository;
 import com.sptp.backend.member_preffereed_art_work.repository.MemberPreferredArtWork;
@@ -24,6 +31,7 @@ import com.sptp.backend.memberkeyword.repository.MemberKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,8 +46,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -53,8 +61,12 @@ public class MemberService {
     private final MemberPreferredArtistRepository memberPreferredArtistRepository;
     private final ArtWorkRepository artWorkRepository;
     private final MemberPreferredArtWorkRepository memberPreferredArtWorkRepository;
+    private final MemberAskRepository memberAskRepository;
+    private final MemberAskImageRepository memberAskImageRepository;
+    private final ApplicationEventPublisher eventPublisher;
     private final int PREFERRED_ARTIST_MAXIMUM = 100;
     private final int PREFERRED_ART_WORK_MAXIMUM = 100;
+
 
     @Value("${aws.storage.url}")
     private String awsStorageUrl;
@@ -218,21 +230,34 @@ public class MemberService {
         }
     }
 
-    private void updateKeyword(Member member, List<String> keywordList) {
+    @Transactional
+    public List<MemberUpdateKeywordsResponseDto> updateKeyword(Long loginMemberId, MemberUpdateKeywordsRequestDto dto) {
 
-        memberKeywordRepository.deleteByMember(member);
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
-        for (String keywordName : keywordList) {
+        memberKeywordRepository.deleteByMember(findMember);
+
+        List<MemberKeyword> memberKeywords = new ArrayList<>();
+
+        for (String keywordName : dto.getKeywords()) {
 
             KeywordMap.checkExistsKeyword(keywordName);
 
             MemberKeyword memberKeyword = MemberKeyword.builder()
-                    .member(member)
+                    .member(findMember)
                     .keywordId(KeywordMap.map.get(keywordName))
                     .build();
 
             memberKeywordRepository.save(memberKeyword);
+            memberKeywords.add(memberKeyword);
         }
+
+        List<MemberUpdateKeywordsResponseDto> memberUpdateKeywordsResponseDto = memberKeywords.stream()
+                .map(m -> new MemberUpdateKeywordsResponseDto(m.getId(), KeywordMap.getKeywordName(m.getKeywordId())))
+                .collect(Collectors.toList());
+
+        return memberUpdateKeywordsResponseDto;
     }
 
     @Transactional
@@ -260,7 +285,6 @@ public class MemberService {
             checkDuplicateMemberNickname(dto.getNickname());
         }
 
-        updateKeyword(findMember, dto.getKeywords());
         findMember.updateUser(dto, imageUrl);
     }
 
@@ -289,7 +313,6 @@ public class MemberService {
             checkDuplicateMemberNickname(dto.getNickname());
         }
 
-        updateKeyword(findMember, dto.getKeywords());
         findMember.updateArtist(dto, imageUrl);
     }
 
@@ -300,6 +323,7 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         findMember.changeToArtist();
+        eventPublisher.publishEvent(new MemberEvent(findMember, NotificationCode.MEMBER_TO_ARTIST));
 
         return findMember.getRoles().get(0);
     }
@@ -324,6 +348,7 @@ public class MemberService {
 
         if(Objects.equals(findMember.getRoles().get(0), "ROLE_ARTIST")) {
             MemberResponse artistResponse = ArtistResponse.builder()
+                    .id(findMember.getId())
                     .nickname(findMember.getNickname())
                     .userId(findMember.getUserId())
                     .email(findMember.getEmail())
@@ -341,6 +366,7 @@ public class MemberService {
         }
 
         MemberResponse memberResponse = MemberResponse.builder()
+                .id(findMember.getId())
                 .nickname(findMember.getNickname())
                 .userId(findMember.getUserId())
                 .email(findMember.getEmail())
@@ -429,10 +455,29 @@ public class MemberService {
         List<Member> findPreferredArtistList = memberPreferredArtistRepository.findPreferredArtist(loginMemberId);
 
         List<PreferredArtistResponse> preferredArtistResponse = findPreferredArtistList.stream()
-                .map(m -> new PreferredArtistResponse(m.getNickname(), m.getEducation(), processImage(m.getImage())))
+                .map(m -> new PreferredArtistResponse(m.getId(), m.getNickname(), m.getEducation(), processImage(m.getImage())))
                 .collect(Collectors.toList());
 
         return preferredArtistResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public ArtistDetailResponse getArtistDetail(Long artistId) {
+
+        Member artist = memberRepository.findById(artistId)
+                .orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
+        if (!Objects.equals(artist.getRoles().get(0), "ROLE_ARTIST")) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ARTIST);
+        }
+
+        List<ArtWork> artworks = artWorkRepository.findArtWorkByMember(artist);
+
+        return ArtistDetailResponse.builder()
+                .member(ArtistDetailResponse.MemberDto.from(artist, awsStorageUrl))
+                .artworks(artworks.stream()
+                        .map(m -> ArtistDetailResponse.ArtWorkDto.from(m, awsStorageUrl))
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     @Transactional
@@ -483,10 +528,89 @@ public class MemberService {
         List<ArtWork> findPreferredArtWorkList = memberPreferredArtWorkRepository.findPreferredArtWork(loginMemberId);
 
         List<PreferredArtWorkResponse> preferredArtWorkResponse = findPreferredArtWorkList.stream()
-                .map(m -> new PreferredArtWorkResponse(m.getTitle(), m.getPrice(), processImage(m.getMainImage())))
+                .map(m -> new PreferredArtWorkResponse(m.getId(), m.getTitle(), m.getPrice(), processImage(m.getMainImage())))
                 .collect(Collectors.toList());
 
         return preferredArtWorkResponse;
+    }
+
+    @Transactional
+    public void saveAsk(Long loginMemberId, MemberAskRequestDto dto) throws IOException {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        MemberAsk memberAsk = MemberAsk.builder()
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .member(findMember)
+                .status(MemberAskStatus.WAITING.name())
+                .build();
+
+        memberAskRepository.save(memberAsk);
+        saveAskImages(dto.getImage(), memberAsk);
+    }
+
+    @Transactional
+    public void updateAsk(Long loginMemberId, Long memberAskId, MemberAskRequestDto dto) throws IOException {
+
+        MemberAsk findMemberAsk = memberAskRepository.findById(memberAskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUNT_ASK));
+
+        // 자신이 쓴 글이 맞는지 검증
+        if (findMemberAsk.getMember().getId() != loginMemberId) {
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
+        }
+
+        findMemberAsk.updateMemberAsk(dto);
+        saveAskImages(dto.getImage(), findMemberAsk);
+    }
+
+    @Transactional
+    public void deleteAsk(Long loginMemberId, Long memberAskId) {
+
+        MemberAsk findMemberAsk = memberAskRepository.findById(memberAskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUNT_ASK));
+
+        // 자신이 쓴 글이 맞는지 검증
+        if (findMemberAsk.getMember().getId() != loginMemberId) {
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
+        }
+
+        memberAskRepository.deleteById(findMemberAsk.getId());
+    }
+
+    private void saveAskImages(MultipartFile[] files, MemberAsk memberAsk) throws IOException {
+
+        if(files[0].isEmpty()) return;
+
+        for (MultipartFile file : files) {
+
+            String imageUUID = UUID.randomUUID().toString();
+            String imageEXT = fileService.extractExt(file.getOriginalFilename());
+
+            MemberAskImage memberAskImage = MemberAskImage.builder()
+                    .memberAsk(memberAsk)
+                    .image(imageUUID + "." + imageEXT)
+                    .build();
+
+            memberAskImageRepository.save(memberAskImage);
+            awsService.uploadImage(file, imageUUID);
+        }
+    }
+
+    public List<MemberAskResponse> getAskList(Long loginMemberId) {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        List<MemberAsk> askList = memberAskRepository.findByMemberId(loginMemberId);
+
+        List<MemberAskResponse> memberAskResponseList = askList.stream()
+                .map(m -> new MemberAskResponse(m.getId(), m.getTitle(), m.getContent(), m.getAnswer(), m.getStatus(), m.getCreatedDate()))
+                .collect(Collectors.toList());
+
+        return memberAskResponseList;
     }
 
     //이미지 처리
@@ -496,5 +620,27 @@ public class MemberService {
             return null;
         }
         return awsStorageUrl + image;
+    }
+
+    @Transactional(readOnly = true)
+    public CustomizedArtWorkResponse getCustomizedArtWorkList (Long loginMemberId, Integer page, Integer limit) {
+
+        List<Integer> findMemberKeywordIdList = memberKeywordRepository.findKeywordIdByMemberId(loginMemberId); // 콜렉터의 keywordId 리스트 반환
+
+        List<ArtWork> artworks = memberRepository.findCustomizedArtWork(findMemberKeywordIdList, page, limit); // 콜렉터 취향과 일치하는 keywordId 개수에 따라 작품 나열해 반환
+
+        boolean nextPage = false;
+        if(artworks.size() == limit+1) {
+            nextPage = true;
+            artworks.remove(limit+0); // limit+1개만큼 가져옴. 마지막 원소 삭제 필요
+        }
+
+
+        return CustomizedArtWorkResponse.builder()
+                .nextPage(nextPage)
+                .artworks(artworks.stream()
+                        .map(m ->CustomizedArtWorkResponse.ArtWorkDto.from(m, awsStorageUrl))
+                        .collect(Collectors.toList()))
+                .build();
     }
 }

@@ -9,9 +9,11 @@ import lombok.*;
 @Builder
 public class PreferredArtWorkResponse {
 
+    private Long id;
+
     private String title;
 
-    private Integer price;
+    private Long price;
 
     private String image;
 }

@@ -1,4 +1,10 @@
+# 배포시 80포트 설정
+
+#server:
+#  port: 80
+
 spring:
+
   servlet:
     multipart:
       max-file-size: 10MB
@@ -19,8 +25,10 @@ spring:
       ddl-auto: create
     properties:
       hibernate:
+#        show_sql: true
         format_sql: true
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        default_batch_fetch_size: 100
 
   security:
     oauth2:

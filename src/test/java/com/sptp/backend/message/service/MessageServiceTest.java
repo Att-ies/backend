@@ -1,6 +1,6 @@
 package com.sptp.backend.message.service;
 
-import com.sptp.backend.artwork.repository.ArtWork;
+import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.chat_room.repository.ChatRoom;
 import com.sptp.backend.chat_room.repository.ChatRoomRepository;
 import com.sptp.backend.common.exception.CustomException;
@@ -10,7 +10,6 @@ import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.message.repository.Message;
 import com.sptp.backend.message.repository.MessageRepository;
 import com.sptp.backend.message.web.dto.MessageRequest;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,8 +22,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,7 +44,7 @@ class MessageServiceTest {
     class saveMessageTest {
         long senderId = 1L;
         long receiverId = 2L;
-        long artWorkId = 4L;
+        long artWorkId = 3L;
         long chatRoomId = 4L;
         Member sender;
         Member receiver;
@@ -76,11 +73,12 @@ class MessageServiceTest {
             chatRoom = ChatRoom.builder()
                     .id(chatRoomId)
                     .artist(sender)
-                    .collector(receiver)
+                    .member(receiver)
                     .artWork(artWork)
                     .build();
 
             messageRequest = MessageRequest.builder()
+                    .senderId(senderId)
                     .chatRoomId(chatRoomId)
                     .message("test")
                     .build();
@@ -100,7 +98,7 @@ class MessageServiceTest {
 
             //when
             //then
-            assertThatNoException().isThrownBy(() -> messageService.saveMessage(senderId, messageRequest));
+            assertThatNoException().isThrownBy(() -> messageService.saveMessage(messageRequest));
         }
 
         @Test
@@ -111,7 +109,7 @@ class MessageServiceTest {
 
             //when
             //then
-            assertThatThrownBy(() -> messageService.saveMessage(senderId, messageRequest))
+            assertThatThrownBy(() -> messageService.saveMessage(messageRequest))
                     .isInstanceOf(CustomException.class)
                     .message().isEqualTo(ErrorCode.NOT_FOUND_MEMBER.getDetail());
         }
@@ -127,7 +125,7 @@ class MessageServiceTest {
 
             //when
             //then
-            assertThatThrownBy(() -> messageService.saveMessage(senderId, messageRequest))
+            assertThatThrownBy(() -> messageService.saveMessage(messageRequest))
                     .isInstanceOf(CustomException.class)
                     .message().isEqualTo(ErrorCode.NOT_FOUND_CHAT_ROOM.getDetail());
         }

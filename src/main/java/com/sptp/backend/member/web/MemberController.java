@@ -1,6 +1,5 @@
 package com.sptp.backend.member.web;
 
-import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import com.sptp.backend.member.web.dto.request.*;
 import com.sptp.backend.jwt.service.JwtService;
@@ -21,7 +20,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -246,6 +244,13 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(preferredArtistResponse);
     }
 
+    // 회원-작가 픽 -> 작가 상세 조회
+    @GetMapping("/artists/{artistId}")
+    public ResponseEntity<ArtistDetailResponse> getArtistDetail(@PathVariable Long artistId) {
+
+        return ResponseEntity.ok(memberService.getArtistDetail(artistId));
+    }
+
     // 회원-작품 찜 관계 등록 (작품 찜하기)
     @PostMapping("/members/preferred-artworks/{artWorkId}")
     public ResponseEntity<Void> pickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -273,5 +278,65 @@ public class MemberController {
         List<PreferredArtWorkResponse> preferredArtWorkResponse = memberService.getPreferredArtWorkList(userDetails.getMember().getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(preferredArtWorkResponse);
+    }
+
+    // 회원-작품 취향 맞춤 추천 목록 조회
+    @GetMapping("/members/customized-artworks")
+    public ResponseEntity<CustomizedArtWorkResponse> customizedArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                                 @RequestParam("page") Integer page, @RequestParam("limit") Integer limit) {
+
+        CustomizedArtWorkResponse customizedArtWorkResponse = memberService.getCustomizedArtWorkList(userDetails.getMember().getId(), page, limit);
+
+        return ResponseEntity.status(HttpStatus.OK).body(customizedArtWorkResponse);
+    }
+
+    // 일대일 문의
+    @PostMapping("/members/ask")
+    public ResponseEntity<Void> saveAsk(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                        MemberAskRequestDto memberAskRequestDto) throws IOException {
+
+        memberService.saveAsk(userDetails.getMember().getId(), memberAskRequestDto);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 일대일 문의 수정
+    @PatchMapping("/members/ask/{askId}")
+    public ResponseEntity<Void> updateAsk(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                          @PathVariable(value = "askId") Long askId,
+                                          MemberAskRequestDto memberAskRequestDto) throws IOException {
+
+        memberService.updateAsk(userDetails.getMember().getId(), askId, memberAskRequestDto);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 일대일 문의 삭제
+    @DeleteMapping("/members/ask/{askId}")
+    public ResponseEntity<Void> deleteAsk(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                          @PathVariable(value = "askId") Long askId) throws IOException {
+
+        memberService.deleteAsk(userDetails.getMember().getId(), askId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 일대일 문의 목록 조회
+    @GetMapping("/members/ask")
+    public ResponseEntity<List<MemberAskResponse>> getAskList(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        List<MemberAskResponse> memberAskResponsesList = memberService.getAskList(userDetails.getMember().getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(memberAskResponsesList);
+    }
+
+    // 관심 키워드 수정
+    @PatchMapping("/members/keywords")
+    public ResponseEntity<List<MemberUpdateKeywordsResponseDto>> updateKeywords(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                         @RequestBody MemberUpdateKeywordsRequestDto memberUpdateKeywordsRequestDto) {
+
+        List<MemberUpdateKeywordsResponseDto> memberUpdateKeywordsResponseDto = memberService.updateKeyword(userDetails.getMember().getId(), memberUpdateKeywordsRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(memberUpdateKeywordsResponseDto);
     }
 }
