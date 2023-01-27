@@ -18,6 +18,7 @@ public class AuctionController {
     private final AuctionService auctionService;
     private final ArtWorkService artWorkService;
 
+    // 경매 생성
     @PostMapping("/art-works/auction")
     public ResponseEntity<Void> saveAuction(@RequestBody AuctionSaveRequestDto auctionSaveRequestDto) {
 
@@ -26,6 +27,7 @@ public class AuctionController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 경매 시작
     @PatchMapping("/art-works/auction")
     public ResponseEntity<Void> startAuction(@RequestBody AuctionStartRequestDto auctionStartRequestDto) {
 
@@ -34,6 +36,7 @@ public class AuctionController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 경매 종료
     @DeleteMapping("/art-works/auction")
     public ResponseEntity<Void> terminateAuction(@RequestBody AuctionTerminateRequestDto auctionTerminateRequestDto) {
 
@@ -42,6 +45,7 @@ public class AuctionController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 현재 경매 작품 조회
     @GetMapping("/art-works/auction")
     public ResponseEntity<AuctionArtWorkListResponseDto> getProcessingAuction() {
 
