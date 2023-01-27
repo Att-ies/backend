@@ -629,8 +629,15 @@ public class MemberService {
 
         List<ArtWork> artworks = memberRepository.findCustomizedArtWork(findMemberKeywordIdList, page, limit); // 콜렉터 취향과 일치하는 keywordId 개수에 따라 작품 나열해 반환
 
+        boolean nextPage = false;
+        if(artworks.size() == limit+1) {
+            nextPage = true;
+            artworks.remove(limit+0); // limit+1개만큼 가져옴. 마지막 원소 삭제 필요
+        }
+
+
         return CustomizedArtWorkResponse.builder()
-                .nextPage(true)
+                .nextPage(nextPage)
                 .artworks(artworks.stream()
                         .map(m ->CustomizedArtWorkResponse.ArtWorkDto.from(m, awsStorageUrl))
                         .collect(Collectors.toList()))

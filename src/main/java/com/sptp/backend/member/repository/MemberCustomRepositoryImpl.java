@@ -21,7 +21,7 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                 .where(artWork.id.eq(artWorkKeyword.artWork.id), artWorkKeyword.keywordId.in(memberKeywordId))
                 .groupBy(artWork.id)
                 .orderBy(artWork.count().desc(), artWork.createdDate.desc())
-                .limit(limit)
+                .limit(limit+1)
                 .offset(limit * (page-1))
                 .fetch();
     }
