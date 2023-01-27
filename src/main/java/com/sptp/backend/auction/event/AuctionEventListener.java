@@ -55,6 +55,7 @@ public class AuctionEventListener {
     // 작가
     public void sendToArtist(Member member, ArtWork artWork, NotificationCode notificationCode) {
 
+        
         saveNotification(member, artWork, notificationCode);
     }
 
@@ -67,14 +68,7 @@ public class AuctionEventListener {
     // 구매자
     public void sendToBuyer(ArtWork artWork, NotificationCode notificationCode) {
 
-        System.out.println("랄랄랄라" + artWork.getId()); // 출력해보기 memberid
-        //Optional<Bidding> bidding= biddingRepository.findFirstByArtWorkOrderByPriceDesc(artWork);
-        //System.out.println(bidding.get().getMember().getId());
-        //saveNotification(bidding.get().getMember(), artWork, notificationCode);
-        Optional<Bidding> topPriceBiddingOptional = biddingRepository.getFirstByArtWorkOrderByPriceDesc(artWork);
 
-        System.out.println(topPriceBiddingOptional.get().getPrice());
-        System.out.println(topPriceBiddingOptional.get().getMember().getId());
     }
 
     // 구매실패자

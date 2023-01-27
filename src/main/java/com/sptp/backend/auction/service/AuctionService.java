@@ -73,7 +73,6 @@ public class AuctionService {
 
         auction.statusToTerminate();
 
-        artWorkRepository.updateStatusToTerminated(auction.getId());
         updateStatusToTerminated(artWorks);
 
         eventPublisher.publishEvent(new AuctionEvent(auction, NotificationCode.SUCCESSFUL_BID));
