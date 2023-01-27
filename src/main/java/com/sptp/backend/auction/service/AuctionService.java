@@ -56,10 +56,13 @@ public class AuctionService {
 
         auction.statusToProcessing();
 
-        eventPublisher.publishEvent(new AuctionEvent(auction, NotificationCode.SAVE_AUCTION));
-        eventPublisher.publishEvent(new AuctionEvent(auction, NotificationCode.SAVE_DISPLAY));
-
         artWorkRepository.updateStatusToProcessing(auction.getId());
+
+        List<ArtWork> artWorks = artWorkRepository.findByAuctionId(auction.getId());
+        for(ArtWork artWork : artWorks) {
+            eventPublisher.publishEvent(new AuctionEvent(artWork, NotificationCode.SAVE_AUCTION));
+            eventPublisher.publishEvent(new AuctionEvent(artWork, NotificationCode.SAVE_DISPLAY));
+        }
     }
 
     @Transactional
@@ -73,19 +76,18 @@ public class AuctionService {
 
         auction.statusToTerminate();
 
-        updateStatusToTerminated(artWorks);
-
-        eventPublisher.publishEvent(new AuctionEvent(auction, NotificationCode.SUCCESSFUL_BID));
-        eventPublisher.publishEvent(new AuctionEvent(auction, NotificationCode.FAILED_BID));
+        updateStatusToTerminated(artWorks, auction);
     }
 
-    private void updateStatusToTerminated(List<ArtWork> artWorks) {
+    private void updateStatusToTerminated(List<ArtWork> artWorks, Auction auction) {
 
         for (ArtWork artWork : artWorks) {
             if (biddingRepository.existsByArtWorkId(artWork.getId())) {
                 artWork.statusToSalesSuccess();
+                eventPublisher.publishEvent(new AuctionEvent(artWork, NotificationCode.SUCCESSFUL_BID));
             }else {
                 artWork.statusToSalesFailed();
+                eventPublisher.publishEvent(new AuctionEvent(artWork, NotificationCode.FAILED_BID));
             }
         }
     }

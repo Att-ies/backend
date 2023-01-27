@@ -23,65 +23,38 @@ import java.util.Optional;
 @Transactional
 @Component
 @RequiredArgsConstructor
-public class AuctionEventListener {
+public class    AuctionEventListener {
 
     private final NotificationRepository notificationRepository;
     private final ArtWorkRepository artWorkRepository;
     private final BiddingRepository biddingRepository;
 
-    // 경매 등록 알림(작가), 전시회 등록 알림(작가), 작품 낙찰 성공(판매자,구매자), 작품 유찰 알림(판매실패자)
+    // 경매 등록 알림(판매자), 전시회 등록 알림(판매자), 작품 낙찰 성공(판매자,구매자), 작품 유찰 알림(판매자)
     @EventListener
     public void handleAuctionEvent(AuctionEvent auctionEvent) {
 
         NotificationCode notificationCode = auctionEvent.getNotificationCode();
-        Auction auction = auctionEvent.getAuction();
+        ArtWork artWork = auctionEvent.getArtWork();
 
-        Iterable<ArtWork> artWorks = artWorkRepository.findByAuctionId(auction.getId());
-        for(ArtWork artWork : artWorks) {
+        noticeToSeller(artWork, notificationCode);
 
-            if(notificationCode.equals(NotificationCode.SAVE_AUCTION) || notificationCode.equals(NotificationCode.SAVE_DISPLAY)) {
-                sendToArtist(artWork.getMember(), artWork, notificationCode);
-            }
-            if(notificationCode.equals(NotificationCode.SUCCESSFUL_BID)) {
-                sendToSeller(artWork.getMember(), artWork, notificationCode);
-                sendToBuyer(artWork, notificationCode);
-            }
-            if(notificationCode.equals(NotificationCode.FAILED_BID)) {
-                sendToFailure(artWork, notificationCode);
-            }
+        if(notificationCode.equals(NotificationCode.SUCCESSFUL_BID)) {
+            noticeToBuyer(artWork, notificationCode);
         }
-    }
-
-    // 작가
-    public void sendToArtist(Member member, ArtWork artWork, NotificationCode notificationCode) {
-
-        saveNotification(member, artWork, notificationCode);
     }
 
     // 판매자
-    public void sendToSeller(Member member, ArtWork artWork, NotificationCode notificationCode) {
-        
-        if(artWork.getSaleStatus().equals("sales_success")) {
-            saveNotification(member, artWork, notificationCode);
-        }
+    public void noticeToSeller(ArtWork artWork, NotificationCode notificationCode) {
+
+        saveNotification(artWork.getMember(), artWork, notificationCode);
     }
 
     // 구매자
-    public void sendToBuyer(ArtWork artWork, NotificationCode notificationCode) {
+    public void noticeToBuyer(ArtWork artWork, NotificationCode notificationCode) {
 
-
-    }
-
-    // 구매실패자
-    public void sendToFailure(ArtWork artWork, NotificationCode notificationCode) {
-
-        Iterable<Bidding> biddings = biddingRepository.findAllByArtWorkOrderByPriceDesc(artWork);
-        int index=0;
-        for(Bidding bidding : biddings) {
-            if(index!=0){
-                saveNotification(bidding.getMember(), artWork, notificationCode);
-            }
-            index++;
+        Optional<Bidding> bidding = biddingRepository.getFirstByArtWorkOrderByPriceDesc(artWork);
+        if(bidding.isPresent()) {
+            saveNotification(bidding.get().getMember(), artWork, notificationCode);
         }
     }
 
