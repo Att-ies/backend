@@ -28,6 +28,7 @@ import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
+import com.sptp.backend.member_preffereed_art_work.repository.MemberPreferredArtWorkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -55,6 +56,7 @@ public class ArtWorkService extends BaseEntity {
     private final ApplicationEventPublisher eventPublisher;
 
     private final AuctionRepository auctionRepository;
+    private final MemberPreferredArtWorkRepository memberPreferredArtWorkRepository;
 
     @Value("${aws.storage.url}")
     private String storageUrl;
@@ -191,7 +193,7 @@ public class ArtWorkService extends BaseEntity {
     }
 
     @Transactional(readOnly = true)
-    public ArtWorkInfoResponseDto getArtWork(Long artWorkId) {
+    public ArtWorkInfoResponseDto getArtWork(Long artWorkId, Member member) {
 
         ArtWork findArtWork = artWorkRepository.findById(artWorkId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
@@ -199,12 +201,19 @@ public class ArtWorkService extends BaseEntity {
         Member findArtist = memberRepository.findById(findArtWork.getMember().getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
 
+        boolean isPreferred = false;
+
+        if (memberPreferredArtWorkRepository.existsByMemberAndArtWork(member, findArtWork)) {
+            isPreferred = true;
+        }
+
         List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorkId(artWorkId);
         List<ArtWorkKeyword> artWorkKeywords = artWorkKeywordRepository.findByArtWorkId(artWorkId);
 
         return ArtWorkInfoResponseDto.builder()
                 .artist(ArtWorkInfoResponseDto.ArtistDto.from(findArtist, storageUrl))
                 .artWork(ArtWorkInfoResponseDto.ArtWorkDto.from(findArtWork, artWorkImages, artWorkKeywords, storageUrl))
+                .isPreferred(isPreferred)
                 .build();
     }
 
