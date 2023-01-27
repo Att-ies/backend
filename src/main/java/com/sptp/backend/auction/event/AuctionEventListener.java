@@ -16,6 +16,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @Async
 @Transactional
@@ -27,7 +29,7 @@ public class AuctionEventListener {
     private final ArtWorkRepository artWorkRepository;
     private final BiddingRepository biddingRepository;
 
-    // 경매 등록 알림(판매자), 전시회 등록 알림(판매자), 작품 낙찰 성공(판매자,구매자), 작품 유찰 알림(판매자,구매실패자)
+    // 경매 등록 알림(작가), 전시회 등록 알림(작가), 작품 낙찰 성공(판매자,구매자), 작품 유찰 알림(판매실패자)
     @EventListener
     public void handleAuctionEvent(AuctionEvent auctionEvent) {
 
@@ -36,9 +38,12 @@ public class AuctionEventListener {
 
         Iterable<ArtWork> artWorks = artWorkRepository.findByAuctionId(auction.getId());
         for(ArtWork artWork : artWorks) {
-            sendToSeller(artWork.getMember(), artWork, notificationCode);
 
+            if(notificationCode.equals(NotificationCode.SAVE_AUCTION) || notificationCode.equals(NotificationCode.SAVE_DISPLAY)) {
+                sendToArtist(artWork.getMember(), artWork, notificationCode);
+            }
             if(notificationCode.equals(NotificationCode.SUCCESSFUL_BID)) {
+                sendToSeller(artWork.getMember(), artWork, notificationCode);
                 sendToBuyer(artWork, notificationCode);
             }
             if(notificationCode.equals(NotificationCode.FAILED_BID)) {
@@ -47,17 +52,29 @@ public class AuctionEventListener {
         }
     }
 
+    // 작가
+    public void sendToArtist(Member member, ArtWork artWork, NotificationCode notificationCode) {
+
+        saveNotification(member, artWork, notificationCode);
+    }
+
     // 판매자
     public void sendToSeller(Member member, ArtWork artWork, NotificationCode notificationCode) {
 
-        saveNotification(member, artWork, notificationCode);
+        
     }
 
     // 구매자
     public void sendToBuyer(ArtWork artWork, NotificationCode notificationCode) {
 
-        Member member = biddingRepository.getFirstByArtWorkOrderByPriceDesc(artWork).get().getMember();
-        saveNotification(member, artWork, notificationCode);
+        System.out.println("랄랄랄라" + artWork.getId()); // 출력해보기 memberid
+        //Optional<Bidding> bidding= biddingRepository.findFirstByArtWorkOrderByPriceDesc(artWork);
+        //System.out.println(bidding.get().getMember().getId());
+        //saveNotification(bidding.get().getMember(), artWork, notificationCode);
+        Optional<Bidding> topPriceBiddingOptional = biddingRepository.getFirstByArtWorkOrderByPriceDesc(artWork);
+
+        System.out.println(topPriceBiddingOptional.get().getPrice());
+        System.out.println(topPriceBiddingOptional.get().getMember().getId());
     }
 
     // 구매실패자
