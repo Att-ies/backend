@@ -55,14 +55,15 @@ public class AuctionEventListener {
     // 작가
     public void sendToArtist(Member member, ArtWork artWork, NotificationCode notificationCode) {
 
-        
         saveNotification(member, artWork, notificationCode);
     }
 
     // 판매자
     public void sendToSeller(Member member, ArtWork artWork, NotificationCode notificationCode) {
-
         
+        if(artWork.getSaleStatus().equals("sales_success")) {
+            saveNotification(member, artWork, notificationCode);
+        }
     }
 
     // 구매자
