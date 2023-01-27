@@ -214,6 +214,7 @@ public class ArtWorkService extends BaseEntity {
                 .artist(ArtWorkInfoResponseDto.ArtistDto.from(findArtist, storageUrl))
                 .artWork(ArtWorkInfoResponseDto.ArtWorkDto.from(findArtWork, artWorkImages, artWorkKeywords, storageUrl))
                 .isPreferred(isPreferred)
+                .turn(findArtWork.getAuction().getTurn())
                 .build();
     }
 
