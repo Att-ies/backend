@@ -95,7 +95,17 @@ public class AuctionService {
         }
 
         List<AuctionListResponseDto> auctionListResponseDto = auctionList.stream()
-                .map(m-> new AuctionListResponseDto(m.getTurn(), m.getStartDate(), m.getEndDate(), m.getStatus())).collect(Collectors.toList());
+                .map(m-> new AuctionListResponseDto(m.getId(), m.getTurn(), m.getStartDate(), m.getEndDate(), m.getStatus())).collect(Collectors.toList());
+
+        return auctionListResponseDto;
+    }
+
+    public List<AuctionListResponseDto> getTerminatedAuctionList() {
+
+        List<Auction> terminatedAuctionList = auctionRepository.findTerminatedAuction();
+
+        List<AuctionListResponseDto> auctionListResponseDto = terminatedAuctionList.stream()
+                .map(m -> new AuctionListResponseDto(m.getId(), m.getTurn(), m.getStartDate(), m.getEndDate(), m.getStatus())).collect(Collectors.toList());
 
         return auctionListResponseDto;
     }

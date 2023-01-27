@@ -12,13 +12,15 @@ import java.time.LocalDateTime;
 @Builder
 public class AuctionListResponseDto {
 
-    Integer turn;
+    private Long id;
+
+    private Integer turn;
 
     @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
-    LocalDateTime startDate;
+    private LocalDateTime startDate;
 
     @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
-    LocalDateTime endDate;
+    private LocalDateTime endDate;
 
-    String status;
+    private String status;
 }

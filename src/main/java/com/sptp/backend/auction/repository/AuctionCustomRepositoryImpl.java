@@ -45,4 +45,14 @@ public class AuctionCustomRepositoryImpl implements AuctionCustomRepository{
                 .fetch();
     }
 
+    @Override
+    public List<Auction> findTerminatedAuction() {
+        return queryFactory
+                .select(auction)
+                .from(auction)
+                .where(auction.status.eq(AuctionStatus.TERMINATED.getType()))
+                .fetch();
+    }
+
+
 }

@@ -9,4 +9,6 @@ public interface AuctionCustomRepository {
     Auction findCurrentlyProcessingAuction();
 
     List<Auction> findScheduledAuction();
+
+    List<Auction> findTerminatedAuction();
 }

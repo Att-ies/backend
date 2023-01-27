@@ -65,4 +65,13 @@ public class AuctionController {
 
         return ResponseEntity.status(HttpStatus.OK).body(auctionListResponseDto);
     }
+
+    // 지난 경매 조회
+    @GetMapping("/auction/period-over")
+    public ResponseEntity<List<AuctionListResponseDto>> getTerminatedAuctionList() {
+
+        List<AuctionListResponseDto> auctionListResponseDto = auctionService.getTerminatedAuctionList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(auctionListResponseDto);
+    }
 }
