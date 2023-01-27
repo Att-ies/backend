@@ -1,5 +1,6 @@
 package com.sptp.backend.art_work.repository;
 
+import com.sptp.backend.auction.repository.Auction;
 import com.sptp.backend.member.repository.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 

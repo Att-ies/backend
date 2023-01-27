@@ -1,9 +1,6 @@
 package com.sptp.backend.common.config;
 
-import com.sptp.backend.jwt.web.CustomAccessDeniedHandler;
-import com.sptp.backend.jwt.web.CustomAuthenticationEntryPoint;
-import com.sptp.backend.jwt.web.JwtAuthenticationFilter;
-import com.sptp.backend.jwt.web.JwtTokenProvider;
+import com.sptp.backend.jwt.web.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,10 +25,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate redisTemplate;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -57,8 +54,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/art-works").hasRole("ARTIST")
                 .anyRequest().authenticated(); // 그외 나머지 요청은 인증 필요
 
-        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 실행
+        http.addFilterBefore(jwtExceptionFilter, jwtAuthenticationFilter.getClass());
     }
 
     @Bean

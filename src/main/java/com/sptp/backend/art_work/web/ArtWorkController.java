@@ -41,7 +41,6 @@ public class ArtWorkController {
     }
 
     // 작품 상세 조회
-
     @GetMapping("/{artWorkId}")
     public ResponseEntity<ArtWorkInfoResponseDto> getArtWork(@PathVariable("artWorkId") Long artWorkId) {
 
@@ -49,8 +48,8 @@ public class ArtWorkController {
 
         return ResponseEntity.status(HttpStatus.OK).body(artWorkInfoResponseDto);
     }
-    // 내 등록 작품 조회
 
+    // 내 등록 작품 조회
     @GetMapping("/me")
     public ResponseEntity<List<ArtWorkMyListResponseDto>> getMyArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails) {
 

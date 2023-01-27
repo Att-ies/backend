@@ -14,7 +14,7 @@ public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
 
         queryFactory
                 .update(QArtWork.artWork)
-                .set(QArtWork.artWork.saleStatus, AuctionStatus.PROCESSING.getType())
+                .set(QArtWork.artWork.saleStatus, ArtWorkStatus.PROCESSING.getType())
                 .where(QArtWork.artWork.auction.id.eq(auctionId))
                 .execute();
     }
@@ -24,7 +24,7 @@ public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
 
         queryFactory
                 .update(QArtWork.artWork)
-                .set(QArtWork.artWork.saleStatus, AuctionStatus.TERMINATED.getType())
+                .set(QArtWork.artWork.saleStatus, ArtWorkStatus.SALES_SUCCESS.getType())
                 .where(QArtWork.artWork.auction.id.eq(auctionId))
                 .execute();
     }

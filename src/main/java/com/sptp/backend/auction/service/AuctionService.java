@@ -1,6 +1,7 @@
 package com.sptp.backend.auction.service;
 
 import com.sptp.backend.art_work.event.ArtWorkEvent;
+import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.auction.event.AuctionEvent;
 import com.sptp.backend.auction.repository.Auction;
@@ -10,6 +11,7 @@ import com.sptp.backend.auction.web.dto.request.AuctionSaveRequestDto;
 import com.sptp.backend.auction.web.dto.request.AuctionStartRequestDto;
 import com.sptp.backend.auction.web.dto.request.AuctionTerminateRequestDto;
 import com.sptp.backend.common.NotificationCode;
+import com.sptp.backend.bidding.repository.BiddingRepository;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ public class AuctionService {
 
     private final AuctionRepository auctionRepository;
     private final ArtWorkRepository artWorkRepository;
+    private final BiddingRepository biddingRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -66,11 +69,25 @@ public class AuctionService {
             throw new CustomException(ErrorCode.NOT_FOUND_AUCTION_TURN);
         });
 
+        List<ArtWork> artWorks = artWorkRepository.findByAuctionId(auction.getId());
+
         auction.statusToTerminate();
 
         eventPublisher.publishEvent(new AuctionEvent(auction, NotificationCode.SUCCESSFUL_BID));
         eventPublisher.publishEvent(new AuctionEvent(auction, NotificationCode.FAILED_BID));
 
         artWorkRepository.updateStatusToTerminated(auction.getId());
+        updateStatusToTerminated(artWorks);
+    }
+
+    private void updateStatusToTerminated(List<ArtWork> artWorks) {
+
+        for (ArtWork artWork : artWorks) {
+            if (biddingRepository.existsByArtWorkId(artWork.getId())) {
+                artWork.statusToSalesSuccess();
+            }else {
+                artWork.statusToSalesFailed();
+            }
+        }
     }
 }
