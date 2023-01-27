@@ -76,10 +76,10 @@ public class AuctionService {
 
         auction.statusToTerminate();
 
-        updateStatusToTerminated(artWorks, auction);
+        updateStatusToTerminated(artWorks);
     }
 
-    private void updateStatusToTerminated(List<ArtWork> artWorks, Auction auction) {
+    private void updateStatusToTerminated(List<ArtWork> artWorks) {
 
         for (ArtWork artWork : artWorks) {
             if (biddingRepository.existsByArtWorkId(artWork.getId())) {
