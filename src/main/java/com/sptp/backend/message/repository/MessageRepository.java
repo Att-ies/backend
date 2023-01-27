@@ -12,7 +12,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @EntityGraph(attributePaths = {"sender"})
     List<Message> findAllByChatRoomOrderByIdAsc(ChatRoom chatRom);
 
-    Message findFirstByChatRoomOrderByIdDesc(ChatRoom chatRoom);
+    Optional<Message> findFirstByChatRoomOrderByIdDesc(ChatRoom chatRoom);
 
     Integer countByChatRoomAndIsReadIsFalse(ChatRoom chatRoom);
 }

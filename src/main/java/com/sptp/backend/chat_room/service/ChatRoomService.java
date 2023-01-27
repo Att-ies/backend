@@ -78,9 +78,16 @@ public class ChatRoomService {
                         .artWorkImage(awsService.getOriginImageUrl(chatRoom.getArtWork().getMainImage()))
                         .unreadCount(getUnreadCount(chatRoom))
                         .otherMember(getOtherMemberDto(chatRoom.getOtherMember(loginMemberId)))
-                        .lastMessage(ChatRoomResponse.MessageDto.from(getLastMessage(chatRoom)))
+                        .lastMessage(getLastMessageDto(chatRoom))
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private ChatRoomResponse.MessageDto getLastMessageDto(ChatRoom chatRoom) {
+        return messageRepository.findFirstByChatRoomOrderByIdDesc(chatRoom)
+                .map(ChatRoomResponse.MessageDto::from)
+                .orElse(null);
+
     }
 
     private ChatRoomResponse.MemberDto getOtherMemberDto(Member otherMember) {
@@ -89,10 +96,6 @@ public class ChatRoomService {
 
     private Integer getUnreadCount(ChatRoom chatRoom) {
         return messageRepository.countByChatRoomAndIsReadIsFalse(chatRoom);
-    }
-
-    private Message getLastMessage(ChatRoom chatRoom) {
-        return messageRepository.findFirstByChatRoomOrderByIdDesc(chatRoom);
     }
 
     public void leaveChatRoom(Long chatRoomId) {
