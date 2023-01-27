@@ -12,6 +12,9 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class MessageRequest {
 
+    @NotNull(message = "보내는 사람의 고유 번호는 필수입니다.")
+    private Long senderId;
+
     @NotNull(message = "채팅방 고유 번호는 필수입니다.")
     private Long chatRoomId;
 

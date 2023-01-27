@@ -76,4 +76,9 @@ public class Bidding extends BaseEntity {
 
         return false;
     }
+
+    public void setArtWork(ArtWork artWork) {
+        this.artWork = artWork;
+        artWork.getBiddingList().add(this);
+    }
 }

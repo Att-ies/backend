@@ -22,9 +22,9 @@ public class MessageService {
     private final ChatRoomRepository chatRoomRepository;
     private final MemberRepository memberRepository;
 
-    public void saveMessage(Long loginMemberId, MessageRequest messageRequest) {
+    public void saveMessage(MessageRequest messageRequest) {
 
-        Member sender = memberRepository.findById(loginMemberId)
+        Member sender = memberRepository.findById(messageRequest.getSenderId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         ChatRoom chatRoom = chatRoomRepository.findById(messageRequest.getChatRoomId())
