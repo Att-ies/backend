@@ -282,10 +282,10 @@ public class MemberController {
 
     // 회원-작품 취향 맞춤 추천 목록 조회
     @GetMapping("/members/customized-artworks")
-    public ResponseEntity<List<CustomizedArtWorkResponse>> customizedArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<CustomizedArtWorkResponse> customizedArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                                  @RequestParam("page") Integer page, @RequestParam("limit") Integer limit) {
 
-        List<CustomizedArtWorkResponse> customizedArtWorkResponse = memberService.getCustomizedArtWorkList(userDetails.getMember().getId(), page, limit);
+        CustomizedArtWorkResponse customizedArtWorkResponse = memberService.getCustomizedArtWorkList(userDetails.getMember().getId(), page, limit);
 
         return ResponseEntity.status(HttpStatus.OK).body(customizedArtWorkResponse);
     }
