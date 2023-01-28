@@ -339,7 +339,7 @@ public class ArtWorkService extends BaseEntity {
 
         ArtWorkTerminatedListResponseDto artWorkTerminatedListResponseDto = ArtWorkTerminatedListResponseDto.builder()
                 .nextPage(hasNext)
-                .artWorkList(artWorkDtoList)
+                .artWorks(artWorkDtoList)
                 .build();
 
         return artWorkTerminatedListResponseDto;

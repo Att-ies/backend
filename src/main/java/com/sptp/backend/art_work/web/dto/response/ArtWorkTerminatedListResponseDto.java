@@ -13,7 +13,7 @@ import java.util.List;
 public class ArtWorkTerminatedListResponseDto {
 
     private boolean nextPage;
-    private List<ArtWorkDto> artWorkList;
+    private List<ArtWorkDto> artWorks;
 
     @Data
     @Builder
