@@ -18,6 +18,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +37,10 @@ public class AuctionService {
 
         if (auctionRepository.existsByTurn(dto.getTurn())) {
             throw new CustomException(ErrorCode.EXIST_AUCTION_TURN);
+        }
+
+        if (LocalDateTime.now().isAfter(dto.getStartDate()) || LocalDateTime.now().isAfter(dto.getEndDate())) {
+            throw new CustomException(ErrorCode.NOT_VALID_PERIOD);
         }
 
         Auction auction = Auction.builder()

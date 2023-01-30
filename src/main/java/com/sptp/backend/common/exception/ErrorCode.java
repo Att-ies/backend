@@ -48,6 +48,7 @@ public enum ErrorCode {
     NOT_FOUND_AUCTION_SCHEDULED(HttpStatus.NOT_FOUND, "현재 예정된 경매가 없습니다."),
     NOT_FOUND_AUCTION_PROCESSING(HttpStatus.NOT_FOUND, "현재 진행중인 경매가 없습니다."),
     IS_NOT_TERMINATED_AUCTION(HttpStatus.BAD_REQUEST, "종료된 경매가 아닙니다."),
+    NOT_VALID_PERIOD(HttpStatus.BAD_REQUEST, "경매 날짜는 현재 시각 이후로 설정되어야 합니다."),
 
     NOT_VALID_AUCTION_PERIOD(HttpStatus.BAD_REQUEST, "경매 기간이 아닙니다."),
     NOT_VALID_BID(HttpStatus.BAD_REQUEST, "유효한 입찰가가 아닙니다. 호가 단위를 확인해주세요.");
