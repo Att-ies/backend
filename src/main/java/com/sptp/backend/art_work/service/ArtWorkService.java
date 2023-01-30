@@ -1,15 +1,10 @@
 package com.sptp.backend.art_work.service;
 
+import com.querydsl.core.Tuple;
 import com.sptp.backend.art_work.event.ArtWorkEvent;
-import com.sptp.backend.art_work.repository.ArtWork;
-import com.sptp.backend.art_work.repository.ArtWorkRepository;
-import com.sptp.backend.art_work.repository.ArtWorkSize;
-import com.sptp.backend.art_work.repository.ArtWorkStatus;
+import com.sptp.backend.art_work.repository.*;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
-import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
-import com.sptp.backend.art_work.web.dto.response.ArtWorkMyListResponseDto;
-import com.sptp.backend.art_work.web.dto.response.ArtWorkTerminatedListResponseDto;
-import com.sptp.backend.art_work.web.dto.response.BiddingListResponse;
+import com.sptp.backend.art_work.web.dto.response.*;
 import com.sptp.backend.art_work_image.repository.ArtWorkImage;
 import com.sptp.backend.art_work_image.repository.ArtWorkImageRepository;
 import com.sptp.backend.art_work_keyword.repository.ArtWorkKeyword;
@@ -22,6 +17,7 @@ import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.bidding.repository.Bidding;
 import com.sptp.backend.bidding.repository.BiddingRepository;
+import com.sptp.backend.bidding.repository.QBidding;
 import com.sptp.backend.common.KeywordMap;
 import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.common.entity.BaseEntity;
@@ -364,4 +360,30 @@ public class ArtWorkService extends BaseEntity {
         return artWorkDtoList;
     }
 
+    public ArtWorkPurchasedListResponseDto getMyBidding(Member member) {
+
+        List<ArtWorkPurchasedListResponseDto.BiddingDto> biddingDtoList = new ArrayList<>();
+        List<ArtWorkPurchasedListResponseDto.SuccessfulBiddingDto> successfulBiddingDtoList = new ArrayList<>();
+
+        List<Tuple> list = biddingRepository.findByMemberWithMaxBidding(member);
+
+        for (Tuple tuple : list) {
+
+            ArtWork findArtWork = tuple.get(QBidding.bidding.artWork);
+            Long myMaxBiddingPrice = tuple.get(QBidding.bidding.price.max());
+
+            Long topPrice = biddingRepository.getFirstByArtWorkOrderByPriceDesc(findArtWork).get().getPrice();
+
+            if (myMaxBiddingPrice.equals(topPrice)) {
+                successfulBiddingDtoList.add(ArtWorkPurchasedListResponseDto.SuccessfulBiddingDto.from(findArtWork, topPrice));
+            } else {
+                biddingDtoList.add(ArtWorkPurchasedListResponseDto.BiddingDto.from(findArtWork, myMaxBiddingPrice, topPrice));
+            }
+        }
+
+        return ArtWorkPurchasedListResponseDto.builder()
+                .successfulBiddingList(successfulBiddingDtoList)
+                .biddingList(biddingDtoList)
+                .build();
+    }
 }
