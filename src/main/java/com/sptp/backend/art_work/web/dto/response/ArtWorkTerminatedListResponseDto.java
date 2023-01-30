@@ -26,10 +26,10 @@ public class ArtWorkTerminatedListResponseDto {
         private Integer biddingCount;
         private String status;
 
-        public static ArtWorkDto from(ArtWork artWork, Long topPrice, Integer biddingCount) {
+        public static ArtWorkDto from(ArtWork artWork, Long topPrice, Integer biddingCount, String storageUrl) {
             return ArtWorkDto.builder()
                     .id(artWork.getId())
-                    .mainImage(artWork.getMainImage())
+                    .mainImage(storageUrl + artWork.getMainImage())
                     .title(artWork.getTitle())
                     .material(artWork.getMaterial())
                     .topPrice(topPrice)

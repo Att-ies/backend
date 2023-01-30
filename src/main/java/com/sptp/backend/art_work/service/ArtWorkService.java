@@ -353,7 +353,7 @@ public class ArtWorkService extends BaseEntity {
                 topPrice = Collections.max(priceList);
             }
 
-            ArtWorkTerminatedListResponseDto.ArtWorkDto artWorkDto = ArtWorkTerminatedListResponseDto.ArtWorkDto.from(artWork, topPrice, artWork.getBiddingList().size());
+            ArtWorkTerminatedListResponseDto.ArtWorkDto artWorkDto = ArtWorkTerminatedListResponseDto.ArtWorkDto.from(artWork, topPrice, artWork.getBiddingList().size(), storageUrl);
             artWorkDtoList.add(artWorkDto);
         }
 
@@ -375,9 +375,9 @@ public class ArtWorkService extends BaseEntity {
             Long topPrice = biddingRepository.getFirstByArtWorkOrderByPriceDesc(findArtWork).get().getPrice();
 
             if (myMaxBiddingPrice.equals(topPrice)) {
-                successfulBiddingDtoList.add(ArtWorkPurchasedListResponseDto.SuccessfulBiddingDto.from(findArtWork, topPrice));
+                successfulBiddingDtoList.add(ArtWorkPurchasedListResponseDto.SuccessfulBiddingDto.from(findArtWork, topPrice, storageUrl));
             } else {
-                biddingDtoList.add(ArtWorkPurchasedListResponseDto.BiddingDto.from(findArtWork, myMaxBiddingPrice, topPrice));
+                biddingDtoList.add(ArtWorkPurchasedListResponseDto.BiddingDto.from(findArtWork, myMaxBiddingPrice, topPrice, storageUrl));
             }
         }
 

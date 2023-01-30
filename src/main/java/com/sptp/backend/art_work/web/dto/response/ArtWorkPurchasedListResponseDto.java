@@ -27,10 +27,10 @@ public class ArtWorkPurchasedListResponseDto {
         private Long myBiddingPrice;
         private Long finalBiddingPrice;
 
-        public static BiddingDto from(ArtWork artWork, Long myBiddingPrice, Long finalBiddingPrice) {
+        public static BiddingDto from(ArtWork artWork, Long myBiddingPrice, Long finalBiddingPrice, String storageUrl) {
             return BiddingDto.builder()
                     .id(artWork.getId())
-                    .mainImage(artWork.getMainImage())
+                    .mainImage(storageUrl + artWork.getMainImage())
                     .turn(artWork.getAuction().getTurn())
                     .title(artWork.getTitle())
                     .artistName(artWork.getMember().getNickname())
@@ -51,10 +51,10 @@ public class ArtWorkPurchasedListResponseDto {
         private String artistName;
         private Long finalBiddingPrice;
 
-        public static SuccessfulBiddingDto from(ArtWork artWork, Long finalBiddingPrice) {
+        public static SuccessfulBiddingDto from(ArtWork artWork, Long finalBiddingPrice, String storageUrl) {
             return SuccessfulBiddingDto.builder()
                     .id(artWork.getId())
-                    .mainImage(artWork.getMainImage())
+                    .mainImage(storageUrl + artWork.getMainImage())
                     .turn(artWork.getAuction().getTurn())
                     .title(artWork.getTitle())
                     .artistName(artWork.getMember().getNickname())
