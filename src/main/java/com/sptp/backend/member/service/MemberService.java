@@ -66,6 +66,7 @@ public class MemberService {
     private final ApplicationEventPublisher eventPublisher;
     private final int PREFERRED_ARTIST_MAXIMUM = 100;
     private final int PREFERRED_ART_WORK_MAXIMUM = 100;
+    private final int LIKE_COUNT_FOR_HOT_LABELED = 5;
 
 
     @Value("${aws.storage.url}")
@@ -489,6 +490,7 @@ public class MemberService {
         ArtWork findArtWork = artWorkRepository.findById(artWorkId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
 
+        findArtWork.plusLikeCount();
         updatePreferredArtWork(findMember, findArtWork, loginMemberId);
     }
 
@@ -519,6 +521,7 @@ public class MemberService {
         ArtWork findArtWork = artWorkRepository.findById(artWorkId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
 
+        findArtWork.minusLikeCount();
         memberPreferredArtWorkRepository.deleteByMemberAndArtWork(findMember, findArtWork);
     }
 
@@ -526,10 +529,19 @@ public class MemberService {
     public List<PreferredArtWorkResponse> getPreferredArtWorkList(Long loginMemberId) {
 
         List<ArtWork> findPreferredArtWorkList = memberPreferredArtWorkRepository.findPreferredArtWork(loginMemberId);
+        List<PreferredArtWorkResponse> preferredArtWorkResponse = new ArrayList<>();
 
-        List<PreferredArtWorkResponse> preferredArtWorkResponse = findPreferredArtWorkList.stream()
-                .map(m -> new PreferredArtWorkResponse(m.getId(), m.getTitle(), m.getPrice(), processImage(m.getMainImage()), m.getSaleStatus()))
-                .collect(Collectors.toList());
+        for (ArtWork artWork : findPreferredArtWorkList) {
+
+            boolean checkHot = false;
+
+            if(artWork.getLikeCount() >= LIKE_COUNT_FOR_HOT_LABELED) checkHot=true;
+
+            preferredArtWorkResponse.add(PreferredArtWorkResponse.builder()
+                    .id(artWork.getId()).title(artWork.getTitle())
+                    .price(artWork.getPrice()).image(awsStorageUrl + artWork.getMainImage())
+                    .status(artWork.getSaleStatus()).hot(checkHot).build());
+        }
 
         return preferredArtWorkResponse;
     }
