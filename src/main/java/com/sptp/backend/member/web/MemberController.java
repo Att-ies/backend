@@ -120,6 +120,7 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 닉네임 중복 체크
     @GetMapping("/members/check-nickname")
     public ResponseEntity<Void> checkUserNickname(@RequestParam("nickname") String nickname) {
 
@@ -169,6 +170,15 @@ public class MemberController {
                                           ArtistUpdateRequest artistUpdateRequest) throws IOException {
 
         memberService.updateArtist(userDetails.getMember().getId(), artistUpdateRequest, image);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PatchMapping("/members/certification")
+    public ResponseEntity<Void> certificateArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                  @RequestParam(value="certificationImage", required = true) MultipartFile image) throws IOException {
+
+        memberService.certificateArtist(userDetails.getMember().getId(), image);
 
         return new ResponseEntity(HttpStatus.OK);
     }

@@ -280,6 +280,25 @@ public class MemberService {
     }
 
     @Transactional
+    public void certificateArtist(Long loginMemberId, MultipartFile image) throws IOException {
+
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        String imageUrl = null;
+        String uuid = UUID.randomUUID().toString();
+
+        if(!image.isEmpty()){
+            String ext = fileService.extractExt(image.getOriginalFilename());
+            imageUrl = uuid + "." + ext;
+
+            awsService.uploadImage(image, uuid);
+        }
+
+        findMember.certificateArtist(imageUrl);
+    }
+
+    @Transactional
     public String changeToArtist(Long memberId) {
 
         Member findMember = memberRepository.findById(memberId)
