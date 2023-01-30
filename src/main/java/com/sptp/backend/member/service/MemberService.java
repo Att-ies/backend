@@ -39,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.Collections;
 import java.util.UUID;
@@ -474,9 +473,9 @@ public class MemberService {
         List<ArtWork> artworks = artWorkRepository.findArtWorkByMember(artist);
 
         return ArtistDetailResponse.builder()
-                .member(ArtistDetailResponse.MemberDto.from(artist))
+                .member(ArtistDetailResponse.MemberDto.from(artist, awsStorageUrl))
                 .artworks(artworks.stream()
-                        .map(ArtistDetailResponse.ArtWorkDto::from)
+                        .map(m -> ArtistDetailResponse.ArtWorkDto.from(m, awsStorageUrl))
                         .collect(Collectors.toList()))
                 .build();
     }
@@ -624,16 +623,24 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<CustomizedArtWorkResponse> getCustomizedArtWorkList (Long loginMemberId, Integer page, Integer limit) {
+    public CustomizedArtWorkResponse getCustomizedArtWorkList (Long loginMemberId, Integer page, Integer limit) {
 
         List<Integer> findMemberKeywordIdList = memberKeywordRepository.findKeywordIdByMemberId(loginMemberId); // 콜렉터의 keywordId 리스트 반환
 
-        List<ArtWork> findCustomizedArtWorkList = memberRepository.findCustomizedArtWork(findMemberKeywordIdList, page, limit); // 콜렉터 취향과 일치하는 keywordId 개수에 따라 작품 나열해 반환
+        List<ArtWork> artworks = memberRepository.findCustomizedArtWork(findMemberKeywordIdList, page, limit); // 콜렉터 취향과 일치하는 keywordId 개수에 따라 작품 나열해 반환
 
-        List<CustomizedArtWorkResponse> customizedArtWorkResponse = findCustomizedArtWorkList.stream()
-                .map(m -> new CustomizedArtWorkResponse(m.getId(), m.getTitle(), m.getMember().getEducation(), processImage(m.getMainImage())))
-                .collect(Collectors.toList());
+        boolean nextPage = false;
+        if(artworks.size() == limit+1) {
+            nextPage = true;
+            artworks.remove(limit+0); // limit+1개만큼 가져옴. 마지막 원소 삭제 필요
+        }
 
-        return customizedArtWorkResponse;
+
+        return CustomizedArtWorkResponse.builder()
+                .nextPage(nextPage)
+                .artworks(artworks.stream()
+                        .map(m ->CustomizedArtWorkResponse.ArtWorkDto.from(m, awsStorageUrl))
+                        .collect(Collectors.toList()))
+                .build();
     }
 }

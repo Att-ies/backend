@@ -1,7 +1,9 @@
 package com.sptp.backend.auction.service;
 
+import com.sptp.backend.art_work.event.ArtWorkEvent;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
+import com.sptp.backend.auction.event.AuctionEvent;
 import com.sptp.backend.auction.repository.Auction;
 import com.sptp.backend.auction.repository.AuctionRepository;
 import com.sptp.backend.auction.repository.AuctionStatus;
@@ -9,10 +11,12 @@ import com.sptp.backend.auction.web.dto.request.AuctionSaveRequestDto;
 import com.sptp.backend.auction.web.dto.request.AuctionStartRequestDto;
 import com.sptp.backend.auction.web.dto.request.AuctionTerminateRequestDto;
 import com.sptp.backend.auction.web.dto.response.AuctionListResponseDto;
+import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.bidding.repository.BiddingRepository;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +31,7 @@ public class AuctionService {
     private final AuctionRepository auctionRepository;
     private final ArtWorkRepository artWorkRepository;
     private final BiddingRepository biddingRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void saveAuction(AuctionSaveRequestDto dto) {
@@ -55,6 +60,12 @@ public class AuctionService {
         auction.statusToProcessing();
 
         artWorkRepository.updateStatusToProcessing(auction.getId());
+
+        List<ArtWork> artWorks = artWorkRepository.findByAuctionId(auction.getId());
+        for(ArtWork artWork : artWorks) {
+            eventPublisher.publishEvent(new AuctionEvent(artWork, NotificationCode.SAVE_AUCTION));
+            eventPublisher.publishEvent(new AuctionEvent(artWork, NotificationCode.SAVE_DISPLAY));
+        }
     }
 
     @Transactional
@@ -76,8 +87,10 @@ public class AuctionService {
         for (ArtWork artWork : artWorks) {
             if (biddingRepository.existsByArtWorkId(artWork.getId())) {
                 artWork.statusToSalesSuccess();
+                eventPublisher.publishEvent(new AuctionEvent(artWork, NotificationCode.SUCCESSFUL_BID));
             }else {
                 artWork.statusToSalesFailed();
+                eventPublisher.publishEvent(new AuctionEvent(artWork, NotificationCode.FAILED_BID));
             }
         }
     }
