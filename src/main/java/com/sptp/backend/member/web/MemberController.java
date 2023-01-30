@@ -128,27 +128,6 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    // 작가 가입
-    @PostMapping("artists/join")
-    public ResponseEntity<ArtistSaveResponseDto> joinAuthor(@RequestParam(value = "image", required = false) MultipartFile image, ArtistSaveRequestDto artistSaveRequestDto) throws IOException {
-
-        Member member = memberService.saveArtist(artistSaveRequestDto, image);
-
-        ArtistSaveResponseDto artistSaveResponseDto = ArtistSaveResponseDto.builder()
-                .nickname(member.getNickname())
-                .userId(member.getUserId())
-                .email(member.getEmail())
-                .telephone(member.getTelephone())
-                .education(member.getEducation())
-                .history(member.getHistory())
-                .description(member.getDescription())
-                .instagram(member.getInstagram())
-                .behance(member.getBehance())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.OK).body(artistSaveResponseDto);
-    }
-
     // 비밀번호 재설정
     @PatchMapping("/members/password")
     public ResponseEntity<Void> changePassword(

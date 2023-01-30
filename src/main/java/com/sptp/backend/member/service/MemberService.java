@@ -93,43 +93,6 @@ public class MemberService {
     }
 
     @Transactional
-    public Member saveArtist(ArtistSaveRequestDto dto, MultipartFile image) throws IOException {
-
-        checkDuplicateMemberUserID(dto.getUserId());
-        checkDuplicateMemberEmail(dto.getEmail());
-        checkDuplicateMemberNickname(dto.getNickname());
-
-        String uuid = UUID.randomUUID().toString();
-        String imageUrl = null;
-
-        if(!image.isEmpty()){
-            String ext = fileService.extractExt(image.getOriginalFilename());
-            imageUrl = uuid + "." + ext;
-
-            awsService.uploadImage(image, uuid);
-        }
-
-        Member member = Member.builder()
-                .nickname(dto.getNickname())
-                .userId(dto.getUserId())
-                .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .telephone(dto.getTelephone())
-                .roles(Collections.singletonList("ROLE_ARTIST"))
-                .education(dto.getEducation())
-                .history(dto.getHistory())
-                .description(dto.getDescription())
-                .instagram(dto.getInstagram())
-                .behance(dto.getBehance())
-                .image(imageUrl)
-                .build();
-
-        memberRepository.save(member);
-        return member;
-
-    }
-
-    @Transactional
     public MemberLoginResponseDto login(MemberLoginRequestDto dto) {
 
         // 이메일 및 비밀번호 유효성 체크
