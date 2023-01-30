@@ -27,7 +27,7 @@ public class AuctionTerminateScheduler {
 
             @Override
             public void run() {
-                log.info("경매 종료 실행");
+                log.info("[log] 경매 {}회차 종료", turn);
                 auctionService.terminateAuction(turn);
             }
         };
@@ -38,6 +38,6 @@ public class AuctionTerminateScheduler {
 
         jobScheduler.schedule(timerTask, duration.toSeconds()*1000);
 
-        log.info("경매 종료 예약, {}초 이후 실행", duration.toSeconds());
+        log.info("[log] 경매 {}회차 종료 예약, {}초 이후 실행", turn, duration.toSeconds());
     }
 }

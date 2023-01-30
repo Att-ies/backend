@@ -23,7 +23,7 @@ public class AuctionStartScheduler {
 
             @Override
             public void run() {
-                log.info("경매 시작 실행");
+                log.info("[log] 경매 {}회차 시작", turn);
                 auctionService.startAuction(turn);
             }
         };
@@ -34,6 +34,6 @@ public class AuctionStartScheduler {
 
         jobScheduler.schedule(timerTask, duration.toSeconds()*1000);
 
-        log.info("경매 시작 예약, {}초 이후 실행", duration.toSeconds());
+        log.info("[log] 경매 {}회차 시작 예약, {}초 이후 실행", turn, duration.toSeconds());
     }
 }
