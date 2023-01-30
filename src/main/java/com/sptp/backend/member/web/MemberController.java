@@ -37,6 +37,7 @@ public class MemberController {
         Member member = memberService.saveUser(memberSaveRequestDto);
 
         MemberSaveResponseDto memberSaveResponseDto = MemberSaveResponseDto.builder()
+                .id(member.getId())
                 .nickname(member.getNickname())
                 .userId(member.getUserId())
                 .email(member.getEmail())
