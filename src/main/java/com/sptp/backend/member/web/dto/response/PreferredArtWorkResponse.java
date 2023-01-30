@@ -16,4 +16,6 @@ public class PreferredArtWorkResponse {
     private Long price;
 
     private String image;
+
+    private String status;
 }

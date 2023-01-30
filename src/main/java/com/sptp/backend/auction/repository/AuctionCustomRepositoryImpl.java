@@ -35,4 +35,24 @@ public class AuctionCustomRepositoryImpl implements AuctionCustomRepository{
                 .fetchOne();
     }
 
+    @Override
+    public List<Auction> findScheduledAuction() {
+        return queryFactory
+                .select(auction)
+                .from(auction)
+                .where(auction.status.eq(AuctionStatus.SCHEDULED.getType())
+                        .and(auction.startDate.goe(LocalDateTime.now())))
+                .fetch();
+    }
+
+    @Override
+    public List<Auction> findTerminatedAuction() {
+        return queryFactory
+                .select(auction)
+                .from(auction)
+                .where(auction.status.eq(AuctionStatus.TERMINATED.getType()))
+                .fetch();
+    }
+
+
 }
