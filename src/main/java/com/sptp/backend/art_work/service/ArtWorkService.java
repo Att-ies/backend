@@ -104,7 +104,7 @@ public class ArtWorkService extends BaseEntity {
         saveArtImages(dto.getImage(), artWork);
         saveArtKeywords(dto.getKeywords(), artWork);
 
-        eventPublisher.publishEvent(new ArtWorkEvent(findMember, artWork, NotificationCode.SAVE_ARTWORK));
+        eventPublisher.publishEvent(new ArtWorkEvent(findMember, artWork, null, NotificationCode.SAVE_ARTWORK));
 
         return savedArtWork.getId();
     }
@@ -157,6 +157,8 @@ public class ArtWorkService extends BaseEntity {
                 .orElseGet(() -> saveBidding(artWork, member));
 
         bidding.raisePrice(topPrice, price);
+        eventPublisher.publishEvent(new ArtWorkEvent(member, artWork, bidding, NotificationCode.SUGGEST_BID));
+        eventPublisher.publishEvent(new ArtWorkEvent(member, artWork, null, NotificationCode.STILL_BID));
     }
 
     private ArtWork getArtWorkOrThrow(Long artWorkId) {
