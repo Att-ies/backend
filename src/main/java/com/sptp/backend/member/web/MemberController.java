@@ -174,10 +174,10 @@ public class MemberController {
     }
 
     // roles 작가로 전환
-    @PatchMapping("/members/roles")
-    public ResponseEntity<RolesChangeResponse> changeToArtist(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    @PatchMapping("/admin/roles/{memberId}")
+    public ResponseEntity<RolesChangeResponse> changeToArtist(@PathVariable(value = "memberId") Long memberId) {
 
-        String roles = memberService.changeToArtist(userDetails.getMember().getId());
+        String roles = memberService.changeToArtist(memberId);
 
         RolesChangeResponse rolesChangeResponse = RolesChangeResponse.builder()
                 .roles(roles)
