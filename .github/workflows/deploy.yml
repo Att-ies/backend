@@ -28,8 +28,8 @@ jobs:
         distribution: 'temurin'
     # 환경 변수 설정
     - name: make env.properties
-      uses: actions/checkout@v3
-      run: |
+    - uses: actions/checkout@v3
+    - run: |
         touch ./src/main/resources/env.properties |
         echo "${{env.ENV}}" > ./src/main/resources/env.properties
     - uses: actions/upload-artifact@v3
