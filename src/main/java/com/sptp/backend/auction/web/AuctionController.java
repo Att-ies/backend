@@ -2,6 +2,8 @@ package com.sptp.backend.auction.web;
 
 import com.sptp.backend.art_work.service.ArtWorkService;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkTerminatedListResponseDto;
+import com.sptp.backend.auction.schedule.AuctionStartScheduler;
+import com.sptp.backend.auction.schedule.AuctionTerminateScheduler;
 import com.sptp.backend.auction.service.AuctionService;
 import com.sptp.backend.auction.web.dto.request.AuctionSaveRequestDto;
 import com.sptp.backend.auction.web.dto.request.AuctionStartRequestDto;
@@ -29,23 +31,11 @@ public class AuctionController {
 
         auctionService.saveAuction(auctionSaveRequestDto);
 
-        return new ResponseEntity(HttpStatus.OK);
-    }
+        AuctionStartScheduler auctionStartScheduler = new AuctionStartScheduler(auctionService);
+        auctionStartScheduler.executeScheduler(auctionSaveRequestDto.getStartDate(), auctionSaveRequestDto.getEndDate(), auctionSaveRequestDto.getTurn());
 
-    // 경매 시작
-    @PatchMapping("/auction")
-    public ResponseEntity<Void> startAuction(@RequestBody AuctionStartRequestDto auctionStartRequestDto) {
-
-        auctionService.startAuction(auctionStartRequestDto);
-
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
-    // 경매 종료
-    @DeleteMapping("/auction")
-    public ResponseEntity<Void> terminateAuction(@RequestBody AuctionTerminateRequestDto auctionTerminateRequestDto) {
-
-        auctionService.terminateAuction(auctionTerminateRequestDto);
+        AuctionTerminateScheduler auctionTerminateScheduler = new AuctionTerminateScheduler(auctionService);
+        auctionTerminateScheduler.executeScheduler(auctionSaveRequestDto.getStartDate(), auctionSaveRequestDto.getEndDate(), auctionSaveRequestDto.getTurn());
 
         return new ResponseEntity(HttpStatus.OK);
     }
