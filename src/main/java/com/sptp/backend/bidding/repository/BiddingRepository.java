@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface BiddingRepository extends JpaRepository<Bidding, Long> {
+public interface BiddingRepository extends JpaRepository<Bidding, Long>, BiddingCustomRepository {
 
     Optional<Bidding> findByArtWorkAndMember(ArtWork artWork, Member member);
     Optional<Bidding> getFirstByArtWorkOrderByPriceDesc(ArtWork artWork);
