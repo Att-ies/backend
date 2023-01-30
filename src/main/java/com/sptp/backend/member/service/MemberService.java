@@ -280,7 +280,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void certificateArtist(Long loginMemberId, MultipartFile image) throws IOException {
+    public void certifyArtist(Long loginMemberId, MultipartFile image) throws IOException {
 
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
@@ -296,6 +296,18 @@ public class MemberService {
         }
 
         findMember.certificateArtist(imageUrl);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CertificationResponse> getCertificationList() {
+
+        List<Member> findCertificationList = memberPreferredArtistRepository.findCertificationList();
+
+        List<CertificationResponse> certificationResponses = findCertificationList.stream()
+                .map(m -> new CertificationResponse(m.getId(), processImage(m.getCertificationImage()), m.getRoles().get(0)))
+                .collect(Collectors.toList());
+
+        return certificationResponses;
     }
 
     @Transactional

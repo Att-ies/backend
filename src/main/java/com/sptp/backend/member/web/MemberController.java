@@ -166,21 +166,31 @@ public class MemberController {
     // 작가 정보 수정
     @PatchMapping("/artists")
     public ResponseEntity<Void> updateArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                          @RequestParam(value = "image", required = false) MultipartFile image,
-                                          ArtistUpdateRequest artistUpdateRequest) throws IOException {
+                                             @RequestParam(value = "image", required = false) MultipartFile image,
+                                             ArtistUpdateRequest artistUpdateRequest) throws IOException {
 
         memberService.updateArtist(userDetails.getMember().getId(), artistUpdateRequest, image);
 
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 작가 인증 파일 보내기
     @PatchMapping("/members/certification")
-    public ResponseEntity<Void> certificateArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                  @RequestParam(value="certificationImage", required = true) MultipartFile image) throws IOException {
+    public ResponseEntity<Void> certifyArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                              @RequestParam(value = "certificationImage", required = true) MultipartFile image) throws IOException {
 
-        memberService.certificateArtist(userDetails.getMember().getId(), image);
+        memberService.certifyArtist(userDetails.getMember().getId(), image);
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    // 작가 인증 파일 목록 조회
+    @GetMapping("/admin/members/certification")
+    public ResponseEntity<List<CertificationResponse>> certificationList() {
+
+        List<CertificationResponse> certificationResponses = memberService.getCertificationList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(certificationResponses);
     }
 
     // roles 작가로 전환
@@ -198,7 +208,7 @@ public class MemberController {
 
     // 회원 정보 조회
     @GetMapping("/members/me")
-    public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
         MemberResponse memberResponse = memberService.getMember(userDetails.getMember().getId());
 
@@ -254,7 +264,7 @@ public class MemberController {
     // 회원-작품 찜 관계 취소
     @DeleteMapping("/members/preferred-artworks/{artWorkId}")
     public ResponseEntity<Void> deletePickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                            @PathVariable(value = "artWorkId") Long artWorkId) {
+                                                  @PathVariable(value = "artWorkId") Long artWorkId) {
 
         memberService.deletePickArtWork(userDetails.getMember().getId(), artWorkId);
 
@@ -273,7 +283,7 @@ public class MemberController {
     // 회원-작품 취향 맞춤 추천 목록 조회
     @GetMapping("/members/customized-artworks")
     public ResponseEntity<CustomizedArtWorkResponse> customizedArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                                 @RequestParam("page") Integer page, @RequestParam("limit") Integer limit) {
+                                                                           @RequestParam("page") Integer page, @RequestParam("limit") Integer limit) {
 
         CustomizedArtWorkResponse customizedArtWorkResponse = memberService.getCustomizedArtWorkList(userDetails.getMember().getId(), page, limit);
 
@@ -323,7 +333,7 @@ public class MemberController {
     // 관심 키워드 수정
     @PatchMapping("/members/keywords")
     public ResponseEntity<List<MemberUpdateKeywordsResponseDto>> updateKeywords(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                         @RequestBody MemberUpdateKeywordsRequestDto memberUpdateKeywordsRequestDto) {
+                                                                                @RequestBody MemberUpdateKeywordsRequestDto memberUpdateKeywordsRequestDto) {
 
         List<MemberUpdateKeywordsResponseDto> memberUpdateKeywordsResponseDto = memberService.updateKeyword(userDetails.getMember().getId(), memberUpdateKeywordsRequestDto);
 

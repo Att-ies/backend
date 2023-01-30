@@ -21,4 +21,13 @@ public class MemberPreferredArtistCustomRepositoryImpl implements MemberPreferre
                 .where(member.id.eq(memberPreferredArtist.artist.id), memberPreferredArtist.member.id.eq(memberId))
                 .fetch();
     }
+
+    @Override
+    public List<Member> findCertificationList() {
+        return queryFactory
+                .select(member)
+                .from(member)
+                .where(member.certificationImage.isNotNull())
+                .fetch();
+    }
 }
