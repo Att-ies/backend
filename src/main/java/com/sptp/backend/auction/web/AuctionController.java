@@ -19,7 +19,7 @@ public class AuctionController {
     private final ArtWorkService artWorkService;
 
     // 경매 생성
-    @PostMapping("/auction")
+    @PostMapping("/admin/auction")
     public ResponseEntity<Void> saveAuction(@RequestBody AuctionSaveRequestDto auctionSaveRequestDto) {
 
         auctionService.saveAuction(auctionSaveRequestDto);
@@ -28,7 +28,7 @@ public class AuctionController {
     }
 
     // 경매 시작
-    @PatchMapping("/auction")
+    @PatchMapping("/admin/auction")
     public ResponseEntity<Void> startAuction(@RequestBody AuctionStartRequestDto auctionStartRequestDto) {
 
         auctionService.startAuction(auctionStartRequestDto);
@@ -37,7 +37,7 @@ public class AuctionController {
     }
 
     // 경매 종료
-    @DeleteMapping("/auction")
+    @DeleteMapping("/admin/auction")
     public ResponseEntity<Void> terminateAuction(@RequestBody AuctionTerminateRequestDto auctionTerminateRequestDto) {
 
         auctionService.terminateAuction(auctionTerminateRequestDto);
