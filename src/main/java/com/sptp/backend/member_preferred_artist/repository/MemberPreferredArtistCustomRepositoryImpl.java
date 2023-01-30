@@ -27,7 +27,7 @@ public class MemberPreferredArtistCustomRepositoryImpl implements MemberPreferre
         return queryFactory
                 .select(member)
                 .from(member)
-                .where(member.certificationImage.isNotNull())
+                .where(member.certificationImage.isNotNull(), member.roles.contains("ROLE_USER"))
                 .fetch();
     }
 }
