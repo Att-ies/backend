@@ -244,9 +244,9 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(preferredArtistResponse);
     }
 
-    // 회원-작가 픽 -> 작가 상세 조회
+    // 작가 상세 조회
     @GetMapping("/artists/{artistId}")
-    public ResponseEntity<ArtistDetailResponse> getArtistDetail(@PathVariable Long artistId) {
+    public ResponseEntity<ArtistDetailResponse> getArtistDetail(@PathVariable(value="artistId") Long artistId) {
 
         return ResponseEntity.ok(memberService.getArtistDetail(artistId));
     }

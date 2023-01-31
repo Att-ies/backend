@@ -1,6 +1,7 @@
 package com.sptp.backend.member.web.dto.response;
 
 import com.sptp.backend.art_work.repository.ArtWork;
+import com.sptp.backend.art_work.repository.ArtWorkStatus;
 import com.sptp.backend.member.repository.Member;
 import lombok.Builder;
 import lombok.Data;
@@ -29,14 +30,16 @@ public class ArtistDetailResponse {
 
         public static MemberDto from(Member member, String awsStorageUrl) {
 
-            if(member.getImage().isBlank()) {
-                awsStorageUrl = null;
+            String image = awsStorageUrl + member.getImage();
+            if(member.getImage() == null) {
+                 image = null;
             }
 
+            System.out.println("작가dto");
             return MemberDto.builder()
                     .id(member.getId())
                     .nickname(member.getNickname())
-                    .image(awsStorageUrl + member.getImage())
+                    .image(image)
                     .education(member.getEducation())
                     .history(member.getHistory())
                     .description(member.getDescription())
@@ -53,9 +56,10 @@ public class ArtistDetailResponse {
         private Long id;
         private String title;
         private String image;
-        // 경매 상태 추후 구현 예정
 
         public static ArtWorkDto from(ArtWork artwork, String awsStorageUrl) {
+
+            System.out.println("작품dto");
             return ArtWorkDto.builder()
                     .id(artwork.getId())
                     .title(artwork.getTitle())

@@ -465,11 +465,12 @@ public class MemberService {
             throw new CustomException(ErrorCode.NOT_FOUND_ARTIST);
         }
 
-        List<ArtWork> artworks = artWorkRepository.findArtWorkByMember(artist);
+        List<ArtWork> artWorkList = artWorkRepository.findArtWorkByMember(artist);
+
 
         return ArtistDetailResponse.builder()
                 .member(ArtistDetailResponse.MemberDto.from(artist, awsStorageUrl))
-                .artworks(artworks.stream()
+                .artworks(artWorkList.stream()
                         .map(m -> ArtistDetailResponse.ArtWorkDto.from(m, awsStorageUrl))
                         .collect(Collectors.toList()))
                 .build();
