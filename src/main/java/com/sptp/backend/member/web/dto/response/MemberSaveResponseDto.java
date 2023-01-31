@@ -9,9 +9,9 @@ import lombok.*;
 @Builder
 public class MemberSaveResponseDto {
 
+    private Long id;
     private String nickname;
     private String userId;
     private String email;
     private String telephone;
-
 }

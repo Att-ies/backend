@@ -42,6 +42,7 @@ public class Member extends BaseEntity {
     private String description;
     private String instagram;
     private String behance;
+    private String certificationImage;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -80,6 +81,11 @@ public class Member extends BaseEntity {
         if(dto.getIsChanged()) {
             this.image=image;
         }
+    }
+
+    public void certificateArtist(String image){
+
+        this.certificationImage = image;
     }
 
     // 이메일이 수정됐는지 확인. 본인 이메일 그대로거나, 비어있을 경우 수정되지 않은 걸로 간주해 false 반환.
