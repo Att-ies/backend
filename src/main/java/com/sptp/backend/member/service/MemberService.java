@@ -467,7 +467,6 @@ public class MemberService {
 
         List<ArtWork> artWorkList = artWorkRepository.findArtWorkByMember(artist);
 
-
         return ArtistDetailResponse.builder()
                 .member(ArtistDetailResponse.MemberDto.from(artist, awsStorageUrl))
                 .artworks(artWorkList.stream()

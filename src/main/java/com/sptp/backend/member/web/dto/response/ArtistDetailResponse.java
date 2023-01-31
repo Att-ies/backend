@@ -35,7 +35,6 @@ public class ArtistDetailResponse {
                  image = null;
             }
 
-            System.out.println("작가dto");
             return MemberDto.builder()
                     .id(member.getId())
                     .nickname(member.getNickname())
@@ -56,14 +55,15 @@ public class ArtistDetailResponse {
         private Long id;
         private String title;
         private String image;
+        private String saleStatus;
 
         public static ArtWorkDto from(ArtWork artwork, String awsStorageUrl) {
 
-            System.out.println("작품dto");
             return ArtWorkDto.builder()
                     .id(artwork.getId())
                     .title(artwork.getTitle())
                     .image(awsStorageUrl + artwork.getMainImage())
+                    .saleStatus(artwork.getSaleStatus())
                     .build();
         }
     }
