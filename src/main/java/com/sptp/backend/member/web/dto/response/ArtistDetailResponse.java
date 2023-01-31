@@ -63,7 +63,7 @@ public class ArtistDetailResponse {
                     .id(artwork.getId())
                     .title(artwork.getTitle())
                     .image(awsStorageUrl + artwork.getMainImage())
-                    .saleStatus(artwork.getSaleStatus())
+                    .saleStatus(ArtWorkStatus.valueOfType(artwork.getSaleStatus()).getName())
                     .build();
         }
     }
