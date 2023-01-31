@@ -10,9 +10,9 @@ import java.util.Arrays;
 public enum ArtWorkStatus {
 
     REGISTERED("registered", "경매전"),
-    PROCESSING("processing","입찰중"),
-    SALES_SUCCESS("sales_success","낙찰"),
-    SALES_FAILED("sales_failed","유찰");
+    PROCESSING("processing", "입찰중"),
+    SALES_SUCCESS("sales_success", "낙찰"),
+    SALES_FAILED("sales_failed", "유찰");
 
     private String type;
     private String name;

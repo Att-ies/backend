@@ -247,7 +247,7 @@ public class MemberController {
     // 작가 상세 조회
     @GetMapping("/artists/{artistId}")
     public ResponseEntity<ArtistDetailResponse> getArtistDetail(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                @PathVariable(value="artistId") Long artistId) {
+                                                                @PathVariable(value = "artistId") Long artistId) {
 
         return ResponseEntity.ok(memberService.getArtistDetail(userDetails.getMember().getId(), artistId));
     }

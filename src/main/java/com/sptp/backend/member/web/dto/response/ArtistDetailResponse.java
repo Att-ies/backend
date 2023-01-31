@@ -32,8 +32,8 @@ public class ArtistDetailResponse {
         public static MemberDto from(Member member, String awsStorageUrl) {
 
             String image = awsStorageUrl + member.getImage();
-            if(member.getImage() == null) {
-                 image = null;
+            if (member.getImage() == null) {
+                image = null;
             }
 
             return MemberDto.builder()
