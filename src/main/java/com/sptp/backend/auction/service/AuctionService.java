@@ -1,6 +1,5 @@
 package com.sptp.backend.auction.service;
 
-import com.sptp.backend.art_work.event.ArtWorkEvent;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.auction.event.AuctionEvent;
@@ -9,7 +8,6 @@ import com.sptp.backend.auction.repository.AuctionRepository;
 import com.sptp.backend.auction.repository.AuctionStatus;
 import com.sptp.backend.auction.web.dto.request.AuctionSaveRequestDto;
 import com.sptp.backend.auction.web.dto.request.AuctionStartRequestDto;
-import com.sptp.backend.auction.web.dto.request.AuctionTerminateRequestDto;
 import com.sptp.backend.auction.web.dto.response.AuctionListResponseDto;
 import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.bidding.repository.BiddingRepository;
@@ -20,6 +18,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +39,10 @@ public class AuctionService {
             throw new CustomException(ErrorCode.EXIST_AUCTION_TURN);
         }
 
+        if (LocalDateTime.now().isAfter(dto.getStartDate()) || LocalDateTime.now().isAfter(dto.getEndDate())) {
+            throw new CustomException(ErrorCode.NOT_VALID_PERIOD);
+        }
+
         Auction auction = Auction.builder()
                 .turn(dto.getTurn())
                 .startDate(dto.getStartDate())
@@ -51,9 +54,9 @@ public class AuctionService {
     }
 
     @Transactional
-    public void startAuction(AuctionStartRequestDto dto) {
+    public void startAuction(Integer turn) {
 
-        Auction auction = auctionRepository.findByTurn(dto.getTurn()).orElseThrow(() -> {
+        Auction auction = auctionRepository.findByTurn(turn).orElseThrow(() -> {
             throw new CustomException(ErrorCode.NOT_FOUND_AUCTION_TURN);
         });
 
@@ -69,9 +72,9 @@ public class AuctionService {
     }
 
     @Transactional
-    public void terminateAuction(AuctionTerminateRequestDto dto) {
+    public void terminateAuction(Integer turn) {
 
-        Auction auction = auctionRepository.findByTurn(dto.getTurn()).orElseThrow(() -> {
+        Auction auction = auctionRepository.findByTurn(turn).orElseThrow(() -> {
             throw new CustomException(ErrorCode.NOT_FOUND_AUCTION_TURN);
         });
 
