@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 public class ArtistDetailResponse {
 
+    private boolean pick;
     private MemberDto member;
     private List<ArtWorkDto> artworks;
 
