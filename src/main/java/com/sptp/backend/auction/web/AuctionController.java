@@ -26,7 +26,7 @@ public class AuctionController {
     private final ArtWorkService artWorkService;
 
     // 경매 생성
-    @PostMapping("/auction")
+    @PostMapping("/admin/auction")
     public ResponseEntity<Void> saveAuction(@RequestBody AuctionSaveRequestDto auctionSaveRequestDto) {
 
         auctionService.saveAuction(auctionSaveRequestDto);
