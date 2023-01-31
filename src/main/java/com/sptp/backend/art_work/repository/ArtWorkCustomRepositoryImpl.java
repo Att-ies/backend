@@ -26,16 +26,6 @@ public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
     }
 
     @Override
-    public void updateStatusToTerminated(Long auctionId) {
-
-        queryFactory
-                .update(artWork)
-                .set(artWork.saleStatus, ArtWorkStatus.SALES_SUCCESS.getType())
-                .where(artWork.auction.id.eq(auctionId))
-                .execute();
-    }
-
-    @Override
     public List<ArtWork> findTerminatedAuctionArtWorkList(Long auctionId, Long artWorkId, Pageable pageable) {
         List<ArtWork> results =  queryFactory
                 .select(artWork)

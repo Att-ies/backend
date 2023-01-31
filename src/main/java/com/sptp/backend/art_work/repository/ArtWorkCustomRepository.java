@@ -8,7 +8,5 @@ public interface ArtWorkCustomRepository {
 
     void updateStatusToProcessing(Long auctionId);
 
-    void updateStatusToTerminated(Long auctionId);
-
     List<ArtWork> findTerminatedAuctionArtWorkList(Long auctionId, Long artWorkId, Pageable pageable);
 }

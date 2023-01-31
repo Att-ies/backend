@@ -18,4 +18,6 @@ public class PreferredArtWorkResponse {
     private String image;
 
     private String status;
+
+    private boolean hot;
 }
