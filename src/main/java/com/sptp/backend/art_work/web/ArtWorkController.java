@@ -85,4 +85,5 @@ public class ArtWorkController {
 
         return ResponseEntity.status(HttpStatus.OK).body(artWorkPurchasedListResponseDto);
     }
+
 }
