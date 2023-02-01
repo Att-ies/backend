@@ -14,6 +14,7 @@ import com.sptp.backend.bidding.repository.BiddingRepository;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,9 @@ public class AuctionService {
     private final ArtWorkRepository artWorkRepository;
     private final BiddingRepository biddingRepository;
     private final ApplicationEventPublisher eventPublisher;
+
+    @Value("${aws.storage.url}")
+    private String storageUrl;
 
     @Transactional
     public void saveAuction(AuctionSaveRequestDto dto) {
@@ -156,7 +160,7 @@ public class AuctionService {
                     .id(auction.getId()).turn(auction.getTurn())
                     .startDate(auction.getStartDate()).endDate(auction.getEndDate())
                     .status(auction.getStatus()).artWorkCount(artWorkList.size())
-                    .image(artWorkList.get(value).getMainImage())
+                    .image(storageUrl + artWorkList.get(value).getMainImage())
                     .build());
         }
 
