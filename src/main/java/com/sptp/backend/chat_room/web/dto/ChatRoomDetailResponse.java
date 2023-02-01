@@ -39,13 +39,13 @@ public class ChatRoomDetailResponse {
         private String message;
 
         @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
-        private LocalDateTime sendTime;
+        private LocalDateTime sendDate;
 
         public static MessageDto from(Message message) {
             return MessageDto.builder()
                     .senderId(message.getSender().getId())
                     .message(message.getMessage())
-                    .sendTime(message.getCreatedDate())
+                    .sendDate(message.getCreatedDate())
                     .build();
         }
     }
