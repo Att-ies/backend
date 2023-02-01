@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -120,7 +121,7 @@ public class AuctionService {
             auctionListResponseDto.add(AuctionListResponseDto.builder()
                     .id(auction.getId()).turn(auction.getTurn())
                     .startDate(auction.getStartDate()).endDate(auction.getEndDate())
-                    .status(auction.getStatus()).artWorkCount(artWorkCount).build());
+                    .status(auction.getStatus()).artWorkCount(artWorkCount.intValue()).build());
         }
 
         return auctionListResponseDto;
@@ -131,13 +132,32 @@ public class AuctionService {
         List<Auction> terminatedAuctionList = auctionRepository.findTerminatedAuction();
         List<AuctionListResponseDto> auctionListResponseDto = new ArrayList<>();
 
+        Random random = new Random();
+
         for (Auction auction : terminatedAuctionList) {
 
-            Long artWorkCount = artWorkRepository.countByAuctionId(auction.getId());
+            List<ArtWork> artWorkList = artWorkRepository.findByAuctionId(auction.getId());
+
+            // 종료된 경매에 아무 작품도 없을 경우 이미지 미포함
+            if (artWorkList.size() == 0) {
+
+                auctionListResponseDto.add(AuctionListResponseDto.builder()
+                        .id(auction.getId()).turn(auction.getTurn())
+                        .startDate(auction.getStartDate()).endDate(auction.getEndDate())
+                        .status(auction.getStatus()).artWorkCount(artWorkList.size())
+                        .build());
+
+                continue;
+            }
+
+            int value = random.nextInt(artWorkList.size());
+
             auctionListResponseDto.add(AuctionListResponseDto.builder()
                     .id(auction.getId()).turn(auction.getTurn())
                     .startDate(auction.getStartDate()).endDate(auction.getEndDate())
-                    .status(auction.getStatus()).artWorkCount(artWorkCount).build());
+                    .status(auction.getStatus()).artWorkCount(artWorkList.size())
+                    .image(artWorkList.get(value).getMainImage())
+                    .build());
         }
 
         return auctionListResponseDto;
