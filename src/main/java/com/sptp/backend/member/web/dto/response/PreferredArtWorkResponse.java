@@ -14,6 +14,7 @@ public class PreferredArtWorkResponse {
     private Long price;
     private String image;
     private String saleStatus;
-    private boolean hot;
     private String artist;
+    private boolean hot;
+    private boolean pick;
 }

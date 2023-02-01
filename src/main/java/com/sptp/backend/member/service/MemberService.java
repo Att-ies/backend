@@ -527,14 +527,19 @@ public class MemberService {
     @Transactional(readOnly = true)
     public List<PreferredArtWorkResponse> getPreferredArtWorkList(Long loginMemberId) {
 
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
         List<ArtWork> findPreferredArtWorkList = memberPreferredArtWorkRepository.findPreferredArtWork(loginMemberId);
         List<PreferredArtWorkResponse> preferredArtWorkResponse = new ArrayList<>();
 
         for (ArtWork artWork : findPreferredArtWorkList) {
 
             boolean checkHot = false;
+            boolean checkPick = false;
 
             if (artWork.getLikeCount() >= LIKE_COUNT_FOR_HOT_LABELED) checkHot = true;
+            if (memberPreferredArtWorkRepository.existsByMemberAndArtWork(findMember, artWork)) checkPick = true;
 
             preferredArtWorkResponse.add(PreferredArtWorkResponse.builder()
                     .id(artWork.getId())
@@ -542,8 +547,9 @@ public class MemberService {
                     .price(artWork.getPrice())
                     .image(awsStorageUrl + artWork.getMainImage())
                     .saleStatus(ArtWorkStatus.valueOfType(artWork.getSaleStatus()).getName())
-                    .hot(checkHot)
                     .artist(artWork.getMember().getNickname())
+                    .hot(checkHot)
+                    .pick(checkPick)
                     .build());
         }
 
