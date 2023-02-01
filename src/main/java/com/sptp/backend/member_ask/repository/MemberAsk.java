@@ -2,6 +2,7 @@ package com.sptp.backend.member_ask.repository;
 
 import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
+import com.sptp.backend.member.web.dto.request.MemberAnswerRequest;
 import com.sptp.backend.member.web.dto.request.MemberAskRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,4 +41,9 @@ public class MemberAsk extends BaseEntity {
         this.content = dto.getContent();
     }
 
+    public void updateMemberAnswer(MemberAnswerRequest dto) {
+
+        this.answer = dto.getAnswer();
+        this.status = MemberAskStatus.COMPLETE.name();
+    }
 }

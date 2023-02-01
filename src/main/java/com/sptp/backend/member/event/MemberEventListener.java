@@ -22,7 +22,7 @@ public class MemberEventListener {
 
     // 작가 등록 완료, 1대1 문의 알림
     @EventListener
-    public void handleMemberEvent(MemberEvent memberEvent){
+    public void handleMemberEvent(MemberEvent memberEvent) {
 
         Member member = memberEvent.getMember();
         NotificationCode notificationCode = memberEvent.getNotificationCode();
@@ -30,7 +30,7 @@ public class MemberEventListener {
         saveNotification(member, notificationCode);
     }
 
-    public void saveNotification(Member member, NotificationCode notificationCode){
+    public void saveNotification(Member member, NotificationCode notificationCode) {
 
         Notification notification = Notification.builder()
                 .member(member)

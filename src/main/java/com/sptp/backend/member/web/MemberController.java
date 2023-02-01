@@ -331,6 +331,25 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(memberAskResponsesList);
     }
 
+    // 관리자 일대일 문의 목록 조회
+    @GetMapping("/admin/members/ask")
+    public ResponseEntity<List<MemberAskResponse>> getAllAskList() {
+
+        List<MemberAskResponse> memberAskResponsesList = memberService.getAllAskList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(memberAskResponsesList);
+    }
+
+    // 일대일 문의 답변
+    @PatchMapping("/admin/members/answer/{askId}")
+    public ResponseEntity<Void> updateAnswer(@PathVariable(value = "askId") Long askId,
+                                             @RequestBody MemberAnswerRequest memberAnswerRequest) {
+
+        memberService.updateAnswer(askId, memberAnswerRequest);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     // 관심 키워드 수정
     @PatchMapping("/members/keywords")
     public ResponseEntity<List<MemberUpdateKeywordsResponseDto>> updateKeywords(@AuthenticationPrincipal CustomUserDetails userDetails,
