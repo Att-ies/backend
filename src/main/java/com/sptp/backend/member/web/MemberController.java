@@ -333,7 +333,7 @@ public class MemberController {
 
     // 관리자 일대일 문의 목록 조회
     @GetMapping("/admin/members/ask")
-    public ResponseEntity<List<MemberAskResponse>> getALlAskList() {
+    public ResponseEntity<List<MemberAskResponse>> getAllAskList() {
 
         List<MemberAskResponse> memberAskResponsesList = memberService.getAllAskList();
 
