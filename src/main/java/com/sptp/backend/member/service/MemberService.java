@@ -235,7 +235,7 @@ public class MemberService {
         String uuid = UUID.randomUUID().toString();
 
         // 유저가 이미지를 다른 파일로 수정한 경우
-        if(!image.isEmpty()) {
+        if (!image.isEmpty()) {
             String ext = fileService.extractExt(image.getOriginalFilename());
             imageUrl = uuid + "." + ext;
 
@@ -263,14 +263,14 @@ public class MemberService {
         String uuid = UUID.randomUUID().toString();
 
         // 작가가 이미지를 다른 파일로 수정한 경우
-        if(!image.isEmpty()){
+        if (!image.isEmpty()) {
             String ext = fileService.extractExt(image.getOriginalFilename());
             imageUrl = uuid + "." + ext;
 
             awsService.uploadImage(image, uuid);
         }
 
-        if(findMember.isUpdatedEmail(dto.getEmail())) {
+        if (findMember.isUpdatedEmail(dto.getEmail())) {
             checkDuplicateMemberEmail(dto.getEmail());
         }
         if (findMember.isUpdatedNickname(dto.getNickname())) {
@@ -289,7 +289,7 @@ public class MemberService {
         String imageUrl = null;
         String uuid = UUID.randomUUID().toString();
 
-        if(!image.isEmpty()){
+        if (!image.isEmpty()) {
             String ext = fileService.extractExt(image.getOriginalFilename());
             imageUrl = uuid + "." + ext;
 
@@ -341,7 +341,7 @@ public class MemberService {
         //키워드 처리
         List<String> keywordNameList = getKeywordName(findMember.getId());
 
-        if(Objects.equals(findMember.getRoles().get(0), "ROLE_ARTIST")) {
+        if (Objects.equals(findMember.getRoles().get(0), "ROLE_ARTIST")) {
             MemberResponse artistResponse = ArtistResponse.builder()
                     .id(findMember.getId())
                     .nickname(findMember.getNickname())
@@ -380,13 +380,13 @@ public class MemberService {
 
         // keywordId(value) 리스트 구하기
         List<Integer> keywordIdList = new ArrayList();
-        for(MemberKeyword memberKeyword : findMemberKeywordList){
+        for (MemberKeyword memberKeyword : findMemberKeywordList) {
             keywordIdList.add(memberKeyword.getKeywordId());
         }
 
         // keywordName(key) 리스트 구하기
         List<String> keywordNameList = new ArrayList();
-        for(Integer keywordId : keywordIdList) {
+        for (Integer keywordId : keywordIdList) {
             keywordNameList.add(KeywordMap.getKeywordName(keywordId));
         }
 
@@ -409,14 +409,14 @@ public class MemberService {
         updatePreferredArtist(findMember, findArtist);
     }
 
-    private void updatePreferredArtist(Member member,Member artist) {
+    private void updatePreferredArtist(Member member, Member artist) {
 
         // Column unique 제약조건 핸들링 (중복 컬럼 검증)
-        if (memberPreferredArtistRepository.existsByMemberAndArtist(member, artist)){
+        if (memberPreferredArtistRepository.existsByMemberAndArtist(member, artist)) {
             throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTIST);
         }
 
-        if(memberPreferredArtistRepository.countByMemberId(member.getId()) >= PREFERRED_ARTIST_MAXIMUM) {
+        if (memberPreferredArtistRepository.countByMemberId(member.getId()) >= PREFERRED_ARTIST_MAXIMUM) {
             throw new CustomException(ErrorCode.OVER_PREFERRED_ARTIST_MAXIMUM);
         }
 
@@ -429,7 +429,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void deletePickArtist(Long loginMemberId, Long artistId){
+    public void deletePickArtist(Long loginMemberId, Long artistId) {
 
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
@@ -457,19 +457,23 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public ArtistDetailResponse getArtistDetail(Long artistId) {
+    public ArtistDetailResponse getArtistDetail(Long loginMemberId, Long artistId) {
+
+        Member member = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         Member artist = memberRepository.findById(artistId)
-                .orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTIST));
         if (!Objects.equals(artist.getRoles().get(0), "ROLE_ARTIST")) {
             throw new CustomException(ErrorCode.NOT_FOUND_ARTIST);
         }
 
-        List<ArtWork> artworks = artWorkRepository.findArtWorkByMember(artist);
+        List<ArtWork> artWorkList = artWorkRepository.findArtWorkByMember(artist);
 
         return ArtistDetailResponse.builder()
+                .pick(memberPreferredArtistRepository.existsByMemberAndArtist(member, artist))
                 .member(ArtistDetailResponse.MemberDto.from(artist, awsStorageUrl))
-                .artworks(artworks.stream()
+                .artworks(artWorkList.stream()
                         .map(m -> ArtistDetailResponse.ArtWorkDto.from(m, awsStorageUrl))
                         .collect(Collectors.toList()))
                 .build();
@@ -494,7 +498,7 @@ public class MemberService {
             throw new CustomException(ErrorCode.EXIST_USER_PREFERRED_ARTWORK);
         }
 
-        if(memberPreferredArtWorkRepository.countByMemberId(loginMemberId) >= PREFERRED_ART_WORK_MAXIMUM){
+        if (memberPreferredArtWorkRepository.countByMemberId(loginMemberId) >= PREFERRED_ART_WORK_MAXIMUM) {
             throw new CustomException(ErrorCode.OVER_PREFERRED_ART_WORK_MAXIMUM);
         }
 
@@ -529,7 +533,7 @@ public class MemberService {
 
             boolean checkHot = false;
 
-            if(artWork.getLikeCount() >= LIKE_COUNT_FOR_HOT_LABELED) checkHot=true;
+            if (artWork.getLikeCount() >= LIKE_COUNT_FOR_HOT_LABELED) checkHot = true;
 
             preferredArtWorkResponse.add(PreferredArtWorkResponse.builder()
                     .id(artWork.getId()).title(artWork.getTitle())
@@ -588,7 +592,7 @@ public class MemberService {
 
     private void saveAskImages(MultipartFile[] files, MemberAsk memberAsk) throws IOException {
 
-        if(files[0].isEmpty()) return;
+        if (files[0].isEmpty()) return;
 
         for (MultipartFile file : files) {
 
@@ -620,32 +624,32 @@ public class MemberService {
     }
 
     //이미지 처리
-    private String processImage(String image){
+    private String processImage(String image) {
 
-        if(StringUtils.isBlank(image)) {
+        if (StringUtils.isBlank(image)) {
             return null;
         }
         return awsStorageUrl + image;
     }
 
     @Transactional(readOnly = true)
-    public CustomizedArtWorkResponse getCustomizedArtWorkList (Long loginMemberId, Integer page, Integer limit) {
+    public CustomizedArtWorkResponse getCustomizedArtWorkList(Long loginMemberId, Integer page, Integer limit) {
 
         List<Integer> findMemberKeywordIdList = memberKeywordRepository.findKeywordIdByMemberId(loginMemberId); // 콜렉터의 keywordId 리스트 반환
 
         List<ArtWork> artworks = memberRepository.findCustomizedArtWork(findMemberKeywordIdList, page, limit); // 콜렉터 취향과 일치하는 keywordId 개수에 따라 작품 나열해 반환
 
         boolean nextPage = false;
-        if(artworks.size() == limit+1) {
+        if (artworks.size() == limit + 1) {
             nextPage = true;
-            artworks.remove(limit+0); // limit+1개만큼 가져옴. 마지막 원소 삭제 필요
+            artworks.remove(limit + 0); // limit+1개만큼 가져옴. 마지막 원소 삭제 필요
         }
 
 
         return CustomizedArtWorkResponse.builder()
                 .nextPage(nextPage)
                 .artworks(artworks.stream()
-                        .map(m ->CustomizedArtWorkResponse.ArtWorkDto.from(m, awsStorageUrl))
+                        .map(m -> CustomizedArtWorkResponse.ArtWorkDto.from(m, awsStorageUrl))
                         .collect(Collectors.toList()))
                 .build();
     }

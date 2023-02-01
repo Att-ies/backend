@@ -244,11 +244,12 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(preferredArtistResponse);
     }
 
-    // 회원-작가 픽 -> 작가 상세 조회
+    // 작가 상세 조회
     @GetMapping("/artists/{artistId}")
-    public ResponseEntity<ArtistDetailResponse> getArtistDetail(@PathVariable Long artistId) {
+    public ResponseEntity<ArtistDetailResponse> getArtistDetail(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                @PathVariable(value = "artistId") Long artistId) {
 
-        return ResponseEntity.ok(memberService.getArtistDetail(artistId));
+        return ResponseEntity.ok(memberService.getArtistDetail(userDetails.getMember().getId(), artistId));
     }
 
     // 회원-작품 찜 관계 등록 (작품 찜하기)
