@@ -47,8 +47,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests() // 요청에 대한 사용권한 체크
                 .antMatchers("/members/join", "/members/login", "/oauth2/*", "/members/token",
                         "/artists/join", "/members/id", "/members/new-password", "/members/check-email",
-                        "/members/check-id", "/members/check-nickname", "/ws-connection/**", "/app/**",
-                        "/health-check").permitAll()
+                        "/members/check-id", "/members/check-nickname", "/health-check").permitAll()
+                .antMatchers("/ws-connection/**").permitAll() // 웹소켓 연결
                 .antMatchers(HttpMethod.PATCH, "/members").hasRole("USER")
                 .antMatchers(HttpMethod.PATCH, "/artists").hasRole("ARTIST")
                 .antMatchers(HttpMethod.POST, "/art-works").hasRole("ARTIST")
