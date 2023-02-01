@@ -577,7 +577,7 @@ public class MemberService {
     public void updateAsk(Long loginMemberId, Long memberAskId, MemberAskRequestDto dto) throws IOException {
 
         MemberAsk findMemberAsk = memberAskRepository.findById(memberAskId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUNT_ASK));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ASK));
 
         // 자신이 쓴 글이 맞는지 검증
         if (findMemberAsk.getMember().getId() != loginMemberId) {
@@ -592,7 +592,7 @@ public class MemberService {
     public void deleteAsk(Long loginMemberId, Long memberAskId) {
 
         MemberAsk findMemberAsk = memberAskRepository.findById(memberAskId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUNT_ASK));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ASK));
 
         // 자신이 쓴 글이 맞는지 검증
         if (findMemberAsk.getMember().getId() != loginMemberId) {
@@ -621,6 +621,7 @@ public class MemberService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<MemberAskResponse> getAskList(Long loginMemberId) {
 
         Member findMember = memberRepository.findById(loginMemberId)
@@ -633,6 +634,31 @@ public class MemberService {
                 .collect(Collectors.toList());
 
         return memberAskResponseList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberAskResponse> getAllAskList() {
+
+        List<MemberAsk> askList = memberAskRepository.findAll();
+
+        List<MemberAskResponse> memberAskResponseList = askList.stream()
+                .map(m -> new MemberAskResponse(m.getId(), m.getTitle(), m.getContent(), m.getAnswer(), m.getStatus(), m.getCreatedDate()))
+                .collect(Collectors.toList());
+
+        return memberAskResponseList;
+    }
+
+    @Transactional
+    public void updateAnswer(Long askId, MemberAnswerRequest dto) {
+
+        MemberAsk findMemberAsk = memberAskRepository.findById(askId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ASK));
+
+        Member findMember = memberRepository.findById(findMemberAsk.getMember().getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
+        findMemberAsk.updateMemberAnswer(dto);
+        eventPublisher.publishEvent(new MemberEvent(findMember, NotificationCode.MEMBER_ASK_RESPONSE));
     }
 
     //이미지 처리
