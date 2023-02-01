@@ -542,7 +542,9 @@ public class MemberService {
                     .price(artWork.getPrice())
                     .image(awsStorageUrl + artWork.getMainImage())
                     .saleStatus(ArtWorkStatus.valueOfType(artWork.getSaleStatus()).getName())
-                    .hot(checkHot).build());
+                    .hot(checkHot)
+                    .artist(artWork.getMember().getNickname())
+                    .build());
         }
 
         return preferredArtWorkResponse;
