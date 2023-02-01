@@ -31,11 +31,10 @@ public class Notification extends BaseEntity {
     private String title;
     private String message;
     private String details;
-    private String link;
+    private Long data;
     private Boolean checked;
 
     public void read() {
         this.checked = true;
     }
-
 }

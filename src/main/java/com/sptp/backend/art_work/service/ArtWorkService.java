@@ -1,14 +1,10 @@
 package com.sptp.backend.art_work.service;
 
+import com.querydsl.core.Tuple;
 import com.sptp.backend.art_work.event.ArtWorkEvent;
-import com.sptp.backend.art_work.repository.ArtWork;
-import com.sptp.backend.art_work.repository.ArtWorkRepository;
-import com.sptp.backend.art_work.repository.ArtWorkSize;
-import com.sptp.backend.art_work.repository.ArtWorkStatus;
+import com.sptp.backend.art_work.repository.*;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
-import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
-import com.sptp.backend.art_work.web.dto.response.ArtWorkMyListResponseDto;
-import com.sptp.backend.art_work.web.dto.response.BiddingListResponse;
+import com.sptp.backend.art_work.web.dto.response.*;
 import com.sptp.backend.art_work_image.repository.ArtWorkImage;
 import com.sptp.backend.art_work_image.repository.ArtWorkImageRepository;
 import com.sptp.backend.art_work_keyword.repository.ArtWorkKeyword;
@@ -21,6 +17,7 @@ import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.bidding.repository.Bidding;
 import com.sptp.backend.bidding.repository.BiddingRepository;
+import com.sptp.backend.bidding.repository.QBidding;
 import com.sptp.backend.common.KeywordMap;
 import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.common.entity.BaseEntity;
@@ -32,6 +29,9 @@ import com.sptp.backend.member_preffereed_art_work.repository.MemberPreferredArt
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -104,7 +104,7 @@ public class ArtWorkService extends BaseEntity {
         saveArtImages(dto.getImage(), artWork);
         saveArtKeywords(dto.getKeywords(), artWork);
 
-        eventPublisher.publishEvent(new ArtWorkEvent(findMember, artWork, NotificationCode.SAVE_ARTWORK));
+        eventPublisher.publishEvent(new ArtWorkEvent(findMember, artWork, null, NotificationCode.SAVE_ARTWORK));
 
         return savedArtWork.getId();
     }
@@ -157,6 +157,8 @@ public class ArtWorkService extends BaseEntity {
                 .orElseGet(() -> saveBidding(artWork, member));
 
         bidding.raisePrice(topPrice, price);
+        eventPublisher.publishEvent(new ArtWorkEvent(member, artWork, bidding, NotificationCode.SUGGEST_BID));
+        eventPublisher.publishEvent(new ArtWorkEvent(member, artWork, null, NotificationCode.STILL_BID));
     }
 
     private ArtWork getArtWorkOrThrow(Long artWorkId) {
@@ -214,6 +216,8 @@ public class ArtWorkService extends BaseEntity {
                 .artist(ArtWorkInfoResponseDto.ArtistDto.from(findArtist, storageUrl))
                 .artWork(ArtWorkInfoResponseDto.ArtWorkDto.from(findArtWork, artWorkImages, artWorkKeywords, storageUrl))
                 .isPreferred(isPreferred)
+                .turn(findArtWork.getAuction().getTurn())
+                .endDate(findArtWork.getAuction().getEndDate())
                 .build();
     }
 
@@ -310,5 +314,79 @@ public class ArtWorkService extends BaseEntity {
         }
 
         return artWorkDtoList;
+    }
+
+    public ArtWorkTerminatedListResponseDto getTerminatedAuctionArtWorkList(Long auctionId, Long artWorkId, Pageable pageable) {
+
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_AUCTION_TURN));
+
+        if (!auction.getStatus().equals(AuctionStatus.TERMINATED.getType())) {
+            throw new CustomException(ErrorCode.IS_NOT_TERMINATED_AUCTION);
+        }
+
+        List<ArtWork> results = artWorkRepository.findTerminatedAuctionArtWorkList(auctionId, artWorkId, pageable);
+        List<ArtWorkTerminatedListResponseDto.ArtWorkDto> artWorkDtoList = transferToTerminatedArtWorkDto(results);
+
+        boolean hasNext = false;
+
+        // 조회한 결과 개수가 요청한 페이지 사이즈보다 클 경우, next = true
+        if (artWorkDtoList.size() > pageable.getPageSize()) {
+            hasNext = true;
+            artWorkDtoList.remove(pageable.getPageSize());
+        }
+
+        ArtWorkTerminatedListResponseDto artWorkTerminatedListResponseDto = ArtWorkTerminatedListResponseDto.builder()
+                .nextPage(hasNext)
+                .artWorks(artWorkDtoList)
+                .build();
+
+        return artWorkTerminatedListResponseDto;
+    }
+
+    private List<ArtWorkTerminatedListResponseDto.ArtWorkDto> transferToTerminatedArtWorkDto(List<ArtWork> artWorkList) {
+
+        List<ArtWorkTerminatedListResponseDto.ArtWorkDto> artWorkDtoList = new ArrayList<>();
+
+        for (ArtWork artWork : artWorkList) {
+
+            List<Long> priceList = artWork.getBiddingList().stream().map(m -> m.getPrice()).collect(Collectors.toList());
+            Long topPrice = artWork.getPrice();
+            if (!priceList.isEmpty()) {
+                topPrice = Collections.max(priceList);
+            }
+
+            ArtWorkTerminatedListResponseDto.ArtWorkDto artWorkDto = ArtWorkTerminatedListResponseDto.ArtWorkDto.from(artWork, topPrice, artWork.getBiddingList().size(), storageUrl);
+            artWorkDtoList.add(artWorkDto);
+        }
+
+        return artWorkDtoList;
+    }
+
+    public ArtWorkPurchasedListResponseDto getMyBidding(Member member) {
+
+        List<ArtWorkPurchasedListResponseDto.BiddingDto> biddingDtoList = new ArrayList<>();
+        List<ArtWorkPurchasedListResponseDto.SuccessfulBiddingDto> successfulBiddingDtoList = new ArrayList<>();
+
+        List<Tuple> list = biddingRepository.findByMemberWithMaxBidding(member);
+
+        for (Tuple tuple : list) {
+
+            ArtWork findArtWork = tuple.get(QBidding.bidding.artWork);
+            Long myMaxBiddingPrice = tuple.get(QBidding.bidding.price.max());
+
+            Long topPrice = biddingRepository.getFirstByArtWorkOrderByPriceDesc(findArtWork).get().getPrice();
+
+            if (myMaxBiddingPrice.equals(topPrice)) {
+                successfulBiddingDtoList.add(ArtWorkPurchasedListResponseDto.SuccessfulBiddingDto.from(findArtWork, topPrice, storageUrl));
+            } else {
+                biddingDtoList.add(ArtWorkPurchasedListResponseDto.BiddingDto.from(findArtWork, myMaxBiddingPrice, topPrice, storageUrl));
+            }
+        }
+
+        return ArtWorkPurchasedListResponseDto.builder()
+                .successfulBiddingList(successfulBiddingDtoList)
+                .biddingList(biddingDtoList)
+                .build();
     }
 }

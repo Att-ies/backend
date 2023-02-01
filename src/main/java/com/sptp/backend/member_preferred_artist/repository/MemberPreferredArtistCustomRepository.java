@@ -7,4 +7,5 @@ import java.util.List;
 public interface MemberPreferredArtistCustomRepository {
 
     List<Member> findPreferredArtist(Long memberId);
+    List<Member> findCertificationList();
 }

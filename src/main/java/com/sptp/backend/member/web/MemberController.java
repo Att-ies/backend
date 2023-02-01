@@ -37,6 +37,7 @@ public class MemberController {
         Member member = memberService.saveUser(memberSaveRequestDto);
 
         MemberSaveResponseDto memberSaveResponseDto = MemberSaveResponseDto.builder()
+                .id(member.getId())
                 .nickname(member.getNickname())
                 .userId(member.getUserId())
                 .email(member.getEmail())
@@ -119,33 +120,13 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    // 닉네임 중복 체크
     @GetMapping("/members/check-nickname")
     public ResponseEntity<Void> checkUserNickname(@RequestParam("nickname") String nickname) {
 
         memberService.checkDuplicateMemberNickname(nickname);
 
         return new ResponseEntity(HttpStatus.OK);
-    }
-
-    // 작가 가입
-    @PostMapping("artists/join")
-    public ResponseEntity<ArtistSaveResponseDto> joinAuthor(@RequestParam(value = "image", required = false) MultipartFile image, ArtistSaveRequestDto artistSaveRequestDto) throws IOException {
-
-        Member member = memberService.saveArtist(artistSaveRequestDto, image);
-
-        ArtistSaveResponseDto artistSaveResponseDto = ArtistSaveResponseDto.builder()
-                .nickname(member.getNickname())
-                .userId(member.getUserId())
-                .email(member.getEmail())
-                .telephone(member.getTelephone())
-                .education(member.getEducation())
-                .history(member.getHistory())
-                .description(member.getDescription())
-                .instagram(member.getInstagram())
-                .behance(member.getBehance())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.OK).body(artistSaveResponseDto);
     }
 
     // 비밀번호 재설정
@@ -185,19 +166,38 @@ public class MemberController {
     // 작가 정보 수정
     @PatchMapping("/artists")
     public ResponseEntity<Void> updateArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                          @RequestParam(value = "image", required = false) MultipartFile image,
-                                          ArtistUpdateRequest artistUpdateRequest) throws IOException {
+                                             @RequestParam(value = "image", required = false) MultipartFile image,
+                                             ArtistUpdateRequest artistUpdateRequest) throws IOException {
 
         memberService.updateArtist(userDetails.getMember().getId(), artistUpdateRequest, image);
 
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    // roles 작가로 전환
-    @PatchMapping("/members/roles")
-    public ResponseEntity<RolesChangeResponse> changeToArtist(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    // 작가 인증 파일 보내기
+    @PatchMapping("/members/certification")
+    public ResponseEntity<Void> certifyArtist(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                              @RequestParam(value = "certificationImage", required = true) MultipartFile image) throws IOException {
 
-        String roles = memberService.changeToArtist(userDetails.getMember().getId());
+        memberService.certifyArtist(userDetails.getMember().getId(), image);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    // 작가 인증 파일 목록 조회
+    @GetMapping("/admin/members/certification")
+    public ResponseEntity<List<CertificationResponse>> certificationList() {
+
+        List<CertificationResponse> certificationResponses = memberService.getCertificationList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(certificationResponses);
+    }
+
+    // roles 작가로 전환
+    @PatchMapping("/admin/roles/{memberId}")
+    public ResponseEntity<RolesChangeResponse> changeToArtist(@PathVariable(value = "memberId") Long memberId) {
+
+        String roles = memberService.changeToArtist(memberId);
 
         RolesChangeResponse rolesChangeResponse = RolesChangeResponse.builder()
                 .roles(roles)
@@ -208,7 +208,7 @@ public class MemberController {
 
     // 회원 정보 조회
     @GetMapping("/members/me")
-    public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
         MemberResponse memberResponse = memberService.getMember(userDetails.getMember().getId());
 
@@ -244,11 +244,12 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(preferredArtistResponse);
     }
 
-    // 회원-작가 픽 -> 작가 상세 조회
+    // 작가 상세 조회
     @GetMapping("/artists/{artistId}")
-    public ResponseEntity<ArtistDetailResponse> getArtistDetail(@PathVariable Long artistId) {
+    public ResponseEntity<ArtistDetailResponse> getArtistDetail(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                @PathVariable(value = "artistId") Long artistId) {
 
-        return ResponseEntity.ok(memberService.getArtistDetail(artistId));
+        return ResponseEntity.ok(memberService.getArtistDetail(userDetails.getMember().getId(), artistId));
     }
 
     // 회원-작품 찜 관계 등록 (작품 찜하기)
@@ -264,7 +265,7 @@ public class MemberController {
     // 회원-작품 찜 관계 취소
     @DeleteMapping("/members/preferred-artworks/{artWorkId}")
     public ResponseEntity<Void> deletePickArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                            @PathVariable(value = "artWorkId") Long artWorkId) {
+                                                  @PathVariable(value = "artWorkId") Long artWorkId) {
 
         memberService.deletePickArtWork(userDetails.getMember().getId(), artWorkId);
 
@@ -282,10 +283,10 @@ public class MemberController {
 
     // 회원-작품 취향 맞춤 추천 목록 조회
     @GetMapping("/members/customized-artworks")
-    public ResponseEntity<List<CustomizedArtWorkResponse>> customizedArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                                 @RequestParam("page") Integer page, @RequestParam("limit") Integer limit) {
+    public ResponseEntity<CustomizedArtWorkResponse> customizedArtWorkList(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                           @RequestParam("page") Integer page, @RequestParam("limit") Integer limit) {
 
-        List<CustomizedArtWorkResponse> customizedArtWorkResponse = memberService.getCustomizedArtWorkList(userDetails.getMember().getId(), page, limit);
+        CustomizedArtWorkResponse customizedArtWorkResponse = memberService.getCustomizedArtWorkList(userDetails.getMember().getId(), page, limit);
 
         return ResponseEntity.status(HttpStatus.OK).body(customizedArtWorkResponse);
     }
@@ -333,7 +334,7 @@ public class MemberController {
     // 관심 키워드 수정
     @PatchMapping("/members/keywords")
     public ResponseEntity<List<MemberUpdateKeywordsResponseDto>> updateKeywords(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                         @RequestBody MemberUpdateKeywordsRequestDto memberUpdateKeywordsRequestDto) {
+                                                                                @RequestBody MemberUpdateKeywordsRequestDto memberUpdateKeywordsRequestDto) {
 
         List<MemberUpdateKeywordsResponseDto> memberUpdateKeywordsResponseDto = memberService.updateKeyword(userDetails.getMember().getId(), memberUpdateKeywordsRequestDto);
 

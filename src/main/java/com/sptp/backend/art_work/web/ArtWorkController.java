@@ -5,6 +5,7 @@ import com.sptp.backend.art_work.web.dto.request.ArtWorkBidRequest;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkMyListResponseDto;
+import com.sptp.backend.art_work.web.dto.response.ArtWorkPurchasedListResponseDto;
 import com.sptp.backend.art_work.web.dto.response.BiddingListResponse;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -75,4 +76,14 @@ public class ArtWorkController {
 
         return ResponseEntity.ok(artWorkService.getBiddingList(artWorkId));
     }
+
+    // 나의 경매 조회
+    @GetMapping("/bidding/me")
+    public ResponseEntity<ArtWorkPurchasedListResponseDto> getMyBidding(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        ArtWorkPurchasedListResponseDto artWorkPurchasedListResponseDto = artWorkService.getMyBidding(userDetails.getMember());
+
+        return ResponseEntity.status(HttpStatus.OK).body(artWorkPurchasedListResponseDto);
+    }
+
 }

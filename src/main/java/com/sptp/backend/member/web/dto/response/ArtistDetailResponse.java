@@ -1,6 +1,7 @@
 package com.sptp.backend.member.web.dto.response;
 
 import com.sptp.backend.art_work.repository.ArtWork;
+import com.sptp.backend.art_work.repository.ArtWorkStatus;
 import com.sptp.backend.member.repository.Member;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.util.List;
 @Builder
 public class ArtistDetailResponse {
 
+    private boolean pick;
     private MemberDto member;
     private List<ArtWorkDto> artworks;
 
@@ -27,12 +29,17 @@ public class ArtistDetailResponse {
         private String instagram;
         private String behance;
 
-        public static MemberDto from(Member member) {
+        public static MemberDto from(Member member, String awsStorageUrl) {
+
+            String image = awsStorageUrl + member.getImage();
+            if (member.getImage() == null) {
+                image = null;
+            }
 
             return MemberDto.builder()
                     .id(member.getId())
                     .nickname(member.getNickname())
-                    .image(member.getImage())
+                    .image(image)
                     .education(member.getEducation())
                     .history(member.getHistory())
                     .description(member.getDescription())
@@ -49,13 +56,15 @@ public class ArtistDetailResponse {
         private Long id;
         private String title;
         private String image;
-        // 경매 상태 추후 구현 예정
+        private String saleStatus;
 
-        public static ArtWorkDto from(ArtWork artwork) {
+        public static ArtWorkDto from(ArtWork artwork, String awsStorageUrl) {
+
             return ArtWorkDto.builder()
                     .id(artwork.getId())
                     .title(artwork.getTitle())
-                    .image(artwork.getMainImage())
+                    .image(awsStorageUrl + artwork.getMainImage())
+                    .saleStatus(ArtWorkStatus.valueOfType(artwork.getSaleStatus()).getName())
                     .build();
         }
     }

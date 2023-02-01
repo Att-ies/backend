@@ -28,6 +28,7 @@ public class AuctionArtWorkListResponseDto {
         private ArtWorkSize artWorkSize;
         private Integer productionYear;
         private Long topPrice;
+        private String material;
 
         public static ArtWorkDto from(ArtWork artWork, Long topPrice, String storageUrl) {
             return ArtWorkDto.builder()
@@ -37,6 +38,7 @@ public class AuctionArtWorkListResponseDto {
                     .artWorkSize(artWork.getArtWorkSize())
                     .productionYear(artWork.getProductionYear())
                     .topPrice(topPrice)
+                    .material(artWork.getMaterial())
                     .build();
         }
     }

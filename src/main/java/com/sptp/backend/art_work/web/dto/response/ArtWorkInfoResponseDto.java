@@ -1,5 +1,6 @@
 package com.sptp.backend.art_work.web.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkSize;
 import com.sptp.backend.art_work_image.repository.ArtWorkImage;
@@ -8,6 +9,7 @@ import com.sptp.backend.common.KeywordMap;
 import com.sptp.backend.member.repository.Member;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +23,10 @@ public class ArtWorkInfoResponseDto {
     private ArtistDto artist;
     private ArtWorkDto artWork;
     private boolean isPreferred;
+    private Integer turn;
+
+    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
+    private LocalDateTime endDate;
 
     @Data
     @Builder

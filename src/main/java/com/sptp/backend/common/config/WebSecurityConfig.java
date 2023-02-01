@@ -1,11 +1,12 @@
 package com.sptp.backend.common.config;
 
-import com.sptp.backend.jwt.web.*;
-
+import com.sptp.backend.jwt.web.CustomAccessDeniedHandler;
+import com.sptp.backend.jwt.web.CustomAuthenticationEntryPoint;
+import com.sptp.backend.jwt.web.JwtAuthenticationFilter;
+import com.sptp.backend.jwt.web.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,7 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -49,9 +49,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/artists/join", "/members/id", "/members/new-password", "/members/check-email",
                         "/members/check-id", "/members/check-nickname", "/health-check").permitAll()
                 .antMatchers("/ws-connection/**").permitAll() // 웹소켓 연결
-                .antMatchers(HttpMethod.PATCH, "/members").hasRole("USER")
-                .antMatchers(HttpMethod.PATCH, "/artists").hasRole("ARTIST")
-                .antMatchers(HttpMethod.POST, "/art-works").hasRole("ARTIST")
+                .antMatchers(HttpMethod.PATCH, "/members").hasAnyRole("USER", "ADMIN")
+                .antMatchers(HttpMethod.PATCH, "/artists").hasAnyRole("ARTIST", "ADMIN")
+                .antMatchers(HttpMethod.POST, "/art-works").hasAnyRole("ARTIST", "ADMIN")
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated(); // 그외 나머지 요청은 인증 필요
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

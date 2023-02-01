@@ -3,8 +3,8 @@ name: Deploy
 on:
   push:
     branches: [ "develop" ]
-  pull_request:
-    branches: [ "develop" ]
+#  pull_request:
+#    branches: [ "develop" ]
 
 permissions:
   contents: read
@@ -15,29 +15,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 환경 변수 설정
-    - name: Set environment values
-      working-directory: ./
-      run: |
-        echo email.AdminMail.id=${{ secrets.EMAIL_ADMINMAIL_ID }} >> env.properties |
-        echo email.AdminMail.password=${{ secrets.EMAIL_ADMINMAIL_PASSWORD }} >> env.properties |
-        echo application.spring.redis.port=${{ secrets.APPLICATION_SPRING_REDIS_PORT }} >> env.properties |
-        echo application.spring.datasource.url=${{ secrets.APPLICATION_SPRING_DATASOURCE_URL }} >> env.properties |
-        echo application.spring.datasource.username=${{ secrets.APPLICATION_SPRING_DATASOURCE_USERNAME }} >> env.properties |
-        echo application.spring.datasource.password=${{ secrets.APPLICATION_SPRING_DATASOURCE_PASSWORD }} >> env.properties |
-        echo application.spring.security.kakao.client-id=${{ secrets.APPLICATION_SPRING_SECURITY_KAKAO_CLIENT_ID }} >> env.properties |
-        echo application.spring.security.kakao.client-secret=${{ secrets.APPLICATION_SPRING_SECURITY_KAKAO_CLIENT_SECRET }} >> env.properties |
-        echo application.spring.security.naver.client-id=${{ secrets.APPLICATION_SPRING_SECURITY_NAVER_CLIENT_ID }} >> env.properties |
-        echo application.spring.security.naver.client-secret=${{ secrets.APPLICATION_SPRING_SECURITY_NAVER_CLIENT_SECRET }} >> env.properties |
-        echo application.jwt.secret=${{ secrets.APPLICATION_JWT_SECRET }} >> env.properties |
-        echo application.jwt.secret_refresh=${{ secrets.APPLICATION_JWT_SECRET_REFRESH }} >> env.properties |
-        echo application.spring.security.kakao.redirect-uri=${{ secrets.APPLICATION_SPRING_SECURITY_KAKAO_REDIRECT_URI }} >> env.properties |
-        echo application.spring.security.naver.redirect-uri=${{ secrets.APPLICATION_SPRING_SECURITY_NAVER_REDIRECT_URI }} >> env.properties |
-        echo aws.iamAccessKey=${{ secrets.AWS_IAMACCESSKEY }} >> env.properties |
-        echo aws.iamSecretKey=${{ secrets.AWS_IAMSECRETKEY }} >> env.properties |
-        echo aws.storage.url=${{ secrets.AWS_STORAGE_URL }} >> env.properties |
-        echo aws.region.static=${{ secrets.AWS_REGION_STATIC }} >> env.properties |
-        echo aws.stack.auto=${{ secrets.AWS_STACK_AUTO }} >> env.properties
     # 기본 체크아웃
     - name: Checkout
       uses: actions/checkout@v3
@@ -50,8 +27,34 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+    # 환경 변수 설정
+    - name: Set environment values
+      run: |
+        cd ./src/main/resources
+        touch ./env.properties
+        echo "${{ secrets.ENV }}" > ./env.properties
+      shell: bash
     # Gradle build (Test 제외)
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
         arguments: clean build -x test
+    # Docker build
+    - name: Docker build
+      run: |
+        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+        docker build -t atties_spring .
+        docker tag atties_spring choo000407/atties_spring:${GITHUB_SHA::7}
+        docker push choo000407/atties_spring:${GITHUB_SHA::7}
+    # Deploy
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ec2-44-193-163-114.compute-1.amazonaws.com
+        username: ec2-user
+        password: ${{ secrets.SSH_PASSWORD }}
+        envs: GITHUB_SHA
+        script: |
+          docker pull choo000407/atties_spring:${GITHUB_SHA::7}
+          docker tag choo000407/atties_spring:${GITHUB_SHA::7} atties_spring
+          docker-compose up -d
