@@ -101,17 +101,23 @@ public class AuctionService {
     public List<AuctionListResponseDto> getAuctionList() {
 
         List<Auction> auctionList = new ArrayList<>();
-
         Auction currentlyProcessingAuction = auctionRepository.findCurrentlyProcessingAuction();
         List<Auction> scheduledAuction = auctionRepository.findScheduledAuction();
+        List<AuctionListResponseDto> auctionListResponseDto = new ArrayList<>();
 
         auctionList.add(currentlyProcessingAuction);
         for (Auction auction : scheduledAuction) {
             auctionList.add(auction);
         }
 
-        List<AuctionListResponseDto> auctionListResponseDto = auctionList.stream()
-                .map(m-> new AuctionListResponseDto(m.getId(), m.getTurn(), m.getStartDate(), m.getEndDate(), m.getStatus())).collect(Collectors.toList());
+        for (Auction auction : auctionList) {
+
+            Long artWorkCount = artWorkRepository.countByAuctionId(auction.getId());
+            auctionListResponseDto.add(AuctionListResponseDto.builder()
+                    .id(auction.getId()).turn(auction.getTurn())
+                    .startDate(auction.getStartDate()).endDate(auction.getEndDate())
+                    .status(auction.getStatus()).artWorkCount(artWorkCount).build());
+        }
 
         return auctionListResponseDto;
     }
@@ -119,9 +125,16 @@ public class AuctionService {
     public List<AuctionListResponseDto> getTerminatedAuctionList() {
 
         List<Auction> terminatedAuctionList = auctionRepository.findTerminatedAuction();
+        List<AuctionListResponseDto> auctionListResponseDto = new ArrayList<>();
 
-        List<AuctionListResponseDto> auctionListResponseDto = terminatedAuctionList.stream()
-                .map(m -> new AuctionListResponseDto(m.getId(), m.getTurn(), m.getStartDate(), m.getEndDate(), m.getStatus())).collect(Collectors.toList());
+        for (Auction auction : terminatedAuctionList) {
+
+            Long artWorkCount = artWorkRepository.countByAuctionId(auction.getId());
+            auctionListResponseDto.add(AuctionListResponseDto.builder()
+                    .id(auction.getId()).turn(auction.getTurn())
+                    .startDate(auction.getStartDate()).endDate(auction.getEndDate())
+                    .status(auction.getStatus()).artWorkCount(artWorkCount).build());
+        }
 
         return auctionListResponseDto;
     }

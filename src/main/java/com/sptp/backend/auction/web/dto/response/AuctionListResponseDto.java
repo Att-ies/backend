@@ -22,5 +22,7 @@ public class AuctionListResponseDto {
     @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
     private LocalDateTime endDate;
 
+    private Long artWorkCount;
+
     private String status;
 }
