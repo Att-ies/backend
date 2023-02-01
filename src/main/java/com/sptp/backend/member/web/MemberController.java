@@ -343,7 +343,7 @@ public class MemberController {
     // 일대일 문의 답변
     @PatchMapping("/admin/members/answer/{askId}")
     public ResponseEntity<Void> updateAnswer(@PathVariable(value = "askId") Long askId,
-                                             MemberAnswerRequest memberAnswerRequest) {
+                                             @RequestBody MemberAnswerRequest memberAnswerRequest) {
 
         memberService.updateAnswer(askId, memberAnswerRequest);
 
