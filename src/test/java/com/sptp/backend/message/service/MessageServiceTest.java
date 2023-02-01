@@ -2,6 +2,7 @@ package com.sptp.backend.message.service;
 
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.chat_room.repository.ChatRoom;
+import com.sptp.backend.chat_room.repository.ChatRoomConnectionRepository;
 import com.sptp.backend.chat_room.repository.ChatRoomRepository;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
@@ -32,6 +33,9 @@ class MessageServiceTest {
 
     @Mock
     ChatRoomRepository chatRoomRepository;
+
+    @Mock
+    ChatRoomConnectionRepository chatRoomConnectionRepository;
 
     @Mock
     MemberRepository memberRepository;
@@ -95,6 +99,9 @@ class MessageServiceTest {
 
             when(messageRepository.save(any(Message.class)))
                     .thenReturn(Message.builder().build());
+
+            when(chatRoomConnectionRepository.countByChatRoomId(messageRequest.getChatRoomId()))
+                    .thenReturn(2);
 
             //when
             //then
