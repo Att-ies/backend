@@ -6,4 +6,5 @@ public interface ChatRoomConnectionRepository extends JpaRepository<ChatRoomConn
 
     boolean existsBySessionId(String sessionId);
     void deleteBySessionId(String sessionId);
+    int countByChatRoomId(Long chatRoomId);
 }
