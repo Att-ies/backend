@@ -21,7 +21,7 @@ function connect() {
         stompClient.subscribe('/queue/chat-rooms/1', function (response) {
             // console.log(response);
             showGreeting(JSON.parse(response.body).message);
-        });
+        }, {'action' : 'enter'});
     });
 }
 
@@ -34,7 +34,8 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.send("/app/send", {}, JSON.stringify({'chatRoomId': $("#chatRoomId").val(), 'message': $("#message").val()}));
+    stompClient.send("/app/send", {},
+        JSON.stringify({'chatRoomId': $("#chatRoomId").val(), 'message': $("#message").val(), 'senderId': $("#senderId").val()}));
 }
 
 function showGreeting(message) {
