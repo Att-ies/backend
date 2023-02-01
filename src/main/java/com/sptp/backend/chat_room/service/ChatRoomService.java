@@ -3,6 +3,8 @@ package com.sptp.backend.chat_room.service;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.chat_room.repository.ChatRoom;
+import com.sptp.backend.chat_room.repository.ChatRoomConnection;
+import com.sptp.backend.chat_room.repository.ChatRoomConnectionRepository;
 import com.sptp.backend.chat_room.repository.ChatRoomRepository;
 import com.sptp.backend.chat_room.web.dto.ChatRoomDetailResponse;
 import com.sptp.backend.chat_room.web.dto.ChatRoomResponse;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomConnectionRepository chatRoomConnectionRepository;
     private final MemberRepository memberRepository;
     private final ArtWorkRepository artWorkRepository;
     private final MessageRepository messageRepository;
@@ -103,6 +106,24 @@ public class ChatRoomService {
 
         if (chatRoomRepository.existsById(chatRoomId)) {
             chatRoomRepository.deleteById(chatRoomId);
+        }
+    }
+
+    public void connect(String sessionId, Long chatRoomId, Long memberId) {
+
+        ChatRoomConnection chatRoomConnection = ChatRoomConnection.builder()
+                .sessionId(sessionId)
+                .chatRoomId(chatRoomId)
+                .memberId(memberId)
+                .build();
+
+        chatRoomConnectionRepository.save(chatRoomConnection);
+    }
+
+    public void disconnect(String sessionId) {
+
+        if (chatRoomConnectionRepository.existsBySessionId(sessionId)) {
+            chatRoomConnectionRepository.deleteBySessionId(sessionId);
         }
     }
 }
