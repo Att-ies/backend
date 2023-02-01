@@ -27,14 +27,16 @@ public class ExhibitionListResponseDto {
         private LocalDateTime startDate;
         @JsonFormat(pattern = "yyyy.MM.dd")
         private LocalDateTime endDate;
-        private Long artWorkCount;
+        private Integer artWorkCount;
+        private String image;
 
-        public static ProcessingAuctionDto from(Auction auction, Long artWorkCount) {
+        public static ProcessingAuctionDto from(Auction auction, String image ,Integer artWorkCount) {
             return ProcessingAuctionDto.builder()
                     .id(auction.getId())
                     .turn(auction.getTurn())
                     .startDate(auction.getStartDate())
                     .endDate(auction.getEndDate())
+                    .image(image)
                     .artWorkCount(artWorkCount)
                     .build();
         }
@@ -50,14 +52,16 @@ public class ExhibitionListResponseDto {
         private LocalDateTime startDate;
         @JsonFormat(pattern = "yyyy.MM.dd")
         private LocalDateTime endDate;
-        private Long artWorkCount;
+        private Integer artWorkCount;
+        private String image;
 
-        public static TerminatedAuctionDto from(Auction auction, Long artWorkCount) {
+        public static TerminatedAuctionDto from(Auction auction, String image, Integer artWorkCount) {
             return TerminatedAuctionDto.builder()
                     .id(auction.getId())
                     .turn(auction.getTurn())
                     .startDate(auction.getStartDate())
                     .endDate(auction.getEndDate())
+                    .image(image)
                     .artWorkCount(artWorkCount)
                     .build();
         }
