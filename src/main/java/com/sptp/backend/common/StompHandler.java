@@ -31,9 +31,9 @@ public class StompHandler implements ChannelInterceptor {
 
         // websocket Authorization 헤더 위치는 http와 다르기 때문에 추가 구현
         if (accessor.getCommand() == StompCommand.CONNECT) {
-//            if (!jwtTokenProvider.validateToken(accessor.getFirstNativeHeader("Authorization"))) {
-//                throw new CustomException(ErrorCode.TOKEN_INVALID);
-//            }
+            if (!jwtTokenProvider.validateToken(accessor.getFirstNativeHeader("Authorization"))) {
+                throw new CustomException(ErrorCode.TOKEN_INVALID);
+            }
             log.info("StompUser = {}, Authentication = {}", accessor.getUser(), SecurityContextHolder.getContext().getAuthentication());
         } else if (accessor.getCommand() == StompCommand.SUBSCRIBE
                 && "enter".equals(accessor.getFirstNativeHeader("action"))) {
