@@ -17,7 +17,7 @@ public class PreferredArtWorkResponse {
 
     private String image;
 
-    private String status;
+    private String saleStatus;
 
     private boolean hot;
 }

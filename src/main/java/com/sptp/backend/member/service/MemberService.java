@@ -3,6 +3,7 @@ package com.sptp.backend.member.service;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
+import com.sptp.backend.art_work.repository.ArtWorkStatus;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.common.NotificationCode;
@@ -540,7 +541,7 @@ public class MemberService {
                     .title(artWork.getTitle())
                     .price(artWork.getPrice())
                     .image(awsStorageUrl + artWork.getMainImage())
-                    .status(artWork.getSaleStatus())
+                    .saleStatus(ArtWorkStatus.valueOfType(artWork.getSaleStatus()).getName())
                     .hot(checkHot).build());
         }
 
