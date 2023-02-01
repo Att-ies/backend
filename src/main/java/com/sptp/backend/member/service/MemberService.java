@@ -642,7 +642,11 @@ public class MemberService {
         MemberAsk findMemberAsk = memberAskRepository.findById(askId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ASK));
 
+        Member findMember = memberRepository.findById(findMemberAsk.getMember().getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
         findMemberAsk.updateMemberAnswer(dto);
+        eventPublisher.publishEvent(new MemberEvent(findMember, NotificationCode.MEMBER_ASK_RESPONSE));
     }
 
     //이미지 처리
