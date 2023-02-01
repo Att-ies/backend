@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -105,7 +106,10 @@ public class AuctionService {
         List<Auction> scheduledAuction = auctionRepository.findScheduledAuction();
         List<AuctionListResponseDto> auctionListResponseDto = new ArrayList<>();
 
-        auctionList.add(currentlyProcessingAuction);
+        if (!Objects.isNull(currentlyProcessingAuction)) {
+            auctionList.add(currentlyProcessingAuction);
+        }
+
         for (Auction auction : scheduledAuction) {
             auctionList.add(auction);
         }
