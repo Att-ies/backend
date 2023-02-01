@@ -536,9 +536,12 @@ public class MemberService {
             if (artWork.getLikeCount() >= LIKE_COUNT_FOR_HOT_LABELED) checkHot = true;
 
             preferredArtWorkResponse.add(PreferredArtWorkResponse.builder()
-                    .id(artWork.getId()).title(artWork.getTitle())
-                    .price(artWork.getPrice()).image(awsStorageUrl + artWork.getMainImage())
-                    .status(artWork.getSaleStatus()).hot(checkHot).build());
+                    .id(artWork.getId())
+                    .title(artWork.getTitle())
+                    .price(artWork.getPrice())
+                    .image(awsStorageUrl + artWork.getMainImage())
+                    .status(artWork.getSaleStatus())
+                    .hot(checkHot).build());
         }
 
         return preferredArtWorkResponse;
