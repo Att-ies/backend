@@ -217,6 +217,7 @@ public class ArtWorkService extends BaseEntity {
                 .artWork(ArtWorkInfoResponseDto.ArtWorkDto.from(findArtWork, artWorkImages, artWorkKeywords, storageUrl))
                 .isPreferred(isPreferred)
                 .turn(findArtWork.getAuction().getTurn())
+                .endDate(findArtWork.getAuction().getEndDate())
                 .build();
     }
 
