@@ -1,6 +1,7 @@
 package com.sptp.backend.common;
 
 import com.sptp.backend.chat_room.service.ChatRoomService;
+import com.sptp.backend.chat_room_connection.service.ChatRoomConnectionService;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
@@ -23,7 +24,7 @@ import java.util.Optional;
 @Slf4j
 public class StompHandler implements ChannelInterceptor {
     private final JwtTokenProvider jwtTokenProvider;
-    private final ChatRoomService chatRoomService;
+    private final ChatRoomConnectionService chatRoomConnectionService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -43,10 +44,10 @@ public class StompHandler implements ChannelInterceptor {
                     .orElseThrow(() -> new CustomException(ErrorCode.NOT_VALID_URI));
             Long loginMemberId = getLoginMemberId(accessor.getFirstNativeHeader("Authorization"));
 
-            chatRoomService.connect(accessor.getSessionId(), chatRoomId, loginMemberId);
+            chatRoomConnectionService.connect(accessor.getSessionId(), chatRoomId, loginMemberId);
         } else if (accessor.getCommand() == StompCommand.DISCONNECT) {
 
-            chatRoomService.disconnect(accessor.getSessionId());
+            chatRoomConnectionService.disconnect(accessor.getSessionId());
         }
 
         return message;

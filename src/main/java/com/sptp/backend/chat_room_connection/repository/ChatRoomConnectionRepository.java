@@ -1,4 +1,4 @@
-package com.sptp.backend.chat_room.repository;
+package com.sptp.backend.chat_room_connection.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

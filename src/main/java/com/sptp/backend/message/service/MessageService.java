@@ -1,7 +1,7 @@
 package com.sptp.backend.message.service;
 
 import com.sptp.backend.chat_room.repository.ChatRoom;
-import com.sptp.backend.chat_room.repository.ChatRoomConnectionRepository;
+import com.sptp.backend.chat_room_connection.repository.ChatRoomConnectionRepository;
 import com.sptp.backend.chat_room.repository.ChatRoomRepository;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;

@@ -1,4 +1,4 @@
-package com.sptp.backend.chat_room.repository;
+package com.sptp.backend.chat_room_connection.repository;
 
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.common.entity.BaseEntity;
@@ -16,7 +16,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Table(uniqueConstraints = {@UniqueConstraint(
-        name = "CHAT_ROOM_SESSION_UNIQUE",
+        name = "CHAT_ROOM_CONNECTION_SESSION_ID_UNIQUE",
         columnNames = {"sessionId"})})
 public class ChatRoomConnection extends BaseEntity {
 
