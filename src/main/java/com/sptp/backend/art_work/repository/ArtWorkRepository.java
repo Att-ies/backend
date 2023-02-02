@@ -13,4 +13,6 @@ public interface ArtWorkRepository extends JpaRepository<ArtWork, Long>, ArtWork
     List<ArtWork> findArtWorkByMember(Member member);
     List<ArtWork> findByAuctionId(Long auctionId);
     List<ArtWork> findByAuctionIdAndSaleStatus(Long auctionId, String status);
+
+    Long countByAuctionId(Long auctionId);
 }

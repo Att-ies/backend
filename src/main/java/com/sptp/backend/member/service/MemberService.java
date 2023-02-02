@@ -3,6 +3,7 @@ package com.sptp.backend.member.service;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
+import com.sptp.backend.art_work.repository.ArtWorkStatus;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileService;
 import com.sptp.backend.common.NotificationCode;
@@ -526,19 +527,30 @@ public class MemberService {
     @Transactional(readOnly = true)
     public List<PreferredArtWorkResponse> getPreferredArtWorkList(Long loginMemberId) {
 
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
         List<ArtWork> findPreferredArtWorkList = memberPreferredArtWorkRepository.findPreferredArtWork(loginMemberId);
         List<PreferredArtWorkResponse> preferredArtWorkResponse = new ArrayList<>();
 
         for (ArtWork artWork : findPreferredArtWorkList) {
 
             boolean checkHot = false;
+            boolean checkPick = false;
 
             if (artWork.getLikeCount() >= LIKE_COUNT_FOR_HOT_LABELED) checkHot = true;
+            if (memberPreferredArtWorkRepository.existsByMemberAndArtWork(findMember, artWork)) checkPick = true;
 
             preferredArtWorkResponse.add(PreferredArtWorkResponse.builder()
-                    .id(artWork.getId()).title(artWork.getTitle())
-                    .price(artWork.getPrice()).image(awsStorageUrl + artWork.getMainImage())
-                    .status(artWork.getSaleStatus()).hot(checkHot).build());
+                    .id(artWork.getId())
+                    .title(artWork.getTitle())
+                    .price(artWork.getPrice())
+                    .image(awsStorageUrl + artWork.getMainImage())
+                    .saleStatus(ArtWorkStatus.valueOfType(artWork.getSaleStatus()).getName())
+                    .artist(artWork.getMember().getNickname())
+                    .hot(checkHot)
+                    .pick(checkPick)
+                    .build());
         }
 
         return preferredArtWorkResponse;
