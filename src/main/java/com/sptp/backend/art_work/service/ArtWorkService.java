@@ -14,7 +14,7 @@ import com.sptp.backend.auction.repository.AuctionRepository;
 import com.sptp.backend.auction.repository.AuctionStatus;
 import com.sptp.backend.auction.web.dto.response.AuctionArtWorkListResponseDto;
 import com.sptp.backend.aws.service.AwsService;
-import com.sptp.backend.aws.service.FileService;
+import com.sptp.backend.aws.service.FileManager;
 import com.sptp.backend.bidding.repository.Bidding;
 import com.sptp.backend.bidding.repository.BiddingRepository;
 import com.sptp.backend.bidding.repository.QBidding;
@@ -30,8 +30,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,7 +48,7 @@ public class ArtWorkService extends BaseEntity {
     private final ArtWorkImageRepository artWorkImageRepository;
     private final MemberRepository memberRepository;
     private final AwsService awsService;
-    private final FileService fileService;
+    private final FileManager fileManager;
 
     private final BiddingRepository biddingRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -74,10 +72,10 @@ public class ArtWorkService extends BaseEntity {
         checkExistsImage(dto);
 
         String GuaranteeImageUUID = UUID.randomUUID().toString();
-        String GuaranteeImageEXT = fileService.extractExt(dto.getGuaranteeImage().getOriginalFilename());
+        String GuaranteeImageEXT = fileManager.extractExtension(dto.getGuaranteeImage().getOriginalFilename());
 
         String mainImageUUID = UUID.randomUUID().toString();
-        String mainImageEXT = fileService.extractExt(dto.getImage()[0].getOriginalFilename());
+        String mainImageEXT = fileManager.extractExtension(dto.getImage()[0].getOriginalFilename());
 
         ArtWork artWork = ArtWork.builder()
                 .member(findMember)
@@ -114,7 +112,7 @@ public class ArtWorkService extends BaseEntity {
         for (MultipartFile file : files) {
 
             String imageUUID = UUID.randomUUID().toString();
-            String imageEXT = fileService.extractExt(file.getOriginalFilename());
+            String imageEXT = fileManager.extractExtension(file.getOriginalFilename());
 
             ArtWorkImage artWorkImage = ArtWorkImage.builder()
                     .artWork(artWork)
