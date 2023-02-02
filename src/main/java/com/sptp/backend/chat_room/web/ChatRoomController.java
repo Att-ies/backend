@@ -1,10 +1,7 @@
 package com.sptp.backend.chat_room.web;
 
 import com.sptp.backend.chat_room.service.ChatRoomService;
-import com.sptp.backend.chat_room.web.dto.ChatRoomCreateRequest;
-import com.sptp.backend.chat_room.web.dto.ChatRoomDetailResponse;
-import com.sptp.backend.chat_room.web.dto.ChatRoomResponse;
-import com.sptp.backend.chat_room.web.dto.ChatRoomsResponse;
+import com.sptp.backend.chat_room.web.dto.*;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHeaders;
@@ -25,14 +22,15 @@ public class ChatRoomController {
 
     // 채팅방 생성
     @PostMapping
-    public ResponseEntity<Void> createChatRoom(@Valid @RequestBody ChatRoomCreateRequest chatRoomCreateRequest,
-                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ChatRoomCreateResponse> createChatRoom(@Valid @RequestBody ChatRoomCreateRequest chatRoomCreateRequest,
+                                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         long chatRoomId = chatRoomService.createChatRoom(userDetails.getMember().getId(),
                 chatRoomCreateRequest.getArtistId(), chatRoomCreateRequest.getArtWorkId());
 
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
-                .header(HttpHeaders.LOCATION, "/chat-rooms/" + chatRoomId).build();
+        return ResponseEntity.ok().body(ChatRoomCreateResponse.builder()
+                .chatRoomId(chatRoomId)
+                .build());
     }
 
     // 채팅방 조회
