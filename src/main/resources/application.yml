@@ -1,6 +1,6 @@
 # 배포시 80포트 설정
-server:
-  port: 80
+#server:
+#  port: 80
 
 spring:
 
@@ -21,7 +21,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
 #        show_sql: true

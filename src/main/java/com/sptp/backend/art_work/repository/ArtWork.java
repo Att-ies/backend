@@ -38,6 +38,7 @@ public class ArtWork extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Auction auction;
 
+    @Builder.Default
     @OneToMany(mappedBy = "artWork")
     private List<Bidding> biddingList = new ArrayList<>();
 
@@ -68,10 +69,11 @@ public class ArtWork extends BaseEntity {
 
     private String saleStatus;
 
+    @Builder.Default
     private int likeCount = 0;
 
     public void statusToProcessing() {
-        this.saleStatus= ArtWorkStatus.PROCESSING.getType();
+        this.saleStatus = ArtWorkStatus.PROCESSING.getType();
     }
 
     public void statusToSalesSuccess() {
