@@ -1,7 +1,9 @@
 package com.sptp.backend.search.web;
 
+import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import com.sptp.backend.search.service.SearchService;
+import com.sptp.backend.search.web.response.SearchArtWorkResponse;
 import com.sptp.backend.search.web.response.SearchWordResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,5 +43,14 @@ public class SearchController {
         searchService.deleteSearchWordAll(userDetails.getMember());
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/art-works/{word}")
+    public ResponseEntity<List<SearchArtWorkResponse>> getSearchArtWorks(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                         @PathVariable("word") String word) {
+
+        List<SearchArtWorkResponse> searchArtWorks = searchService.getSearchArtWorks(userDetails.getMember(), word);
+
+        return ResponseEntity.status(HttpStatus.OK).body(searchArtWorks);
     }
 }
