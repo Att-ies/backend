@@ -6,6 +6,7 @@ import com.sptp.backend.auction.repository.Auction;
 import com.sptp.backend.auction.repository.AuctionRepository;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
+import com.sptp.backend.exhibition.web.dto.response.ExhibitionAuctionResponseDto;
 import com.sptp.backend.exhibition.web.dto.response.ExhibitionListResponseDto;
 import com.sptp.backend.exhibition.web.dto.response.ExhibitionResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -30,31 +31,28 @@ public class ExhibitionService {
     private String storageUrl;
 
     @Transactional(readOnly = true)
-    public ExhibitionListResponseDto getExhibitList() {
+    public List<ExhibitionAuctionResponseDto> getExhibitList() {
 
-        List<ExhibitionListResponseDto.ProcessingAuctionDto> processingAuctionDto = new ArrayList<>();
-        List<ExhibitionListResponseDto.TerminatedAuctionDto> terminatedAuctionDto = new ArrayList<>();
+        List<ExhibitionAuctionResponseDto> auctionResponseDtoList = new ArrayList<>();
 
         Auction currentlyProcessingAuction = auctionRepository.findCurrentlyProcessingAuction();
         List<Auction> terminatedAuctionList = auctionRepository.findTerminatedAuction();
 
         if (!Objects.isNull(currentlyProcessingAuction)) {
+
             List<ArtWork> artWorkList = artWorkRepository.findByAuctionId(currentlyProcessingAuction.getId());
-            processingAuctionDto.add(ExhibitionListResponseDto.ProcessingAuctionDto.from(
-                    currentlyProcessingAuction, getRandomImage(artWorkList), artWorkList.size()));
+            auctionResponseDtoList.add(ExhibitionAuctionResponseDto.from(
+                    currentlyProcessingAuction,getRandomImage(artWorkList), artWorkList.size()));
         }
 
         for (Auction terminatedAuction : terminatedAuctionList) {
 
             List<ArtWork> artWorkList = artWorkRepository.findByAuctionId(terminatedAuction.getId());
-            terminatedAuctionDto.add(ExhibitionListResponseDto.TerminatedAuctionDto.from(
+            auctionResponseDtoList.add(ExhibitionAuctionResponseDto.from(
                     terminatedAuction, getRandomImage(artWorkList), artWorkList.size()));
         }
 
-        return ExhibitionListResponseDto.builder()
-                .processingAuction(processingAuctionDto)
-                .terminatedAuction(terminatedAuctionDto)
-                .build();
+        return auctionResponseDtoList;
     }
 
     private String getRandomImage(List<ArtWork> artWorkList) {

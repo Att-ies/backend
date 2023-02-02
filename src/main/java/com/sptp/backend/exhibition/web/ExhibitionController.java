@@ -1,6 +1,7 @@
 package com.sptp.backend.exhibition.web;
 
 import com.sptp.backend.exhibition.service.ExhibitionService;
+import com.sptp.backend.exhibition.web.dto.response.ExhibitionAuctionResponseDto;
 import com.sptp.backend.exhibition.web.dto.response.ExhibitionListResponseDto;
 import com.sptp.backend.exhibition.web.dto.response.ExhibitionResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,9 @@ public class ExhibitionController {
     private final ExhibitionService exhibitionService;
 
     @GetMapping
-    public ResponseEntity<ExhibitionListResponseDto> getExhibitList() {
+    public ResponseEntity<List<ExhibitionAuctionResponseDto>> getExhibitList() {
 
-        ExhibitionListResponseDto exhibitList = exhibitionService.getExhibitList();
+        List<ExhibitionAuctionResponseDto> exhibitList = exhibitionService.getExhibitList();
 
         return ResponseEntity.status(HttpStatus.OK).body(exhibitList);
     }
