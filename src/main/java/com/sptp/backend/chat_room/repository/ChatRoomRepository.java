@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
-    Optional<ChatRoom> findByMemberIdAndArtistIdAndArtWorkId(Long artistId, Long MemberId, Long artWorkId);
+    Optional<ChatRoom> findByMemberIdAndArtistIdAndArtWorkId(Long memberId, Long artistId, Long artWorkId);
 
     @EntityGraph(attributePaths = {"artWork", "artist", "member"})
     List<ChatRoom> findAllByMemberIdOrArtistId(Long memberId, Long artistId);
