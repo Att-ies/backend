@@ -64,11 +64,13 @@ public class SearchService {
         return memberRecentSearches.stream().map(m -> new SearchWordResponse(m.getId(), m.getWord())).collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<SearchArtWorkResponse> getSearchArtWorks(Member member, String word) {
 
         List<SearchArtWorkResponse> searchArtWorkResponseList = new ArrayList<>();
         List<ArtWork> artWorkList = artWorkRepository.findBySearchWord(word);
+
+        saveSearchWord(member, word);
 
         for (ArtWork artWork : artWorkList) {
 
