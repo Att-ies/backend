@@ -5,6 +5,7 @@ import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.auction.repository.Auction;
 import com.sptp.backend.auction.repository.AuctionRepository;
 import com.sptp.backend.exhibition.web.dto.response.ExhibitionListResponseDto;
+import com.sptp.backend.exhibition.web.dto.response.ExhibitionResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,5 +66,13 @@ public class ExhibitionService {
         int value = random.nextInt(artWorkList.size());
 
         return storageUrl + artWorkList.get(value).getMainImage();
+    }
+
+    public List<ExhibitionResponseDto> getExhibitArtWorks(Long auctionId) {
+
+        List<ArtWork> artWorkList = artWorkRepository.findByAuctionId(auctionId);
+
+        return artWorkList.stream().map(m ->
+                new ExhibitionResponseDto(m.getTitle(), m.getMember().getEducation(), m.getDescription(), m.getGenre())).collect(Collectors.toList());
     }
 }
