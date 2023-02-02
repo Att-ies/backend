@@ -71,7 +71,7 @@ public class ArtWork extends BaseEntity {
     private int likeCount = 0;
 
     public void statusToProcessing() {
-        this.saleStatus= ArtWorkStatus.PROCESSING.getType();
+        this.saleStatus = ArtWorkStatus.PROCESSING.getType();
     }
 
     public void statusToSalesSuccess() {

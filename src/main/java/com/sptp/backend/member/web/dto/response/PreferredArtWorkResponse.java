@@ -10,14 +10,11 @@ import lombok.*;
 public class PreferredArtWorkResponse {
 
     private Long id;
-
     private String title;
-
     private Long price;
-
     private String image;
-
-    private String status;
-
+    private String saleStatus;
+    private String artist;
     private boolean hot;
+    private boolean pick;
 }
