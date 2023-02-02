@@ -683,7 +683,6 @@ public class MemberService {
             artworks.remove(limit + 0); // limit+1개만큼 가져옴. 마지막 원소 삭제 필요
         }
 
-
         return CustomizedArtWorkResponse.builder()
                 .nextPage(nextPage)
                 .artworks(artworks.stream()
