@@ -1,6 +1,7 @@
 package com.sptp.backend.message.service;
 
 import com.sptp.backend.chat_room.repository.ChatRoom;
+import com.sptp.backend.chat_room_connection.repository.ChatRoomConnectionRepository;
 import com.sptp.backend.chat_room.repository.ChatRoomRepository;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
@@ -20,6 +21,7 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomConnectionRepository chatRoomConnectionRepository;
     private final MemberRepository memberRepository;
 
     public void saveMessage(MessageRequest messageRequest) {
@@ -34,8 +36,15 @@ public class MessageService {
                 .sender(sender)
                 .chatRoom(chatRoom)
                 .message(messageRequest.getMessage())
+                .isRead(isOtherConnecting(messageRequest)) // 상대방이 접속 상태면 읽음 처리
                 .build();
 
         messageRepository.save(message);
+    }
+
+    private boolean isOtherConnecting(MessageRequest messageRequest) {
+
+        int connectionCount = chatRoomConnectionRepository.countByChatRoomId(messageRequest.getChatRoomId());
+        return connectionCount == 2; // 발송자와 상대방이 접속한 경우
     }
 }

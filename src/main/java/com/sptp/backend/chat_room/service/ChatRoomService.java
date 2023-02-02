@@ -3,6 +3,8 @@ package com.sptp.backend.chat_room.service;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.chat_room.repository.ChatRoom;
+import com.sptp.backend.chat_room_connection.repository.ChatRoomConnection;
+import com.sptp.backend.chat_room_connection.repository.ChatRoomConnectionRepository;
 import com.sptp.backend.chat_room.repository.ChatRoomRepository;
 import com.sptp.backend.chat_room.web.dto.ChatRoomDetailResponse;
 import com.sptp.backend.chat_room.web.dto.ChatRoomResponse;
@@ -53,11 +55,12 @@ public class ChatRoomService {
         return chatRoomRepository.save(chatRoom).getId();
     }
 
-    public ChatRoomDetailResponse getChatRoomDetail(Long chatRoomId) {
+    public ChatRoomDetailResponse getChatRoomDetail(Long loginMemberId, Long chatRoomId) {
 
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CHAT_ROOM));
         List<Message> messages = messageRepository.findAllByChatRoomOrderByIdAsc(chatRoom);
+        messages.forEach(message -> message.read(loginMemberId));
 
         return ChatRoomDetailResponse.builder()
                 .chatRoomId(chatRoomId)

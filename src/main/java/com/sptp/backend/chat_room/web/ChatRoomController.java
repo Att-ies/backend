@@ -26,7 +26,7 @@ public class ChatRoomController {
     // 채팅방 생성
     @PostMapping
     public ResponseEntity<Void> createChatRoom(@Valid @RequestBody ChatRoomCreateRequest chatRoomCreateRequest,
-                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
+                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         long chatRoomId = chatRoomService.createChatRoom(userDetails.getMember().getId(),
                 chatRoomCreateRequest.getArtistId(), chatRoomCreateRequest.getArtWorkId());
@@ -37,9 +37,10 @@ public class ChatRoomController {
 
     // 채팅방 조회
     @GetMapping("/{chatRoomId}")
-    public ResponseEntity<ChatRoomDetailResponse> getChatRoomDetail(@PathVariable Long chatRoomId) {
+    public ResponseEntity<ChatRoomDetailResponse> getChatRoomDetail(@PathVariable Long chatRoomId,
+                                                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        return ResponseEntity.ok(chatRoomService.getChatRoomDetail(chatRoomId));
+        return ResponseEntity.ok(chatRoomService.getChatRoomDetail(userDetails.getMember().getId(), chatRoomId));
     }
 
     // 채팅방 목록 조회
