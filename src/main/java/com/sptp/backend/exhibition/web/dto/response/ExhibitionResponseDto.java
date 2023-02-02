@@ -14,4 +14,5 @@ public class ExhibitionResponseDto {
     private String education;
     private String description;
     private String genre;
+    private String image;
 }
