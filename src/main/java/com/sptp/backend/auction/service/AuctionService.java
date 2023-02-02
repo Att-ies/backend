@@ -14,6 +14,7 @@ import com.sptp.backend.bidding.repository.BiddingRepository;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +34,9 @@ public class AuctionService {
     private final ArtWorkRepository artWorkRepository;
     private final BiddingRepository biddingRepository;
     private final ApplicationEventPublisher eventPublisher;
+
+    @Value("${aws.storage.url}")
+    private String storageUrl;
 
     @Transactional
     public void saveAuction(AuctionSaveRequestDto dto) {
@@ -101,17 +107,26 @@ public class AuctionService {
     public List<AuctionListResponseDto> getAuctionList() {
 
         List<Auction> auctionList = new ArrayList<>();
-
         Auction currentlyProcessingAuction = auctionRepository.findCurrentlyProcessingAuction();
         List<Auction> scheduledAuction = auctionRepository.findScheduledAuction();
+        List<AuctionListResponseDto> auctionListResponseDto = new ArrayList<>();
 
-        auctionList.add(currentlyProcessingAuction);
+        if (!Objects.isNull(currentlyProcessingAuction)) {
+            auctionList.add(currentlyProcessingAuction);
+        }
+
         for (Auction auction : scheduledAuction) {
             auctionList.add(auction);
         }
 
-        List<AuctionListResponseDto> auctionListResponseDto = auctionList.stream()
-                .map(m-> new AuctionListResponseDto(m.getId(), m.getTurn(), m.getStartDate(), m.getEndDate(), m.getStatus())).collect(Collectors.toList());
+        for (Auction auction : auctionList) {
+
+            Long artWorkCount = artWorkRepository.countByAuctionId(auction.getId());
+            auctionListResponseDto.add(AuctionListResponseDto.builder()
+                    .id(auction.getId()).turn(auction.getTurn())
+                    .startDate(auction.getStartDate()).endDate(auction.getEndDate())
+                    .status(auction.getStatus()).artWorkCount(artWorkCount.intValue()).build());
+        }
 
         return auctionListResponseDto;
     }
@@ -119,9 +134,35 @@ public class AuctionService {
     public List<AuctionListResponseDto> getTerminatedAuctionList() {
 
         List<Auction> terminatedAuctionList = auctionRepository.findTerminatedAuction();
+        List<AuctionListResponseDto> auctionListResponseDto = new ArrayList<>();
 
-        List<AuctionListResponseDto> auctionListResponseDto = terminatedAuctionList.stream()
-                .map(m -> new AuctionListResponseDto(m.getId(), m.getTurn(), m.getStartDate(), m.getEndDate(), m.getStatus())).collect(Collectors.toList());
+        Random random = new Random();
+
+        for (Auction auction : terminatedAuctionList) {
+
+            List<ArtWork> artWorkList = artWorkRepository.findByAuctionId(auction.getId());
+
+            // 종료된 경매에 아무 작품도 없을 경우 이미지 미포함
+            if (artWorkList.size() == 0) {
+
+                auctionListResponseDto.add(AuctionListResponseDto.builder()
+                        .id(auction.getId()).turn(auction.getTurn())
+                        .startDate(auction.getStartDate()).endDate(auction.getEndDate())
+                        .status(auction.getStatus()).artWorkCount(artWorkList.size())
+                        .build());
+
+                continue;
+            }
+
+            int value = random.nextInt(artWorkList.size());
+
+            auctionListResponseDto.add(AuctionListResponseDto.builder()
+                    .id(auction.getId()).turn(auction.getTurn())
+                    .startDate(auction.getStartDate()).endDate(auction.getEndDate())
+                    .status(auction.getStatus()).artWorkCount(artWorkList.size())
+                    .image(storageUrl + artWorkList.get(value).getMainImage())
+                    .build());
+        }
 
         return auctionListResponseDto;
     }
