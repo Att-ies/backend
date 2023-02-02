@@ -61,7 +61,9 @@ public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
                     .from(artWork, artWorkKeyword)
                     .join(artWork)
                     .where(
-                            artWork.id.eq(artWorkKeyword.artWork.id).and(artWorkKeyword.keywordId.in(KeywordMap.map.get(word)))
+                            artWork.id.eq(artWorkKeyword.artWork.id),
+                            artWorkKeyword.keywordId.in(KeywordMap.map.get(word)),
+                            artWork.saleStatus.ne(ArtWorkStatus.REGISTERED.getType())
                     )
                     .fetch();
         }
@@ -74,6 +76,7 @@ public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
                 .where(artWork.member.nickname.contains(word)
                         .or(artWork.title.contains(word))
                         .or(artWork.genre.contains(word))
+                        .and(artWork.saleStatus.ne(ArtWorkStatus.REGISTERED.getType()))
                 )
                 .fetch();
     }

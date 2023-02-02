@@ -15,4 +15,5 @@ public class SearchArtWorkResponse {
     private String artistName;
     private String education;
     private boolean pick;
+    private String status;
 }

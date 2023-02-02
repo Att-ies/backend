@@ -85,6 +85,7 @@ public class SearchService {
                     .title(artWork.getTitle())
                     .education(artWork.getMember().getEducation())
                     .pick(pick)
+                    .status(artWork.getSaleStatus())
                     .build());
         }
         return searchArtWorkResponseList;
