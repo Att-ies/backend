@@ -36,4 +36,12 @@ public class Message extends BaseEntity {
 
     private String message;
     private Boolean isRead;
+
+    public void read(long memberId) {
+        boolean isMyMessage = sender.getId().equals(memberId);
+
+        if (!isMyMessage) {
+            isRead = true;
+        }
+    }
 }
