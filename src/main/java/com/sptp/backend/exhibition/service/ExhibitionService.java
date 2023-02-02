@@ -4,6 +4,8 @@ import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.auction.repository.Auction;
 import com.sptp.backend.auction.repository.AuctionRepository;
+import com.sptp.backend.common.exception.CustomException;
+import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.exhibition.web.dto.response.ExhibitionListResponseDto;
 import com.sptp.backend.exhibition.web.dto.response.ExhibitionResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -74,5 +76,17 @@ public class ExhibitionService {
 
         return artWorkList.stream().map(m ->
                 new ExhibitionResponseDto(m.getTitle(), m.getMember().getEducation(), m.getDescription(), m.getGenre())).collect(Collectors.toList());
+    }
+
+    public ExhibitionResponseDto getExhibitArtWork(Long artWorkId) {
+
+        ArtWork artWork = artWorkRepository.findById(artWorkId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+
+        return ExhibitionResponseDto.builder()
+                .title(artWork.getTitle())
+                .education(artWork.getMember().getEducation())
+                .description(artWork.getDescription())
+                .genre(artWork.getGenre())
+                .build();
     }
 }

@@ -35,4 +35,12 @@ public class ExhibitionController {
 
         return ResponseEntity.status(HttpStatus.OK).body(exhibitArtWorks);
     }
+
+    @GetMapping("/art-works/{artWorkId}")
+    public ResponseEntity<ExhibitionResponseDto> getExhibitArtWork(@PathVariable("artWorkId") Long artWorkId) {
+
+        ExhibitionResponseDto exhibitArtWork = exhibitionService.getExhibitArtWork(artWorkId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(exhibitArtWork);
+    }
 }
