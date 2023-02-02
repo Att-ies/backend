@@ -44,7 +44,7 @@ public class ChatRoomDetailResponse {
         public static MessageDto from(Message message) {
             return MessageDto.builder()
                     .senderId(message.getSender().getId())
-                    .message(message.getMessage())
+                    .message(message.getContent())
                     .sendDate(message.getCreatedDate())
                     .build();
         }
