@@ -265,8 +265,9 @@ public class ArtWorkService extends BaseEntity {
         ArtWork artWork = getArtWorkOrThrow(artWorkId);
         List<Bidding> biddingList = biddingRepository.findAllByArtWorkOrderByPriceDesc(artWork);
 
+
         return BiddingListResponse.builder()
-                .artWork(BiddingListResponse.ArtWorkDto.of(artWork, getTopPrice(artWork)))
+                .artWork(BiddingListResponse.ArtWorkDto.of(artWork, getTopPrice(artWork), fileManager.getFullPath(artWork.getMainImage())))
                 .auction(BiddingListResponse.AuctionDto.from(artWork.getAuction()))
                 .biddingList(biddingList.stream().map(BiddingListResponse.BiddingDto::from)
                         .collect(Collectors.toList()))
