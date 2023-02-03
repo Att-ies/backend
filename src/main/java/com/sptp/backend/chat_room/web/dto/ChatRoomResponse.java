@@ -37,14 +37,16 @@ public class ChatRoomResponse {
     @Data
     @Builder
     public static class MessageDto {
-        private String message;
+        private String type;
+        private String content;
 
         @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
         private LocalDateTime sendDate;
 
         public static MessageDto from(Message message) {
             return MessageDto.builder()
-                    .message(message.getMessage())
+                    .type(message.getType())
+                    .content(message.getContent())
                     .sendDate(message.getCreatedDate())
                     .build();
         }

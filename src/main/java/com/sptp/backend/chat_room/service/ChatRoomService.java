@@ -2,6 +2,7 @@ package com.sptp.backend.chat_room.service;
 
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.aws.service.AwsService;
+import com.sptp.backend.aws.service.FileManager;
 import com.sptp.backend.chat_room.repository.ChatRoom;
 import com.sptp.backend.chat_room_connection.repository.ChatRoomConnection;
 import com.sptp.backend.chat_room_connection.repository.ChatRoomConnectionRepository;
@@ -15,6 +16,7 @@ import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.message.repository.Message;
 import com.sptp.backend.message.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +33,7 @@ public class ChatRoomService {
     private final MemberRepository memberRepository;
     private final ArtWorkRepository artWorkRepository;
     private final MessageRepository messageRepository;
-    private final AwsService awsService;
+    private final FileManager fileManager;
 
     public long createChatRoom(Long loginMemberId, Long artistId, Long artWorkId) {
 
@@ -78,7 +80,7 @@ public class ChatRoomService {
 
         return chatRooms.stream().map(chatRoom -> ChatRoomResponse.builder()
                         .chatRoomId(chatRoom.getId())
-                        .artWorkImage(awsService.getOriginImageUrl(chatRoom.getArtWork().getMainImage()))
+                        .artWorkImage(fileManager.getFullPath(chatRoom.getArtWork().getMainImage()))
                         .unreadCount(getUnreadCount(chatRoom))
                         .otherMember(getOtherMemberDto(chatRoom.getOtherMember(loginMemberId)))
                         .lastMessage(getLastMessageDto(chatRoom))
@@ -94,7 +96,7 @@ public class ChatRoomService {
     }
 
     private ChatRoomResponse.MemberDto getOtherMemberDto(Member otherMember) {
-        return ChatRoomResponse.MemberDto.of(otherMember, awsService.getOriginImageUrl(otherMember.getImage()));
+        return ChatRoomResponse.MemberDto.of(otherMember, fileManager.getFullPath(otherMember.getImage()));
     }
 
     private Integer getUnreadCount(ChatRoom chatRoom) {

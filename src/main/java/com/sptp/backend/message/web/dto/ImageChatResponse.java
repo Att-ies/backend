@@ -10,11 +10,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MessageResponse {
+public class ImageChatResponse {
 
     private Long chatRoomId;
 
-    private String type;
-
-    private String content;
+    private String image;
 }

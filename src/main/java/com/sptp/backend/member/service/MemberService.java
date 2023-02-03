@@ -5,7 +5,7 @@ import com.sptp.backend.art_work.repository.ArtWork;
 import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.art_work.repository.ArtWorkStatus;
 import com.sptp.backend.aws.service.AwsService;
-import com.sptp.backend.aws.service.FileService;
+import com.sptp.backend.aws.service.FileManager;
 import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.member.event.MemberEvent;
 import com.sptp.backend.member.web.dto.request.*;
@@ -57,7 +57,7 @@ public class MemberService {
     private final JwtService jwtService;
     private final RedisTemplate redisTemplate;
     private final MemberKeywordRepository memberKeywordRepository;
-    private final FileService fileService;
+    private final FileManager fileManager;
     private final AwsService awsService;
     private final MemberPreferredArtistRepository memberPreferredArtistRepository;
     private final ArtWorkRepository artWorkRepository;
@@ -237,7 +237,7 @@ public class MemberService {
 
         // 유저가 이미지를 다른 파일로 수정한 경우
         if (!image.isEmpty()) {
-            String ext = fileService.extractExt(image.getOriginalFilename());
+            String ext = fileManager.extractExtension(image.getOriginalFilename());
             imageUrl = uuid + "." + ext;
 
             awsService.uploadImage(image, uuid);
@@ -265,7 +265,7 @@ public class MemberService {
 
         // 작가가 이미지를 다른 파일로 수정한 경우
         if (!image.isEmpty()) {
-            String ext = fileService.extractExt(image.getOriginalFilename());
+            String ext = fileManager.extractExtension(image.getOriginalFilename());
             imageUrl = uuid + "." + ext;
 
             awsService.uploadImage(image, uuid);
@@ -291,7 +291,7 @@ public class MemberService {
         String uuid = UUID.randomUUID().toString();
 
         if (!image.isEmpty()) {
-            String ext = fileService.extractExt(image.getOriginalFilename());
+            String ext = fileManager.extractExtension(image.getOriginalFilename());
             imageUrl = uuid + "." + ext;
 
             awsService.uploadImage(image, uuid);
@@ -609,7 +609,7 @@ public class MemberService {
         for (MultipartFile file : files) {
 
             String imageUUID = UUID.randomUUID().toString();
-            String imageEXT = fileService.extractExt(file.getOriginalFilename());
+            String imageEXT = fileManager.extractExtension(file.getOriginalFilename());
 
             MemberAskImage memberAskImage = MemberAskImage.builder()
                     .memberAsk(memberAsk)
