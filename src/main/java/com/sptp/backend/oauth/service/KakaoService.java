@@ -153,11 +153,17 @@ public class KakaoService {
         if (!memberRepository.existsByEmail(email)) {
 
             String uuid = UUID.randomUUID().toString().substring(0, 7);
+            String randomNickName = "user_" + uuid;
+
+            while (memberRepository.existsByNickname(randomNickName)) {
+                uuid = UUID.randomUUID().toString().substring(0, 7);
+                randomNickName = "user_" + uuid;
+            }
 
             Member member = Member.builder()
                     .email(email)
                     .password("")
-                    .nickname("user_" + uuid)
+                    .nickname(randomNickName)
                     .roles(Collections.singletonList("ROLE_USER"))
                     .build();
 
