@@ -34,10 +34,10 @@ public class MessageController {
     @MessageMapping("/send-image")
     public void chatImage(@Valid ImageChatRequest imageChatRequest) {
 
-        ImageChatResponse imageChatResponse = messageService.saveImage(
+        MessageResponse messageResponse = messageService.saveImage(
                 imageChatRequest.getSenderId(), imageChatRequest.getChatRoomId(), imageChatRequest.getEncodedImage());
 
         simpMessagingTemplate.convertAndSend("/queue/chat-rooms/" + imageChatRequest.getChatRoomId(),
-                imageChatResponse);
+                messageResponse);
     }
 }

@@ -14,5 +14,7 @@ public class MessageResponse {
 
     private Long chatRoomId;
 
-    private String message;
+    private String type;
+
+    private String content;
 }

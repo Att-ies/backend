@@ -43,7 +43,8 @@ public class MessageService {
 
         return MessageResponse.builder()
                 .chatRoomId(chatRoomId)
-                .message(textMessage)
+                .type(MessageType.TEXT.name())
+                .content(textMessage)
                 .build();
     }
 
@@ -53,7 +54,7 @@ public class MessageService {
         return connectionCount == 2; // 발송자와 상대방이 접속한 경우
     }
 
-    public ImageChatResponse saveImage(Long senderId, Long chatRoomId, String encodedImage) {
+    public MessageResponse saveImage(Long senderId, Long chatRoomId, String encodedImage) {
 
         String storeImageFileName = fileManager.storeImageFile(encodedImage);
 
@@ -67,9 +68,10 @@ public class MessageService {
 
         messageRepository.save(message);
 
-        return ImageChatResponse.builder()
+        return MessageResponse.builder()
                 .chatRoomId(chatRoomId)
-                .image(fileManager.getFullPath(storeImageFileName))
+                .type(MessageType.IMAGE.name())
+                .content(fileManager.getFullPath(storeImageFileName))
                 .build();
     }
 
