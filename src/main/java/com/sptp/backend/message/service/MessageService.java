@@ -7,14 +7,12 @@ import com.sptp.backend.chat_room.repository.ChatRoomRepository;
 import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
-import com.sptp.backend.member.event.MemberEvent;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.message.event.MessageEvent;
 import com.sptp.backend.message.repository.Message;
 import com.sptp.backend.message.repository.MessageRepository;
 import com.sptp.backend.message.repository.MessageType;
-import com.sptp.backend.message.web.dto.ImageChatResponse;
 import com.sptp.backend.message.web.dto.MessageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +41,9 @@ public class MessageService {
                 .content(textMessage)
                 .isRead(isOtherConnecting(chatRoomId)) // 상대방이 접속 상태면 읽음 처리
                 .build();
+
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CHAT_ROOM));
 
         messageRepository.save(message);
         eventPublisher.publishEvent(new MessageEvent(chatRoom, message, NotificationCode.CHATTING));
