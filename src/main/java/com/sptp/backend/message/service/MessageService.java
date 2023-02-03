@@ -34,19 +34,22 @@ public class MessageService {
 
     public MessageResponse saveMessage(Long senderId, Long chatRoomId, String textMessage) {
 
+        ChatRoom chatRoom = getChatRoomOrThrow(chatRoomId);
+        int connectionCount = chatRoomConnectionRepository.countByChatRoomId(chatRoomId);
+
         Message message = Message.builder()
                 .sender(getMemberOrThrow(senderId))
-                .chatRoom(getChatRoomOrThrow(chatRoomId))
+                .chatRoom(chatRoom)
                 .type(MessageType.TEXT.name())
                 .content(textMessage)
-                .isRead(isOtherConnecting(chatRoomId)) // 상대방이 접속 상태면 읽음 처리
+                .isRead(isOtherConnecting(connectionCount)) // 상대방이 접속 상태면 읽음 처리
                 .build();
 
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CHAT_ROOM));
-
         messageRepository.save(message);
-        eventPublisher.publishEvent(new MessageEvent(chatRoom, message, NotificationCode.CHATTING));
+
+        if (!isOtherConnecting(connectionCount)) {
+            eventPublisher.publishEvent(new MessageEvent(chatRoom, message, NotificationCode.CHATTING));
+        }
 
         return MessageResponse.builder()
                 .chatRoomId(chatRoomId)
@@ -55,14 +58,15 @@ public class MessageService {
                 .build();
     }
 
-    private boolean isOtherConnecting(Long chatRoomId) {
+    private boolean isOtherConnecting(int connectionCount) {
 
-        int connectionCount = chatRoomConnectionRepository.countByChatRoomId(chatRoomId);
         return connectionCount == 2; // 발송자와 상대방이 접속한 경우
     }
 
     public MessageResponse saveImage(Long senderId, Long chatRoomId, String encodedImage) {
 
+        ChatRoom chatRoom = getChatRoomOrThrow(chatRoomId);
+        int connectionCount = chatRoomConnectionRepository.countByChatRoomId(chatRoomId);
         String storeImageFileName = fileManager.storeImageFile(encodedImage);
 
         Message message = Message.builder()
@@ -70,10 +74,14 @@ public class MessageService {
                 .chatRoom(getChatRoomOrThrow(chatRoomId))
                 .type(MessageType.IMAGE.name())
                 .content(storeImageFileName)
-                .isRead(isOtherConnecting(chatRoomId)) // 상대방이 접속 상태면 읽음 처리
+                .isRead(isOtherConnecting(connectionCount)) // 상대방이 접속 상태면 읽음 처리
                 .build();
 
         messageRepository.save(message);
+
+        if (!isOtherConnecting(connectionCount)) {
+            eventPublisher.publishEvent(new MessageEvent(chatRoom, message, NotificationCode.CHATTING));
+        }
 
         return MessageResponse.builder()
                 .chatRoomId(chatRoomId)
