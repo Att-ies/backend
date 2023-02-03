@@ -1,6 +1,5 @@
 package com.sptp.backend.common.config;
 
-import com.sptp.backend.common.stomp.AgentWebSocketHandlerDecoratorFactory;
 import com.sptp.backend.common.stomp.StompHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +8,6 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -17,7 +15,7 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final StompHandler stompHandler;
-    private final AgentWebSocketHandlerDecoratorFactory agentWebSocketHandlerDecoratorFactory;
+//    private final AgentWebSocketHandlerDecoratorFactory agentWebSocketHandlerDecoratorFactory;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -42,8 +40,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(stompHandler);
     }
 
-    @Override
-    public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
-        registry.setDecoratorFactories(agentWebSocketHandlerDecoratorFactory); // 메시지 전송 크기 늘리는 용도
-    }
+//    @Override
+//    public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
+//        registry.setDecoratorFactories(agentWebSocketHandlerDecoratorFactory); // 메시지 전송 크기 늘리는 용도
+//    }
 }
