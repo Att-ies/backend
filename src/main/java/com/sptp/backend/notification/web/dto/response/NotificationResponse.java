@@ -16,5 +16,5 @@ public class NotificationResponse {
     private String message;
     private String details;
     private Long data;
-    private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
 }

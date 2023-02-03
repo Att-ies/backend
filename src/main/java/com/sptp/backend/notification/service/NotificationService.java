@@ -27,10 +27,10 @@ public class NotificationService {
     @Transactional
     public List<NotificationResponse> getNotificationList(Long loginMember){
 
-        List<Notification> findNotificationList = notificationRepository.findByMemberId(loginMember);
+        List<Notification> findNotificationList = notificationRepository.findByMemberIdOrderByModifiedDateDesc(loginMember);
 
         List<NotificationResponse> notificationResponses = findNotificationList.stream()
-                .map(m -> new NotificationResponse(m.getId(), m.getTitle(), m.getMessage(), m.getDetails(), m.getData(), m.getCreatedDate()))
+                .map(m -> new NotificationResponse(m.getId(), m.getTitle(), m.getMessage(), m.getDetails(), m.getData(), m.getModifiedDate()))
                 .collect(Collectors.toList());
 
         markAsRead(findNotificationList);

@@ -3,15 +3,19 @@ package com.sptp.backend.message.service;
 import com.sptp.backend.chat_room.repository.ChatRoom;
 import com.sptp.backend.chat_room_connection.repository.ChatRoomConnectionRepository;
 import com.sptp.backend.chat_room.repository.ChatRoomRepository;
+import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
+import com.sptp.backend.member.event.MemberEvent;
 import com.sptp.backend.member.repository.Member;
 import com.sptp.backend.member.repository.MemberRepository;
+import com.sptp.backend.message.event.MessageEvent;
 import com.sptp.backend.message.repository.Message;
 import com.sptp.backend.message.repository.MessageRepository;
 import com.sptp.backend.message.web.dto.MessageRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +27,7 @@ public class MessageService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomConnectionRepository chatRoomConnectionRepository;
     private final MemberRepository memberRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void saveMessage(MessageRequest messageRequest) {
 
@@ -40,6 +45,8 @@ public class MessageService {
                 .build();
 
         messageRepository.save(message);
+
+        eventPublisher.publishEvent(new MessageEvent(chatRoom, message, NotificationCode.CHATTING));
     }
 
     private boolean isOtherConnecting(MessageRequest messageRequest) {

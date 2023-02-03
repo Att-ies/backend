@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    List<Notification> findByMemberId(Long memberId);
+    List<Notification> findByMemberIdOrderByModifiedDateDesc(Long memberId);
     long countByMemberAndChecked(Member member, boolean checked);
 }
