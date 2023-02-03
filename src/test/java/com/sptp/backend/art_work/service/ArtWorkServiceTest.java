@@ -19,6 +19,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -45,6 +46,10 @@ class ArtWorkServiceTest {
 
     @Mock
     BiddingRepository biddingRepository;
+
+    @Mock
+    ApplicationEventPublisher eventPublisher;
+
 
     @BeforeEach
     void setUp() {

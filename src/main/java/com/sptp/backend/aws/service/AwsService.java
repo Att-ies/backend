@@ -5,28 +5,25 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 @RequiredArgsConstructor
 public class AwsService {
 
     private final AmazonS3Client amazonS3Client;
-    private final FileService fileService;
 
-    @Value("${aws.storage.url}")
-    private String storageUrl;
-
-    private String S3Bucket = "atties-bucket";
+    private final String S3Bucket = "atties-bucket";
 
     public void uploadImage(MultipartFile image, String uuid) throws IOException {
 
-        String ext = fileService.extractExt(image.getOriginalFilename());
+        String originalFilename = image.getOriginalFilename();
+        String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
         long size = image.getSize();
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -40,12 +37,13 @@ public class AwsService {
         );
     }
 
-    public String getOriginImageUrl(String url) {
+    public void uploadImage(String fileName, byte[] imageBytes) throws IOException {
+        InputStream inputStream = new ByteArrayInputStream(imageBytes);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(imageBytes.length);
 
-        if (Strings.isBlank(url)) {
-            return null;
-        }
-
-        return storageUrl + url;
+        amazonS3Client.putObject(new PutObjectRequest(S3Bucket, fileName, inputStream, metadata)
+                .withCannedAcl(CannedAccessControlList.PublicRead)
+        );
     }
 }

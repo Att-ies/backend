@@ -1,4 +1,4 @@
-package com.sptp.backend.common;
+package com.sptp.backend.common.stomp;
 
 import com.sptp.backend.chat_room.service.ChatRoomService;
 import com.sptp.backend.chat_room_connection.service.ChatRoomConnectionService;

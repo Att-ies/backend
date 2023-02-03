@@ -42,7 +42,7 @@ class MessageRepositoryTest {
 
         for (int i = 0; i < messageCount; i++) {
             entityManager.persist(Message.builder()
-                    .message("테스트 메시지")
+                    .content("테스트 메시지")
                     .chatRoom(chatRoom)
                     .build());
             ;

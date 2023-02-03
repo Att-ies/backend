@@ -54,7 +54,6 @@ class MessageServiceTest {
         Member receiver;
         ArtWork artWork;
         ChatRoom chatRoom;
-        MessageRequest messageRequest;
 
         @BeforeEach
         void init() {
@@ -80,12 +79,6 @@ class MessageServiceTest {
                     .member(receiver)
                     .artWork(artWork)
                     .build();
-
-            messageRequest = MessageRequest.builder()
-                    .senderId(senderId)
-                    .chatRoomId(chatRoomId)
-                    .message("test")
-                    .build();
         }
 
         @Test
@@ -100,12 +93,12 @@ class MessageServiceTest {
             when(messageRepository.save(any(Message.class)))
                     .thenReturn(Message.builder().build());
 
-            when(chatRoomConnectionRepository.countByChatRoomId(messageRequest.getChatRoomId()))
+            when(chatRoomConnectionRepository.countByChatRoomId(chatRoomId))
                     .thenReturn(2);
 
             //when
             //then
-            assertThatNoException().isThrownBy(() -> messageService.saveMessage(messageRequest));
+            assertThatNoException().isThrownBy(() -> messageService.saveMessage(senderId, chatRoomId, "message"));
         }
 
         @Test
@@ -116,7 +109,7 @@ class MessageServiceTest {
 
             //when
             //then
-            assertThatThrownBy(() -> messageService.saveMessage(messageRequest))
+            assertThatThrownBy(() -> messageService.saveMessage(senderId, chatRoomId, "message"))
                     .isInstanceOf(CustomException.class)
                     .message().isEqualTo(ErrorCode.NOT_FOUND_MEMBER.getDetail());
         }
@@ -132,7 +125,7 @@ class MessageServiceTest {
 
             //when
             //then
-            assertThatThrownBy(() -> messageService.saveMessage(messageRequest))
+            assertThatThrownBy(() -> messageService.saveMessage(senderId, chatRoomId, "message"))
                     .isInstanceOf(CustomException.class)
                     .message().isEqualTo(ErrorCode.NOT_FOUND_CHAT_ROOM.getDetail());
         }

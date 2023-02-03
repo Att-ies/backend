@@ -11,7 +11,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -34,8 +33,9 @@ public class Message extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private ChatRoom chatRoom;
 
-    private String message;
     private Boolean isRead;
+    private String type;
+    private String content; // type == text -> massage 저장, type == image -> url 저장
 
     public void read(long memberId) {
         boolean isMyMessage = sender.getId().equals(memberId);
