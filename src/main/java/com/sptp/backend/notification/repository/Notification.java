@@ -2,6 +2,7 @@ package com.sptp.backend.notification.repository;
 
 import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.member.repository.Member;
+import com.sptp.backend.member.web.dto.request.MemberUpdateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,8 +34,15 @@ public class Notification extends BaseEntity {
     private String details;
     private Long data;
     private Boolean checked;
+    private Long unique; // 채팅 알림이 한 채팅방에 대해 여러 개 생성되는 것 방지. chatRoomId 저장
 
     public void read() {
+
         this.checked = true;
+    }
+
+    public void updateMessage(String message) {
+
+        this.message = message;
     }
 }

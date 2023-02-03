@@ -1,13 +1,8 @@
 package com.sptp.backend.notification.service;
 
-import com.sptp.backend.common.NotificationCode;
-import com.sptp.backend.common.exception.CustomException;
-import com.sptp.backend.common.exception.ErrorCode;
 import com.sptp.backend.member.repository.Member;
-import com.sptp.backend.member.repository.MemberRepository;
 import com.sptp.backend.notification.repository.Notification;
 import com.sptp.backend.notification.repository.NotificationRepository;
-import com.sptp.backend.notification.web.dto.response.NotificationNewResponse;
 import com.sptp.backend.notification.web.dto.response.NotificationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
