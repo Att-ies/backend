@@ -70,10 +70,10 @@ public class ExhibitionService {
 
     public List<ExhibitionResponseDto> getExhibitArtWorks(Long auctionId) {
 
-        List<ArtWork> artWorkList = artWorkRepository.findByAuctionId(auctionId);
+        List<ArtWork> artWorkList = artWorkRepository.findByAuctionIdOrderByCreatedDateDesc(auctionId);
 
         return artWorkList.stream().map(m ->
-                new ExhibitionResponseDto(m.getTitle(), m.getMember().getEducation(), m.getDescription(), m.getGenre(), storageUrl + m.getMainImage())).collect(Collectors.toList());
+                new ExhibitionResponseDto(m.getId(), m.getTitle(), m.getMember().getEducation(), m.getDescription(), m.getGenre(), storageUrl + m.getMainImage(), m.getMember().getId())).collect(Collectors.toList());
     }
 
     public ExhibitionResponseDto getExhibitArtWork(Long artWorkId) {
@@ -81,11 +81,13 @@ public class ExhibitionService {
         ArtWork artWork = artWorkRepository.findById(artWorkId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
 
         return ExhibitionResponseDto.builder()
+                .id(artWork.getId())
                 .title(artWork.getTitle())
                 .education(artWork.getMember().getEducation())
                 .description(artWork.getDescription())
                 .genre(artWork.getGenre())
                 .image(storageUrl + artWork.getMainImage())
+                .artistId(artWork.getMember().getId())
                 .build();
     }
 }
