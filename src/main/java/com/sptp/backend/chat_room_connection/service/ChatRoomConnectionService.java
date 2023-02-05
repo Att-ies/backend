@@ -15,6 +15,10 @@ public class ChatRoomConnectionService {
 
     public void connect(String sessionId, Long chatRoomId, Long memberId) {
 
+        if (chatRoomConnectionRepository.existsBySessionId(sessionId)) {
+            return;
+        }
+
         ChatRoomConnection chatRoomConnection = ChatRoomConnection.builder()
                 .sessionId(sessionId)
                 .chatRoomId(chatRoomId)
