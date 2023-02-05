@@ -27,8 +27,9 @@ public class BiddingListResponse {
         private String genre;
         private Long beginPrice;
         private Long topPrice;
+        private String image;
 
-        public static ArtWorkDto of(ArtWork artWork, Long topPrice) {
+        public static ArtWorkDto of(ArtWork artWork, Long topPrice, String image) {
             return ArtWorkDto.builder()
                     .id(artWork.getId())
                     .title(artWork.getTitle())
@@ -36,6 +37,7 @@ public class BiddingListResponse {
                     .genre(artWork.getGenre())
                     .beginPrice(Long.valueOf(artWork.getPrice()))
                     .topPrice(topPrice)
+                    .image(image)
                     .build();
         }
     }
