@@ -12,7 +12,7 @@ import static com.sptp.backend.art_work.repository.QArtWork.*;
 import static com.sptp.backend.art_work_keyword.repository.QArtWorkKeyword.*;
 
 @RequiredArgsConstructor
-public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
+public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository {
 
     private final JPAQueryFactory queryFactory;
 
@@ -28,7 +28,7 @@ public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
 
     @Override
     public List<ArtWork> findTerminatedAuctionArtWorkList(Long auctionId, Long artWorkId, Pageable pageable) {
-        List<ArtWork> results =  queryFactory
+        List<ArtWork> results = queryFactory
                 .select(artWork)
                 .from(artWork)
                 .where(
@@ -38,7 +38,7 @@ public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
                         artWork.saleStatus.ne(ArtWorkStatus.PROCESSING.getType())
                 )
                 .orderBy(artWork.id.desc())
-                .limit(pageable.getPageSize()+1)
+                .limit(pageable.getPageSize() + 1)
                 .fetch();
 
         return results;

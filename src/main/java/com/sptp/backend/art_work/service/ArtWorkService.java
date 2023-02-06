@@ -315,7 +315,7 @@ public class ArtWorkService extends BaseEntity {
         return artWorkDtoList;
     }
 
-    public List<ArtWorkDeliveryResponse>  getDeliveryList(Long auctionId) {
+    public List<ArtWorkDeliveryResponse> getDeliveryList(Long auctionId) {
 
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_AUCTION_TURN));
@@ -327,7 +327,7 @@ public class ArtWorkService extends BaseEntity {
         List<ArtWorkDeliveryResponse> artWorkDeliveryResponseList = new ArrayList<>();
         List<ArtWork> artWorkList = artWorkRepository.findByAuctionIdAndSaleStatus(auctionId, ArtWorkStatus.SALES_SUCCESS.getType());
 
-        for(ArtWork artWork : artWorkList) {
+        for (ArtWork artWork : artWorkList) {
 
             Optional<Bidding> bidding = biddingRepository.getFirstByArtWorkOrderByPriceDesc(artWork);
 
