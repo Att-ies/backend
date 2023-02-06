@@ -1,6 +1,7 @@
 package com.sptp.backend.bidding.repository;
 
 import com.sptp.backend.art_work.repository.ArtWork;
+import com.sptp.backend.auction.repository.AuctionStatus;
 import com.sptp.backend.common.entity.BaseEntity;
 import com.sptp.backend.common.exception.CustomException;
 import com.sptp.backend.common.exception.ErrorCode;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -35,7 +37,8 @@ public class Bidding extends BaseEntity {
     private Long price;
 
     public void validateAuctionPeriod() {
-        if (!artWork.getAuction().isValidPeriod(getCreatedDate())) {
+
+        if (!artWork.getAuction().getStatus().equals(AuctionStatus.PROCESSING.getType())) {
             throw new CustomException(ErrorCode.NOT_VALID_AUCTION_PERIOD);
         }
     }
