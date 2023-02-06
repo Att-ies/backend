@@ -10,8 +10,6 @@ import java.util.List;
 
 import static com.sptp.backend.art_work.repository.QArtWork.*;
 import static com.sptp.backend.art_work_keyword.repository.QArtWorkKeyword.*;
-import static com.sptp.backend.member.repository.QMember.*;
-import static com.sptp.backend.bidding.repository.QBidding.*;
 
 @RequiredArgsConstructor
 public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
