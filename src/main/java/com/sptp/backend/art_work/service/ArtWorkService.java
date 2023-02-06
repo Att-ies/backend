@@ -159,6 +159,7 @@ public class ArtWorkService extends BaseEntity {
                 Bidding firstBidding = Bidding.builder().member(member).artWork(artWork).price(price).build();
                 biddingRepository.save(firstBidding);
                 validateAuctionPeriod(artWork.getAuction());
+                eventPublisher.publishEvent(new ArtWorkEvent(member, artWork, firstBidding, NotificationCode.SUGGEST_BID));
                 return;
 
             } // 시작가보다 높은 가격에 응찰할 경우
@@ -171,6 +172,7 @@ public class ArtWorkService extends BaseEntity {
                 Bidding firstBidding = Bidding.builder().member(member).artWork(artWork).price(price).build();
                 biddingRepository.save(firstBidding);
                 validateAuctionPeriod(artWork.getAuction());
+                eventPublisher.publishEvent(new ArtWorkEvent(member, artWork, firstBidding, NotificationCode.SUGGEST_BID));
                 return;
             }
 
