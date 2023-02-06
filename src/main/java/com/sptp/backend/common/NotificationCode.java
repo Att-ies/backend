@@ -35,7 +35,7 @@ public enum NotificationCode {
             "을 누군가 입찰했어요. 바로 확인해보세요.",
             "클릭 시, 응찰 페이지로 이동"),
     CHATTING("채팅",
-            "건의 읽지 않은 채팅이 있습니다.",
+            " 작품에 대한 새로운 채팅이 왔습니다.",
             "클릭 시, 채팅 목록 페이지 이동");
 
     private final String title;

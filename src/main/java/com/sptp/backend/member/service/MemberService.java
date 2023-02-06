@@ -673,6 +673,9 @@ public class MemberService {
     @Transactional(readOnly = true)
     public CustomizedArtWorkResponse getCustomizedArtWorkList(Long loginMemberId, Integer page, Integer limit) {
 
+        Member member = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
         List<Integer> findMemberKeywordIdList = memberKeywordRepository.findKeywordIdByMemberId(loginMemberId); // 콜렉터의 keywordId 리스트 반환
 
         List<ArtWork> artworks = memberRepository.findCustomizedArtWork(findMemberKeywordIdList, page, limit); // 콜렉터 취향과 일치하는 keywordId 개수에 따라 작품 나열해 반환
@@ -686,7 +689,7 @@ public class MemberService {
         return CustomizedArtWorkResponse.builder()
                 .nextPage(nextPage)
                 .artworks(artworks.stream()
-                        .map(m -> CustomizedArtWorkResponse.ArtWorkDto.from(m, awsStorageUrl))
+                        .map(m -> CustomizedArtWorkResponse.ArtWorkDto.from(m, awsStorageUrl, memberPreferredArtWorkRepository.existsByMemberAndArtWork(member, m)))
                         .collect(Collectors.toList()))
                 .build();
     }
