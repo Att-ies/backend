@@ -19,5 +19,5 @@ public class MessageRequest {
     private Long chatRoomId;
 
     @NotBlank(message = "채팅 메세지를 입력해주세요.")
-    private String message;
+    private String content;
 }

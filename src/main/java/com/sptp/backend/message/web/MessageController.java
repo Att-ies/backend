@@ -25,7 +25,7 @@ public class MessageController {
     public void chatText(@Valid MessageRequest messageRequest) {
 
         MessageResponse messageResponse = messageService.saveMessage(
-                messageRequest.getSenderId(), messageRequest.getChatRoomId(), messageRequest.getMessage());
+                messageRequest.getSenderId(), messageRequest.getChatRoomId(), messageRequest.getContent());
 
         simpMessagingTemplate.convertAndSend("/queue/chat-rooms/" + messageRequest.getChatRoomId(),
                 messageResponse);

@@ -18,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -142,9 +143,18 @@ public class NaverService {
         //DB에 해당 이메일 없을 경우 회원 가입 로직 실행
         if (!memberRepository.existsByEmail(email)) {
 
+            String uuid = UUID.randomUUID().toString().substring(0, 7);
+            String randomNickName = "user_" + uuid;
+
+            while (memberRepository.existsByNickname(randomNickName)) {
+                uuid = UUID.randomUUID().toString().substring(0, 7);
+                randomNickName = "user_" + uuid;
+            }
+
             Member member = Member.builder()
                     .email(email)
                     .password("")
+                    .nickname(randomNickName)
                     .roles(Collections.singletonList("ROLE_USER"))
                     .build();
 
