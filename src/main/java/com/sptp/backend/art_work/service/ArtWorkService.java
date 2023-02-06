@@ -150,13 +150,44 @@ public class ArtWorkService extends BaseEntity {
         ArtWork artWork = getArtWorkOrThrow(artWorkId);
         Member member = getMemberOrThrow(loginMemberId);
 
-        Long topPrice = getTopPrice(artWork);
-        Bidding bidding = biddingRepository.findByArtWorkAndMember(artWork, member)
-                .orElseGet(() -> saveBidding(artWork, member));
+        // 작품에 대한 최초 응찰일 경우
+        if (!biddingRepository.existsByArtWorkId(artWork.getId())) {
 
-        bidding.raisePrice(topPrice, price);
-        eventPublisher.publishEvent(new ArtWorkEvent(member, artWork, bidding, NotificationCode.SUGGEST_BID));
-        eventPublisher.publishEvent(new ArtWorkEvent(member, artWork, null, NotificationCode.STILL_BID));
+            // 시작가에 맞춰 응찰할 경우
+            if(price.equals(artWork.getPrice())) {
+
+                Bidding firstBidding = Bidding.builder().member(member).artWork(artWork).price(price).build();
+                biddingRepository.save(firstBidding);
+                validateAuctionPeriod(artWork.getAuction());
+                return;
+
+            } // 시작가보다 높은 가격에 응찰할 경우
+            else if (price > artWork.getPrice()) {
+
+                if (!isValidPrice(artWork.getPrice(), price)) {
+                    throw new CustomException(ErrorCode.NOT_VALID_BID);
+                }
+
+                Bidding firstBidding = Bidding.builder().member(member).artWork(artWork).price(price).build();
+                biddingRepository.save(firstBidding);
+                validateAuctionPeriod(artWork.getAuction());
+                return;
+            }
+
+            throw new CustomException(ErrorCode.NOT_VALID_BID);
+
+        }else{
+
+            Long topPrice = getTopPrice(artWork);
+            Bidding bidding = biddingRepository.findByArtWorkAndMember(artWork, member)
+                    .orElseGet(() -> saveBidding(artWork, member));
+
+            validateAuctionPeriod(artWork.getAuction());
+
+            bidding.raisePrice(topPrice, price);
+            eventPublisher.publishEvent(new ArtWorkEvent(member, artWork, bidding, NotificationCode.SUGGEST_BID));
+            eventPublisher.publishEvent(new ArtWorkEvent(member, artWork, null, NotificationCode.STILL_BID));
+        }
     }
 
     private ArtWork getArtWorkOrThrow(Long artWorkId) {
@@ -187,7 +218,6 @@ public class ArtWorkService extends BaseEntity {
                 .build());
 
         bidding.setArtWork(artWork);
-        bidding.validateAuctionPeriod();
 
         return bidding;
     }
@@ -264,6 +294,7 @@ public class ArtWorkService extends BaseEntity {
 
         ArtWork artWork = getArtWorkOrThrow(artWorkId);
         List<Bidding> biddingList = biddingRepository.findAllByArtWorkOrderByPriceDesc(artWork);
+
 
 
         return BiddingListResponse.builder()
@@ -387,5 +418,41 @@ public class ArtWorkService extends BaseEntity {
                 .successfulBiddingList(successfulBiddingDtoList)
                 .biddingList(biddingDtoList)
                 .build();
+    }
+
+    private boolean isValidPrice(Long topPrice, Long price) {
+
+        long priceDifference = price - topPrice;
+
+        if (topPrice < 300_000) {
+            if (priceDifference >= 20_000) {
+                return true;
+            }
+        } else if (topPrice < 1_000_000) {
+            if (priceDifference >= 50_000) {
+                return true;
+            }
+        } else if (topPrice < 3_000_000) {
+            if (priceDifference >= 100_000) {
+                return true;
+            }
+        } else if (topPrice < 5_000_000) {
+            if (priceDifference >= 200_000) {
+                return true;
+            }
+        } else {
+            if (priceDifference >= 500_000) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void validateAuctionPeriod(Auction auction) {
+
+        if (!auction.getStatus().equals(AuctionStatus.PROCESSING.getType())) {
+            throw new CustomException(ErrorCode.NOT_VALID_AUCTION_PERIOD);
+        }
     }
 }
