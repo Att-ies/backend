@@ -9,4 +9,6 @@ public interface ArtWorkCustomRepository {
     void updateStatusToProcessing(Long auctionId);
 
     List<ArtWork> findTerminatedAuctionArtWorkList(Long auctionId, Long artWorkId, Pageable pageable);
+
+    List<ArtWork> findBySearchWord(String word);
 }

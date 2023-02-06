@@ -1,14 +1,21 @@
 package com.sptp.backend.art_work.repository;
 
+import com.fasterxml.jackson.databind.introspect.MemberKey;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sptp.backend.art_work_keyword.repository.QArtWorkKeyword;
 import com.sptp.backend.auction.repository.AuctionStatus;
+import com.sptp.backend.common.KeywordMap;
+import com.sptp.backend.member.repository.QMember;
+import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 import static com.sptp.backend.art_work.repository.QArtWork.*;
+import static com.sptp.backend.art_work_keyword.repository.QArtWorkKeyword.*;
+import static com.sptp.backend.member.repository.QMember.*;
 
 @RequiredArgsConstructor
 public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
@@ -41,6 +48,37 @@ public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
                 .fetch();
 
         return results;
+    }
+
+    @Override
+    public List<ArtWork> findBySearchWord(String word) {
+
+        // 검색어가 서버에 정의된 관심 키워드일 경우에는 키워드를 통한 검색
+        if (KeywordMap.map.containsKey(word)) {
+
+            return queryFactory
+                    .select(artWork)
+                    .from(artWork, artWorkKeyword)
+                    .join(artWork)
+                    .where(
+                            artWork.id.eq(artWorkKeyword.artWork.id),
+                            artWorkKeyword.keywordId.in(KeywordMap.map.get(word)),
+                            artWork.saleStatus.ne(ArtWorkStatus.REGISTERED.getType())
+                    )
+                    .fetch();
+        }
+
+        // 그 외에는 제목, 작가, 장르를 통한 검색
+        return queryFactory
+                .select(artWork)
+                .from(artWork)
+                .join(artWork)
+                .where(artWork.member.nickname.contains(word)
+                        .or(artWork.title.contains(word))
+                        .or(artWork.genre.contains(word))
+                        .and(artWork.saleStatus.ne(ArtWorkStatus.REGISTERED.getType()))
+                )
+                .fetch();
     }
 
     private BooleanExpression ltArtWorkId(Long artWorkId) {
