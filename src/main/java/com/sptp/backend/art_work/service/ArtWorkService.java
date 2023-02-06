@@ -150,6 +150,10 @@ public class ArtWorkService extends BaseEntity {
         ArtWork artWork = getArtWorkOrThrow(artWorkId);
         Member member = getMemberOrThrow(loginMemberId);
 
+        if (artWork.getMember().getId().equals(loginMemberId)) {
+            throw new CustomException(ErrorCode.NOT_VALID_REQUEST);
+        }
+
         // 작품에 대한 최초 응찰일 경우
         if (!biddingRepository.existsByArtWorkId(artWork.getId())) {
 

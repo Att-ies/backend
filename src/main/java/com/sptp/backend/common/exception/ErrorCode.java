@@ -53,6 +53,7 @@ public enum ErrorCode {
 
     NOT_VALID_AUCTION_PERIOD(HttpStatus.BAD_REQUEST, "경매 기간이 아닙니다."),
     NOT_VALID_BID(HttpStatus.BAD_REQUEST, "유효한 입찰가가 아닙니다. 호가 단위를 확인해주세요."),
+    NOT_VALID_REQUEST(HttpStatus.BAD_REQUEST, "자신의 작품에는 응찰할 수 없습니다."),
 
     //경로 예외
     NOT_VALID_URI(HttpStatus.BAD_REQUEST, "유효한 경로로 요청해주세요.");
