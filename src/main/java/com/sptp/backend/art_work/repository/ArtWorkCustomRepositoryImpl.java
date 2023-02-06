@@ -1,13 +1,8 @@
 package com.sptp.backend.art_work.repository;
 
-import com.fasterxml.jackson.databind.introspect.MemberKey;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sptp.backend.art_work_keyword.repository.QArtWorkKeyword;
-import com.sptp.backend.auction.repository.AuctionStatus;
 import com.sptp.backend.common.KeywordMap;
-import com.sptp.backend.member.repository.QMember;
-import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
@@ -16,6 +11,7 @@ import java.util.List;
 import static com.sptp.backend.art_work.repository.QArtWork.*;
 import static com.sptp.backend.art_work_keyword.repository.QArtWorkKeyword.*;
 import static com.sptp.backend.member.repository.QMember.*;
+import static com.sptp.backend.bidding.repository.QBidding.*;
 
 @RequiredArgsConstructor
 public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
@@ -45,6 +41,22 @@ public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
                 )
                 .orderBy(artWork.id.desc())
                 .limit(pageable.getPageSize()+1)
+                .fetch();
+
+        return results;
+    }
+
+    @Override
+    public List<ArtWork> findDeliveryArtWorkList(Long auctionId) {
+
+        List<ArtWork> results = queryFactory
+                .select(artWork)
+                .from(artWork)
+                .innerJoin(artWork.member, member)
+                .where(
+                        artWork.auction.id.eq(auctionId),
+                        artWork.saleStatus.eq(ArtWorkStatus.SALES_SUCCESS.getType())
+                )
                 .fetch();
 
         return results;

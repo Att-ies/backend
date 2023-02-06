@@ -10,5 +10,7 @@ public interface ArtWorkCustomRepository {
 
     List<ArtWork> findTerminatedAuctionArtWorkList(Long auctionId, Long artWorkId, Pageable pageable);
 
+    List<ArtWork> findDeliveryArtWorkList(Long auctionId);
+
     List<ArtWork> findBySearchWord(String word);
 }
