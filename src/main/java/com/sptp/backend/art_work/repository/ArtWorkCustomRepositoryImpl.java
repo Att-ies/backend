@@ -47,22 +47,6 @@ public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
     }
 
     @Override
-    public List<ArtWork> findDeliveryArtWorkList(Long auctionId) {
-
-        List<ArtWork> results = queryFactory
-                .select(artWork)
-                .from(artWork)
-                .innerJoin(artWork.member, member)
-                .where(
-                        artWork.auction.id.eq(auctionId),
-                        artWork.saleStatus.eq(ArtWorkStatus.SALES_SUCCESS.getType())
-                )
-                .fetch();
-
-        return results;
-    }
-
-    @Override
     public List<ArtWork> findBySearchWord(String word) {
 
         // 검색어가 서버에 정의된 관심 키워드일 경우에는 키워드를 통한 검색
