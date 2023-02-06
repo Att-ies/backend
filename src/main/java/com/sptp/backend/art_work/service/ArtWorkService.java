@@ -377,7 +377,7 @@ public class ArtWorkService extends BaseEntity {
             Long topPrice = biddingRepository.getFirstByArtWorkOrderByPriceDesc(findArtWork).get().getPrice();
 
             // 해당 작품이 판매 완료 상태인 경우
-            if (myMaxBiddingPrice.equals(topPrice) && findArtWork.getStatus().equals(ArtWorkStatus.SALES_SUCCESS.getType())) {
+            if (myMaxBiddingPrice.equals(topPrice) && findArtWork.getSaleStatus().equals(ArtWorkStatus.SALES_SUCCESS.getType())) {
                 successfulBiddingDtoList.add(ArtWorkPurchasedListResponseDto.SuccessfulBiddingDto.from(findArtWork, topPrice, storageUrl));
             } else {
                 biddingDtoList.add(ArtWorkPurchasedListResponseDto.BiddingDto.from(findArtWork, myMaxBiddingPrice, topPrice, storageUrl));
