@@ -1,13 +1,8 @@
 package com.sptp.backend.art_work.repository;
 
-import com.fasterxml.jackson.databind.introspect.MemberKey;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sptp.backend.art_work_keyword.repository.QArtWorkKeyword;
-import com.sptp.backend.auction.repository.AuctionStatus;
 import com.sptp.backend.common.KeywordMap;
-import com.sptp.backend.member.repository.QMember;
-import com.sptp.backend.memberkeyword.repository.MemberKeyword;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
@@ -15,10 +10,9 @@ import java.util.List;
 
 import static com.sptp.backend.art_work.repository.QArtWork.*;
 import static com.sptp.backend.art_work_keyword.repository.QArtWorkKeyword.*;
-import static com.sptp.backend.member.repository.QMember.*;
 
 @RequiredArgsConstructor
-public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
+public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository {
 
     private final JPAQueryFactory queryFactory;
 
@@ -34,7 +28,7 @@ public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
 
     @Override
     public List<ArtWork> findTerminatedAuctionArtWorkList(Long auctionId, Long artWorkId, Pageable pageable) {
-        List<ArtWork> results =  queryFactory
+        List<ArtWork> results = queryFactory
                 .select(artWork)
                 .from(artWork)
                 .where(
@@ -44,7 +38,7 @@ public class ArtWorkCustomRepositoryImpl implements ArtWorkCustomRepository{
                         artWork.saleStatus.ne(ArtWorkStatus.PROCESSING.getType())
                 )
                 .orderBy(artWork.id.desc())
-                .limit(pageable.getPageSize()+1)
+                .limit(pageable.getPageSize() + 1)
                 .fetch();
 
         return results;

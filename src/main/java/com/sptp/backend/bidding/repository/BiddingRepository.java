@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface BiddingRepository extends JpaRepository<Bidding, Long>, BiddingCustomRepository {
 
     Optional<Bidding> findByArtWorkAndMember(ArtWork artWork, Member member);
+
     Optional<Bidding> getFirstByArtWorkOrderByPriceDesc(ArtWork artWork);
 
     boolean existsByArtWorkId(Long artWorkId);

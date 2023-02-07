@@ -360,6 +360,32 @@ public class ArtWorkService extends BaseEntity {
         return artWorkDtoList;
     }
 
+    public List<ArtWorkDeliveryResponse> getDeliveryList(Long auctionId) {
+
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_AUCTION_TURN));
+
+        if (!auction.getStatus().equals(AuctionStatus.TERMINATED.getType())) {
+            throw new CustomException(ErrorCode.IS_NOT_TERMINATED_AUCTION);
+        }
+
+        List<ArtWorkDeliveryResponse> artWorkDeliveryResponseList = new ArrayList<>();
+        List<ArtWork> artWorkList = artWorkRepository.findByAuctionIdAndSaleStatus(auctionId, ArtWorkStatus.SALES_SUCCESS.getType());
+
+        for (ArtWork artWork : artWorkList) {
+
+            Optional<Bidding> bidding = biddingRepository.getFirstByArtWorkOrderByPriceDesc(artWork);
+
+            artWorkDeliveryResponseList.add(ArtWorkDeliveryResponse.builder()
+                    .artWork(ArtWorkDeliveryResponse.ArtWorkDto.from(artWork, bidding.get().getPrice()))
+                    .artist(ArtWorkDeliveryResponse.MemberDto.from(artWork.getMember()))
+                    .member(ArtWorkDeliveryResponse.MemberDto.from(bidding.get().getMember()))
+                    .build());
+        }
+
+        return artWorkDeliveryResponseList;
+    }
+
     public ArtWorkTerminatedListResponseDto getTerminatedAuctionArtWorkList(Long auctionId, Long artWorkId, Pageable pageable) {
 
         Auction auction = auctionRepository.findById(auctionId)

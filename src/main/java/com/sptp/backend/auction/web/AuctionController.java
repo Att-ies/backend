@@ -1,13 +1,12 @@
 package com.sptp.backend.auction.web;
 
 import com.sptp.backend.art_work.service.ArtWorkService;
+import com.sptp.backend.art_work.web.dto.response.ArtWorkDeliveryResponse;
 import com.sptp.backend.art_work.web.dto.response.ArtWorkTerminatedListResponseDto;
 import com.sptp.backend.auction.schedule.AuctionStartScheduler;
 import com.sptp.backend.auction.schedule.AuctionTerminateScheduler;
 import com.sptp.backend.auction.service.AuctionService;
 import com.sptp.backend.auction.web.dto.request.AuctionSaveRequestDto;
-import com.sptp.backend.auction.web.dto.request.AuctionStartRequestDto;
-import com.sptp.backend.auction.web.dto.request.AuctionTerminateRequestDto;
 import com.sptp.backend.auction.web.dto.response.AuctionArtWorkListResponseDto;
 import com.sptp.backend.auction.web.dto.response.AuctionListResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +37,15 @@ public class AuctionController {
         auctionTerminateScheduler.executeScheduler(auctionSaveRequestDto.getStartDate(), auctionSaveRequestDto.getEndDate(), auctionSaveRequestDto.getTurn());
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    // 관리자 - 특정 경매의 배송(낙찰) 목록 조회
+    @GetMapping("/admin/auction/{auctionId}/delivery")
+    public ResponseEntity<List<ArtWorkDeliveryResponse>> getDeliveryList(@PathVariable("auctionId") Long auctionId) {
+
+        List<ArtWorkDeliveryResponse> auctionDeliveryResponseList = artWorkService.getDeliveryList(auctionId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(auctionDeliveryResponseList);
     }
 
     // 현재 경매 작품 조회
