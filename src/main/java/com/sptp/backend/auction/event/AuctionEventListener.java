@@ -26,7 +26,6 @@ import java.util.Optional;
 public class    AuctionEventListener {
 
     private final NotificationRepository notificationRepository;
-    private final ArtWorkRepository artWorkRepository;
     private final BiddingRepository biddingRepository;
 
     // 경매 등록 알림(판매자), 전시회 등록 알림(판매자), 작품 낙찰 성공(판매자,구매자), 작품 유찰 알림(판매자)

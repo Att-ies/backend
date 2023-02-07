@@ -22,13 +22,15 @@ public class CustomizedArtWorkResponse {
         private String title;
         private String education;
         private String image;
+        private boolean pick;
 
-        public static ArtWorkDto from (ArtWork artWork, String awsStorageUrl) {
+        public static ArtWorkDto from (ArtWork artWork, String awsStorageUrl, boolean pick) {
             return ArtWorkDto.builder()
                     .id(artWork.getId())
                     .title(artWork.getTitle())
                     .education(artWork.getMember().getEducation())
                     .image(awsStorageUrl + artWork.getMainImage())
+                    .pick(pick)
                     .build();
         }
     }
