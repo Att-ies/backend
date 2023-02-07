@@ -77,11 +77,13 @@ public class ChatRoomService {
     public List<ChatRoomResponse> getChatRooms(Long loginMemberId) {
 
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByMemberIdOrArtistId(loginMemberId, loginMemberId);
+       Member member = memberRepository.findById(loginMemberId)
+               .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         return chatRooms.stream().map(chatRoom -> ChatRoomResponse.builder()
                         .chatRoomId(chatRoom.getId())
                         .artWorkImage(fileManager.getFullPath(chatRoom.getArtWork().getMainImage()))
-                        .unreadCount(getUnreadCount(chatRoom))
+                        .unreadCount(getUnreadCount(chatRoom, member))
                         .otherMember(getOtherMemberDto(chatRoom.getOtherMember(loginMemberId)))
                         .lastMessage(getLastMessageDto(chatRoom))
                         .build())
@@ -99,8 +101,8 @@ public class ChatRoomService {
         return ChatRoomResponse.MemberDto.of(otherMember, fileManager.getFullPath(otherMember.getImage()));
     }
 
-    private Integer getUnreadCount(ChatRoom chatRoom) {
-        return messageRepository.countByChatRoomAndIsReadIsFalse(chatRoom);
+    private Integer getUnreadCount(ChatRoom chatRoom, Member member) {
+        return messageRepository.countByChatRoomAndIsReadIsFalseAndSenderNot(chatRoom, member);
     }
 
     public void leaveChatRoom(Long chatRoomId) {

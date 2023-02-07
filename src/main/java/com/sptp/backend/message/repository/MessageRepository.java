@@ -1,6 +1,7 @@
 package com.sptp.backend.message.repository;
 
 import com.sptp.backend.chat_room.repository.ChatRoom;
+import com.sptp.backend.member.repository.Member;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,5 +15,5 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     Optional<Message> findFirstByChatRoomOrderByIdDesc(ChatRoom chatRoom);
 
-    Integer countByChatRoomAndIsReadIsFalse(ChatRoom chatRoom);
+    Integer countByChatRoomAndIsReadIsFalseAndSenderNot(ChatRoom chatRoom, Member sender);
 }
