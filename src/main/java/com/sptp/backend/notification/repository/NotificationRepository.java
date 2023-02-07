@@ -9,8 +9,8 @@ import java.util.Optional;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
     List<Notification> findByMemberIdOrderByModifiedDateDesc(Long memberId);
+
     long countByMemberAndChecked(Member member, boolean checked);
 
-    boolean existsByChatRoomId(Long chatRoomId);
-    Optional<Notification> findByChatRoomId(Long chatRoomId);
+    Optional<Notification> findByChatRoomIdAndMember(Long chatRoomId, Member member);
 }

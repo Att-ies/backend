@@ -17,6 +17,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @Async
 @Transactional
@@ -37,18 +39,23 @@ public class MessageEventListener {
         ArtWork artWork = artWorkRepository.findById(chatRoom.getArtWork().getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
 
-        // 해당 채팅방에 대한 알림이 이미 존재한다면
-        if(notificationRepository.existsByChatRoomId(chatRoom.getId())) {
-            updateNotification(chatRoom.getId());
+        // 알림 받을 유저
+        Member member = new Member();
+        if (chatRoom.getArtist().getId().equals(message.getSender().getId())) {
+            member = chatRoom.getMember();
+        }
+        if (chatRoom.getMember().getId().equals(message.getSender().getId())) {
+            member = chatRoom.getArtist();
+        }
+
+        // 해당 유저의 채팅방에 대한 알림이 이미 존재한다면
+        Optional<Notification> findNotification = notificationRepository.findByChatRoomIdAndMember(chatRoom.getId(), member);
+        if (findNotification.isPresent()) {
+            findNotification.get().updateRead();
             return;
         }
 
-        if(chatRoom.getArtist().getId().equals(message.getSender().getId())) {
-            saveNotification(chatRoom.getMember(), artWork, chatRoom, notificationCode);
-        }
-        if(chatRoom.getMember().getId().equals(message.getSender().getId())) {
-            saveNotification(chatRoom.getArtist(), artWork, chatRoom, notificationCode);
-        }
+        saveNotification(member, artWork, chatRoom, notificationCode);
     }
 
     public void saveNotification(Member member, ArtWork artWork, ChatRoom chatRoom, NotificationCode notificationCode) {
@@ -63,13 +70,5 @@ public class MessageEventListener {
                 .build();
 
         notificationRepository.save(notification);
-    }
-
-    public void updateNotification(Long chatRoomId) {
-
-        Notification findNotification = notificationRepository.findByChatRoomId(chatRoomId)
-                        .orElseThrow();
-
-        findNotification.updateMessage();
     }
 }
