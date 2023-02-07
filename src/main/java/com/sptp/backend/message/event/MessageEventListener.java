@@ -39,7 +39,7 @@ public class MessageEventListener {
 
         // 해당 채팅방에 대한 알림이 이미 존재한다면
         if(notificationRepository.existsByChatRoomId(chatRoom.getId())) {
-            updateNotification(chatRoom.getId(), artWork, notificationCode);
+            updateNotification(chatRoom.getId());
             return;
         }
 
@@ -65,12 +65,11 @@ public class MessageEventListener {
         notificationRepository.save(notification);
     }
 
-    public void updateNotification(Long chatRoomId, ArtWork artWork, NotificationCode notificationCode) {
+    public void updateNotification(Long chatRoomId) {
 
         Notification findNotification = notificationRepository.findByChatRoomId(chatRoomId)
                         .orElseThrow();
 
-        // 작품 이름 변경된 거 반영할 겸 알림 업데이트. 실제론 modifiedDate 변경이 목표
-        findNotification.updateMessage(artWork.getTitle() + notificationCode.getMessage());
+        findNotification.updateMessage();
     }
 }
