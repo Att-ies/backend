@@ -41,8 +41,8 @@ public class Notification extends BaseEntity {
         this.checked = true;
     }
 
-    public void updateMessage(String message) {
+    public void updateRead() {
 
-        this.message = message;
+        this.checked = false;
     }
 }
