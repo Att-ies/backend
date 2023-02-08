@@ -584,6 +584,12 @@ public class MemberService {
             throw new CustomException(ErrorCode.PERMISSION_DENIED);
         }
 
+        // 수정시에 이미지 업로드한 경우에만 기존 이미지 삭제
+        if (!dto.getImage()[0].isEmpty()) {
+
+            memberAskImageRepository.deleteByMemberAskId(findMemberAsk.getId());
+        }
+
         findMemberAsk.updateMemberAsk(dto);
         saveAskImages(dto.getImage(), findMemberAsk);
     }
