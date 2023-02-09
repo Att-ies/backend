@@ -4,6 +4,14 @@
 
 <br />
 
+## 팀원 👨‍👨‍👧‍👧👩‍👦‍👦
+
+|                Backend                 |                Backend                 |              Backend               |     |
+| :------------------------------------: | :------------------------------------: | :--------------------------------: | --- |
+| <img src="https://avatars.githubusercontent.com/u/71515740?v=4" width=400px alt="Carrick"> |  <img src="https://avatars.githubusercontent.com/u/83302344?v=4" width=400px alt="Choo">   | <img src="https://user-images.githubusercontent.com/62178788/217484706-f58f77bd-4554-4852-9d8e-506f465ea41d.jpeg" width=400px alt="Poo"> |
+|  [Carrick](https://github.com/Gyubam)  | [Choo](https://github.com/ChooSeoyeon) | [Poo](https://github.com/JunYoung) |
+|                                       |
+
 ## 프로젝트 기술스택 💡
 ![image](https://user-images.githubusercontent.com/83302344/217729743-6add222b-e4c7-4936-aadd-79d5feb959c0.png)
 
