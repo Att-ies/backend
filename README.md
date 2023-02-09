@@ -70,3 +70,31 @@
 <br />
 
 ## 코딩 컨벤션
+
+<details>
+
+<summary>네이밍 규칙</summary>
+
+1. 변수나 함수, 클래스명은 `camelCase`를 사용한다.
+2. 함수의 경우 동사+명사 사용한다.
+
+- ex) `getInfo()`
+
+3. DB에 저장되는 컬럼명은 `snakeCase`를 사용한다.
+
+- ex) `member_id`
+
+4. Url 명은 `kebabCase`를 사용하며, 명사와 소문자로 구성한다.
+5. 구분자로 하이픈(-)을 사용하며, 되도록이면 구분자 없이 구성한다.
+
+- ex) `www.example.com/user`
+
+</details>
+
+<details>
+
+<summary>빌더</summary>
+
+1. 가독성 향상을 위해 생성자 대신 빌더를 필수적으로 사용한다.
+
+</details>
