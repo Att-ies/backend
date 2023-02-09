@@ -27,5 +27,21 @@
 ![image](https://user-images.githubusercontent.com/83302344/217729455-38630323-d050-478e-8a85-1e1b507c932e.png)
 
 ## Git 전략
+<details>
+<summary>변수</summary>
+
+1. 변수나 함수명은 `camelCase`를 사용한다.
+2. 함수의 경우 동사+명사 사용한다.
+
+- ex) getRecords()
+
+3. flag로 사용 되는 변수는 조동사 + flag 종류로 구성한다.
+
+- ex) isDeleted
+
+4. Class / Interface / Type / Namespace / Enum 명은 `PascalCase`를 사용한다.
+5. 약어는 되도록 사용하지 않는다.
+
+- 부득이하게 약어가 필요하다고 판단되는 경우 팀원과 상의를 거친다.
 
 ## 코딩 컨벤션
