@@ -28,34 +28,47 @@
 
 ## Git 전략
 <details>
-<summary>Git Workflow</summary>
+<summary>변수</summary>
 
-### main → develop → feature/이슈번호-기능, fix/이슈번호-기능, refactor/이슈번호-기능
+1. 변수나 함수명은 `camelCase`를 사용한다.
+2. 함수의 경우 동사+명사 사용한다.
 
-1. local - feature/이슈번호-기능 에서 각자 작업
-2. 작업 완료 후 remote - develop 에 PR
-3. 코드 리뷰 후 Approve 받고 Merge
-4. remote - develop 에 Merge 될 때 마다 모든 팀원 remote - develop pull 받아 최신 상태 유지
+- ex) getRecords()
+
+3. flag로 사용 되는 변수는 조동사 + flag 종류로 구성한다.
+
+- ex) isDeleted
+
+4. Class / Interface / Type / Namespace / Enum 명은 `PascalCase`를 사용한다.
+5. 약어는 되도록 사용하지 않는다.
+
+- 부득이하게 약어가 필요하다고 판단되는 경우 팀원과 상의를 거친다.
+
 </details>
 
-<details>
-<summary>Commit Convention</summary>
-
-| 태그 이름  | 설명                                                                 |
-| ---------- | ------------------------------------------------------------------- |
-| feat     | 새로운 기능에 대한 커밋                                              |
-| fix      | 버그 수정에 대한 커밋                                                |
-| hotfix   | issue나 QA에서 급한 버그 수정                                        |
-| build    | 빌드 관련 파일 수정에 대한 커밋                                       |
-| chore    | 그 외 자잘한 수정에 대한 커밋                                         |
-| style   | 코드 스타일 혹은 포맷 등에 관한 커밋                                   |
-| docs     | 문서 수정에 대한 커밋                                                |
-| test     | 테스트 코드 수정에 대한 커밋                                         |
-| refactor | 코드 리팩토링에 대한 커밋                                            |
-</details> <br>
-<br />
-
-## 배포 과정
-
-
 ## 코딩 컨벤션
+
+<details>
+<summary>네이밍 규칙</summary>
+
+1. 변수나 함수, 클래스명은 `camelCase`를 사용한다.
+2. 함수의 경우 동사+명사 사용한다.
+
+- ex) getInfo()
+
+3. DB에 저장되는 컬럼명은 `snakeCase`를 사용한다.
+
+- ex) member_id
+
+4. Url 명은 `kebabCase`를 사용하며, 명사와 소문자로 구성한다.
+5. 구분자로 하이픈(-)을 사용하며, 되도록이면 구분자 없이 구성한다.
+
+- ex) www.example.com/user
+
+</details>
+
+<summary>빌더</summary>
+
+1. 가독성 향상을 위해 생성자 대신 빌더를 필수적으로 사용한다.
+
+</details>
