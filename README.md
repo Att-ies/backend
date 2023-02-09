@@ -17,7 +17,7 @@
 |  [Carrick](https://github.com/Gyubam)  | [Choo](https://github.com/ChooSeoyeon) | [Poo](https://github.com/JunYoung) |
 |                                       |
 
-## ERD
+## ERD 🔨
 ![image](https://user-images.githubusercontent.com/83302344/217729214-bb115b0a-78ec-4950-880f-fc4d13ebb96a.png)
 
 ## 프로젝트 기술스택 💡
