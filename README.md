@@ -8,7 +8,7 @@
 
 |                Backend                 |                Backend                 |              Backend               |     |
 | :------------------------------------: | :------------------------------------: | :--------------------------------: | --- |
-| <img src="https://avatars.githubusercontent.com/u/71515740?v=4" width=400px alt="Carrick"> |  <img src="https://avatars.githubusercontent.com/u/83302344?v=4" width=400px alt="Choo">   | <img src="https://user-images.githubusercontent.com/62178788/217484706-f58f77bd-4554-4852-9d8e-506f465ea41d.jpeg" width=400px alt="Poo"> |
+| <img src="https://avatars.githubusercontent.com/u/71515740?v=4" width=200px alt="Carrick"> |  <img src="https://avatars.githubusercontent.com/u/83302344?v=4" width=200px alt="Choo">   | <img src="https://user-images.githubusercontent.com/62178788/217484706-f58f77bd-4554-4852-9d8e-506f465ea41d.jpeg" width=200px alt="Poo"> |
 |  [Carrick](https://github.com/Gyubam)  | [Choo](https://github.com/ChooSeoyeon) | [Poo](https://github.com/JunYoung) |
 |                                       |
 
