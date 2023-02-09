@@ -35,6 +35,8 @@ public class Message extends BaseEntity {
 
     private Boolean isRead;
     private String type;
+
+    @Column(length = 600)
     private String content; // type == text -> massage 저장, type == image -> url 저장
 
     public void read(long memberId) {

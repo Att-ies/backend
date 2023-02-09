@@ -62,6 +62,7 @@ public class ArtWork extends BaseEntity {
 
     private String genre;
 
+    @Column(length = 3000)
     private String description;
 
     @Embedded
