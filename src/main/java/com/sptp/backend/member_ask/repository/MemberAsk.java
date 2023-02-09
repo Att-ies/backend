@@ -30,8 +30,12 @@ public class MemberAsk extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
+    @Column(length = 100)
     private String title;
+
+    @Column(length = 3000)
     private String content;
+
     private String answer;
     private String status;
 
