@@ -28,20 +28,31 @@
 
 ## Git 전략
 <details>
-<summary>변수</summary>
+<summary>❗️ Git Workflow</summary>
 
-1. 변수나 함수명은 `camelCase`를 사용한다.
-2. 함수의 경우 동사+명사 사용한다.
+### main → develop → feature/이슈번호-기능, fix/이슈번호-기능, refactor/이슈번호-기능
 
-- ex) getRecords()
+1. local - feature/이슈번호-기능 에서 각자 작업
+2. 작업 완료 후 remote - develop 에 PR
+3. 코드 리뷰 후 Approve 받고 Merge
+4. remote - develop 에 Merge 될 때 마다 모든 팀원 remote - develop pull 받아 최신 상태 유지
+</details>
 
-3. flag로 사용 되는 변수는 조동사 + flag 종류로 구성한다.
+<details>
+<summary>❗️ Commit Convention</summary>
 
-- ex) isDeleted
-
-4. Class / Interface / Type / Namespace / Enum 명은 `PascalCase`를 사용한다.
-5. 약어는 되도록 사용하지 않는다.
-
-- 부득이하게 약어가 필요하다고 판단되는 경우 팀원과 상의를 거친다.
+| 태그 이름  | 설명                                                                 |
+| ---------- | ------------------------------------------------------------------- |
+| [feat]     | 새로운 기능에 대한 커밋                                              |
+| [fix]      | 버그 수정에 대한 커밋                                                |
+| [hotfix]   | issue나 QA에서 급한 버그 수정                                        |
+| [build]    | 빌드 관련 파일 수정에 대한 커밋                                       |
+| [chore]    | 그 외 자잘한 수정에 대한 커밋                                         |
+| [style]   | 코드 스타일 혹은 포맷 등에 관한 커밋                                   |
+| [docs]     | 문서 수정에 대한 커밋                                                |
+| [test]     | 테스트 코드 수정에 대한 커밋                                         |
+| [refactor] | 코드 리팩토링에 대한 커밋                                            |
+</details> <br>
+<br />
 
 ## 코딩 컨벤션
