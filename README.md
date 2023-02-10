@@ -35,9 +35,25 @@
 <br>
 <br />
 
+## 백엔드 배포 과정 (GithubActions 이용해 아래 과정에 대해 CI/CD 구축함)
+
+### 로컬 : Gradle build, Docker build
+1. jar 빌드 : `gradle build`
+2. 이미지 생성 : `docker build -t 계정명/atties_spring ./`
+3. 도커 허브로 push : `docker push 계정명/atties_spring`
+
+(`atties_spring`은 도커허브의 repository명)
+
+### 서버 : Deploy
+1. 도커 허브에서 pull : `docker pull 계정명/atties_spring`
+2. 도커 yml에서 설정한 이미지 생성 : `docker tag 계정명/atties_spring atties_spring`
+3. 도커 컴포즈 실행 : `docker-compose up`
+<br>
+<br />
+
+
 ## Git 전략
-<details>
-<summary>Git Workflow</summary>
+### 1) Git Workflow
 
 ### main → develop → feature/이슈번호-기능, fix/이슈번호-기능, refactor/이슈번호-기능
 
@@ -47,8 +63,7 @@
 4. remote - develop 에 Merge 될 때 마다 모든 팀원 remote - develop pull 받아 최신 상태 유지
 </details>
 
-<details>
-<summary>Commit Convention</summary>
+### 2) Commit Convention
 
 | 태그 이름  | 설명                                                                 |
 | ---------- | ------------------------------------------------------------------- |
@@ -61,19 +76,12 @@
 | docs     | 문서 수정에 대한 커밋                                                |
 | test     | 테스트 코드 수정에 대한 커밋                                         |
 | refactor | 코드 리팩토링에 대한 커밋                                            |
-</details> 
-<br>
-<br />
-
-## 배포 과정
 <br>
 <br />
 
 ## 코딩 컨벤션
 
-<details>
-
-<summary>네이밍 규칙</summary>
+### 1) 네이밍 규칙
 
 1. 변수나 함수, 클래스명은 `camelCase`를 사용한다.
 2. 함수의 경우 동사+명사 사용한다.
@@ -89,12 +97,6 @@
 
 - ex) `www.example.com/user`
 
-</details>
-
-<details>
-
-<summary>빌더</summary>
+### 2) 빌더
 
 1. 가독성 향상을 위해 생성자 대신 빌더를 필수적으로 사용한다.
-
-</details>
