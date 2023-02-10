@@ -10,4 +10,5 @@ import lombok.*;
 public class NotificationNewResponse {
 
     private Boolean newNotification;
+    private Boolean isArtist;
 }
