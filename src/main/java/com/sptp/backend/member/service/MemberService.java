@@ -6,6 +6,8 @@ import com.sptp.backend.art_work.repository.ArtWorkRepository;
 import com.sptp.backend.art_work.repository.ArtWorkStatus;
 import com.sptp.backend.aws.service.AwsService;
 import com.sptp.backend.aws.service.FileManager;
+import com.sptp.backend.bidding.repository.Bidding;
+import com.sptp.backend.bidding.repository.BiddingRepository;
 import com.sptp.backend.common.NotificationCode;
 import com.sptp.backend.member.event.MemberEvent;
 import com.sptp.backend.member.web.dto.request.*;
@@ -65,6 +67,7 @@ public class MemberService {
     private final MemberAskRepository memberAskRepository;
     private final MemberAskImageRepository memberAskImageRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final BiddingRepository biddingRepository;
     private final int PREFERRED_ARTIST_MAXIMUM = 100;
     private final int PREFERRED_ART_WORK_MAXIMUM = 100;
     private final int LIKE_COUNT_FOR_HOT_LABELED = 5;
@@ -537,14 +540,18 @@ public class MemberService {
 
             boolean checkHot = false;
             boolean checkPick = false;
+            Long price = artWork.getPrice();
 
             if (artWork.getLikeCount() >= LIKE_COUNT_FOR_HOT_LABELED) checkHot = true;
             if (memberPreferredArtWorkRepository.existsByMemberAndArtWork(findMember, artWork)) checkPick = true;
+            if (biddingRepository.existsByArtWorkId(artWork.getId())) {
+                price = getTopPrice(artWork);
+            }
 
             preferredArtWorkResponse.add(PreferredArtWorkResponse.builder()
                     .id(artWork.getId())
                     .title(artWork.getTitle())
-                    .price(artWork.getPrice())
+                    .price(price)
                     .image(awsStorageUrl + artWork.getMainImage())
                     .saleStatus(ArtWorkStatus.valueOfType(artWork.getSaleStatus()).getName())
                     .artist(artWork.getMember().getNickname())
@@ -698,5 +705,16 @@ public class MemberService {
                         .map(m -> CustomizedArtWorkResponse.ArtWorkDto.from(m, awsStorageUrl, memberPreferredArtWorkRepository.existsByMemberAndArtWork(member, m)))
                         .collect(Collectors.toList()))
                 .build();
+    }
+
+    private Long getTopPrice(ArtWork artWork) {
+
+        Optional<Bidding> topPriceBiddingOptional = biddingRepository.getFirstByArtWorkOrderByPriceDesc(artWork);
+
+        if (topPriceBiddingOptional.isEmpty()) {
+            return Long.valueOf(artWork.getPrice());
+        }
+
+        return topPriceBiddingOptional.get().getPrice();
     }
 }
