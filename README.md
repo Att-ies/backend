@@ -118,8 +118,8 @@
 |[GET] nickname 중복 검사 | Choo | ✅ |
 |[POST] 임시 비밀번호 발급 | Poo | ✅ |
 |[POST] 아이디 찾기 메일 발송 | Choo | ✅ |
-|[DELETE] 비밀번호 변경 메일 발송 | Poo | ✅ |
-|[PATCH] 회원탈퇴 | Poo | ✅ |
+|[PATCH] 비밀번호 변경 메일 발송 | Poo | ✅ |
+|[DELETE] 회원탈퇴 | Poo | ✅ |
 |2. 회원정보|
 |[PATCH] 작가 인증 파일 보내기 | Choo | ✅ |
 |[GET] 회원/작가 정보 조회 | Choo | ✅ |
