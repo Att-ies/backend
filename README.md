@@ -132,7 +132,7 @@
 |[POST] 작품 찜하기 | Carrick | ✅ |
 |[DELETE] 작품 찜 취소하기 | Carrick | ✅ |
 |[GET] 찜작품 목록 조회 | Carrick | ✅ |
-|[GET] 취향 작품 목록 조회(추천) | Choo | ✅ |
+|[GET] 취향 작품 추천 목록 조회 | Choo | ✅ |
 |[PATCH] 관심 키워드 수정하기 | Carrick | ✅ |
 |3. 1:1 문의|
 |[GET] 1:1 문의 목록 조회 | Carrick | ✅ |
