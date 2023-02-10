@@ -51,7 +51,6 @@
 <br>
 <br />
 
-
 ## Git 전략
 ### 1) Git Workflow
 
@@ -100,3 +99,56 @@
 ### 2) 빌더
 
 1. 가독성 향상을 위해 생성자 대신 빌더를 필수적으로 사용한다.
+
+## 전체 API 로직 구현 진척도 및 담당자
+
+|기능|담당자|구현 여부|
+|---|---|---|
+|1. 회원관리|
+|[POST] 일반 회원가입 | Carrick | ✅ |
+|[POST] 로그인 | Carrick | ✅ |
+|[GET] 네이버 로그인 | Carrick | ✅ |
+|[GET] 카카오 로그인 | Carrick | ✅ |
+|[POST] Access Token 재발급 | Carrick | ✅ |
+|[POST] 로그아웃 | Carrick | ✅ |
+|[GET] email 중복 검사 | Carrick | ✅ |
+|[GET] id 중복 검사 | Carrick | ✅ |
+|[GET] nickname 중복 검사 | Choo | ✅ |
+|[POST] 임시 비밀번호 발급 | Poo | ✅ |
+|[POST] 아이디 찾기 메일 발송 | Choo | ✅ |
+|[DELETE] 비밀번호 변경 메일 발송 | Poo | ✅ |
+|[PATCH] 회원탈퇴 | Poo | ✅ |
+|2. 회원정보|
+|[PATCH] 작가 인증 파일 보내기 | Choo | ✅ |
+|[GET] 회원/작가 정보 조회 | Choo | ✅ |
+|[PATCH] 회원 정보 수정 | Choo | ✅ |
+|[PATCH] 작가 정보 수정 | Choo | ✅ |
+|[POST] 작가 픽하기 | Choo | ✅ |
+|[DELETE] 작가 픽 취소하기 | Choo | ✅ |
+|[GET] 픽작가 목록 조회 | Choo | ✅ |
+|[GET] 작가 상세 조회 | Choo | ✅ |
+|[POST] 작품 찜하기 | Carrick | ✅ |
+|[DELETE] 작품 찜 취소하기 | Carrick | ✅ |
+|[GET] 찜작품 목록 조회 | Carrick | ✅ |
+|[GET] 취향 작품 목록 조회(추천) | Choo | ✅ |
+|[PATCH] 관심 키워드 수정하기 | Carrick | ✅ |
+|3. 1:1 문의|
+|[GET] 1:1 문의 목록 조회 | Carrick | ✅ |
+|[POST] 1:1 문의하기 | Carrick | ✅ |
+|[PATCH] 1:1 문의 수정하기 | Carrick | ✅ |
+|[DELETE] 1:1 문의 삭제하기 | Carrick | ✅ |
+|4. 관리자|
+|[PATCH] 관리자 - 작가 프로필 전환 | Choo | ✅ |
+|[GET] 관리자 - 작가 인증 파일 목록 조회 | Choo | ✅ |
+|[PATCH] 관리자 - 1:1 문의 답변하기 | Choo | ✅ |
+|[GET] 관리자 - 1:1 문의 목록 조회 | Choo | ✅ |
+|[GET] 관리자 - 경매 배송 목록 조회 | Choo | ✅ |
+|[POST] 관리자 - 경매 생성 | Carrick | ✅ |
+|5. 작품|
+|[POST] 작품 등록 | Carrick | ✅ |
+|[GET] 등록 작품 목록 조회 | Carrick | ✅ |
+|[GET] 작품 상세 조회 | Carrick | ✅ |
+|[GET] 구매 작품 조회 | Carrick | ✅ |
+|[GET] 작품 검색 | Carrick | ✅ |
+|6. 채팅|
+|[POST] 채팅방 생성 | Poo | ✅ |
