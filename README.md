@@ -99,6 +99,8 @@
 ### 2) 빌더
 
 1. 가독성 향상을 위해 생성자 대신 빌더를 필수적으로 사용한다.
+<br>
+<br />
 
 ## 전체 API 로직 구현 진척도 및 담당자
 
@@ -149,6 +151,31 @@
 |[GET] 등록 작품 목록 조회 | Carrick | ✅ |
 |[GET] 작품 상세 조회 | Carrick | ✅ |
 |[GET] 구매 작품 조회 | Carrick | ✅ |
-|[GET] 작품 검색 | Carrick | ✅ |
 |6. 채팅|
 |[POST] 채팅방 생성 | Poo | ✅ |
+|[GET] 채팅방 조회 | Poo | ✅ |
+| 웹소켓 연결 | Poo | ✅ |
+| 채팅 송신 | Poo | ✅ |
+| 채팅방 구독 | Poo | ✅ |
+|[GET] 채팅방 목록 조회 | Poo | ✅ |
+|[DELETE] 채팅방 나가기 | Poo | ✅ |
+|7. 경매|
+|[PUT] 응찰하기 | Poo | ✅ |
+|[GET] 응찰 내역 조회 | Poo | ✅ |
+|[GET] 경매 목록 조회 | Carrick | ✅ |
+|[GET] 진행중 경매 작품 목록 조회 | Carrick | ✅ |
+|[GET] 종료된 경매 목록 조회 | Carrick | ✅ |
+|[GET] 종료된 경매의 작품 목록 조회 | Carrick | ✅ |
+|8. 알림|
+|[GET] 알림 목록 조회 | Choo | ✅ |
+|[DELETE] 알림 삭제 | Choo | ✅ |
+|[GET] 새로운 알림 유무 조회 | Choo | ✅ |
+|9. 전시|
+|[GET] 전시회 목록 조회 | Carrick | ✅ |
+|[GET] 전시회 조회 | Carrick | ✅ |
+|[GET] 특정 작품 전시회 조회 | Carrick | ✅ |
+|10. 검색|
+|[GET] 최근 검색어 조회 | Carrick | ✅ |
+|[DELETE] 최근 검색어 단일 삭제 | Carrick | ✅ |
+|[DELETE] 최근 검색어 전체 삭제 | Carrick | ✅ |
+|[GET] 작품 검색 | Carrick | ✅ |
