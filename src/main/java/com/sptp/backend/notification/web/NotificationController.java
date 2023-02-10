@@ -45,11 +45,7 @@ public class NotificationController {
     @GetMapping("/notifications/new")
     public ResponseEntity<NotificationNewResponse> getNotificationNew(@AuthenticationPrincipal CustomUserDetails userDetails){
 
-        Boolean checked = notificationService.getNotificationNew(userDetails.getMember());
-
-        NotificationNewResponse notificationNewResponse = NotificationNewResponse.builder()
-                .newNotification(checked)
-                .build();
+        NotificationNewResponse notificationNewResponse = notificationService.getNotificationNew(userDetails.getMember());
 
         return ResponseEntity.status(HttpStatus.OK).body(notificationNewResponse);
     }
