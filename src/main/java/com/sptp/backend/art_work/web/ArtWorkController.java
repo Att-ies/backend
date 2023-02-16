@@ -105,4 +105,13 @@ public class ArtWorkController {
         return ResponseEntity.ok().build();
     }
 
+    // 작품 삭제
+    @DeleteMapping("/{artWorkId}")
+    public ResponseEntity<Void> deleteArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                              @PathVariable("artWorkId") Long artWorkId) {
+
+        artWorkService.deleteArtWork(userDetails.getMember(), artWorkId);
+
+        return ResponseEntity.ok().build();
+    }
 }

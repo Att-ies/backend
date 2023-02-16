@@ -582,4 +582,14 @@ public class ArtWorkService extends BaseEntity {
             throw new CustomException(ErrorCode.SHOULD_BE_REGISTERED);
         }
     }
+
+    public void deleteArtWork(Member member, Long artWorkId) {
+
+        ArtWork findArtWork = artWorkRepository.findById(artWorkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+
+        checkEditArtWork(member, findArtWork);
+
+        artWorkRepository.deleteById(artWorkId);
+    }
 }
