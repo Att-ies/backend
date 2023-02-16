@@ -42,6 +42,7 @@ public enum ErrorCode {
     SHOULD_EXIST_IMAGE(HttpStatus.BAD_REQUEST, "이미지가 존재하지 않습니다."),
     EXIST_USER_PREFERRED_ARTWORK(HttpStatus.CONFLICT, "이미 찜한 작품입니다."),
     NOT_FOUND_ARTWORK(HttpStatus.NOT_FOUND, "해당 작품을 찾을 수 없습니다."),
+    SHOULD_BE_REGISTERED(HttpStatus.BAD_REQUEST, "진행중 및 종료된 작품은 수정할 수 없습니다."),
 
     //경매 예외
     EXIST_AUCTION_TURN(HttpStatus.CONFLICT, "해당 경매 회차가 이미 존재합니다."),

@@ -3,6 +3,7 @@ package com.sptp.backend.art_work.service;
 import com.querydsl.core.Tuple;
 import com.sptp.backend.art_work.event.ArtWorkEvent;
 import com.sptp.backend.art_work.repository.*;
+import com.sptp.backend.art_work.web.dto.request.ArtWorkEditRequestDto;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
 import com.sptp.backend.art_work.web.dto.response.*;
 import com.sptp.backend.art_work_image.repository.ArtWorkImage;
@@ -71,8 +72,8 @@ public class ArtWorkService extends BaseEntity {
 
         checkExistsImage(dto);
 
-        String GuaranteeImageUUID = UUID.randomUUID().toString();
-        String GuaranteeImageEXT = fileManager.extractExtension(dto.getGuaranteeImage().getOriginalFilename());
+        String guaranteeImageUUID = UUID.randomUUID().toString();
+        String guaranteeImageEXT = fileManager.extractExtension(dto.getGuaranteeImage().getOriginalFilename());
 
         String mainImageUUID = UUID.randomUUID().toString();
         String mainImageEXT = fileManager.extractExtension(dto.getImage()[0].getOriginalFilename());
@@ -84,7 +85,7 @@ public class ArtWorkService extends BaseEntity {
                 .price(dto.getPrice())
                 .status(dto.getStatus())
                 .statusDescription(dto.getStatusDescription())
-                .guaranteeImage(GuaranteeImageUUID + "." + GuaranteeImageEXT)
+                .guaranteeImage(guaranteeImageUUID + "." + guaranteeImageEXT)
                 .mainImage(mainImageUUID + "." + mainImageEXT)
                 .genre(dto.getGenre())
                 .artWorkSize(ArtWorkSize.builder().size(dto.getSize()).length(dto.getLength()).width(dto.getWidth()).height(dto.getHeight()).build())
@@ -97,7 +98,7 @@ public class ArtWorkService extends BaseEntity {
                 .build();
 
         ArtWork savedArtWork = artWorkRepository.save(artWork);
-        awsService.uploadImage(dto.getGuaranteeImage(), GuaranteeImageUUID);
+        awsService.uploadImage(dto.getGuaranteeImage(), guaranteeImageUUID);
         awsService.uploadImage(dto.getImage()[0], mainImageUUID);
         saveArtImages(dto.getImage(), artWork);
         saveArtKeywords(dto.getKeywords(), artWork);
@@ -108,6 +109,10 @@ public class ArtWorkService extends BaseEntity {
     }
 
     public void saveArtImages(MultipartFile[] files, ArtWork artWork) throws IOException {
+
+        if (files[0].isEmpty()) {
+            return;
+        }
 
         for (MultipartFile file : files) {
 
@@ -494,6 +499,87 @@ public class ArtWorkService extends BaseEntity {
 
         if (!auction.getStatus().equals(AuctionStatus.PROCESSING.getType())) {
             throw new CustomException(ErrorCode.NOT_VALID_AUCTION_PERIOD);
+        }
+    }
+
+    public ArtWorkEditFormResponse getEditForm(Member member, Long artworkId) {
+
+        ArtWork findArtWork = artWorkRepository.findById(artworkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+
+        checkEditArtWork(member, findArtWork);
+
+        List<ArtWorkKeyword> artWorkKeywordList = artWorkKeywordRepository.findByArtWorkId(artworkId);
+        List<ArtWorkImage> artWorkImageList = artWorkImageRepository.findByArtWorkId(artworkId);
+
+        return ArtWorkEditFormResponse.from(findArtWork, artWorkImageList, artWorkKeywordList, storageUrl);
+
+    }
+
+    public void editArtWork(Member member, Long artworkId, ArtWorkEditRequestDto dto) throws IOException {
+
+        ArtWork findArtWork = artWorkRepository.findById(artworkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+
+        checkEditArtWork(member, findArtWork);
+
+        artWorkImageRepository.deleteByArtWorkId(findArtWork.getId());
+        artWorkKeywordRepository.deleteByArtWorkId(findArtWork.getId());
+
+        String mainImageUrl = "";
+        String guaranteeImageUrl = UUID.randomUUID().toString() + "." + fileManager.extractExtension(dto.getGuaranteeImage().getOriginalFilename());
+
+        if (dto.getImage()[0].isEmpty() && dto.getPrevImage().isEmpty()) {
+            throw new CustomException(ErrorCode.SHOULD_EXIST_IMAGE);
+        }
+
+        mainImageUrl = setMainImageUrl(dto);
+
+        findArtWork.updateArtWork(dto, ArtWorkSize.builder()
+                        .size(dto.getSize()).width(dto.getWidth())
+                        .height(dto.getHeight()).length(dto.getLength())
+                        .build()
+                , mainImageUrl, guaranteeImageUrl);
+
+        awsService.uploadImage(dto.getGuaranteeImage(), guaranteeImageUrl.substring(0,guaranteeImageUrl.lastIndexOf(".")));
+        awsService.uploadImage(dto.getImage()[0], mainImageUrl.substring(0,mainImageUrl.lastIndexOf(".")));
+        savePrevImage(dto, findArtWork);
+        saveArtImages(dto.getImage(), findArtWork);
+        saveArtKeywords(dto.getKeywords(), findArtWork);
+    }
+
+    public String setMainImageUrl(ArtWorkEditRequestDto dto) {
+
+        if (dto.getImage()[0].isEmpty() && !dto.getPrevImage().isEmpty()) {
+            return fileManager.extractImageDB(dto.getPrevImage().get(0));
+        }
+
+        if (!dto.getImage()[0].isEmpty() && dto.getPrevImage().isEmpty()) {
+            return UUID.randomUUID().toString() + "." + fileManager.extractExtension(dto.getImage()[0].getOriginalFilename());
+        }
+
+        if (!dto.getImage()[0].isEmpty() && !dto.getPrevImage().isEmpty()) {
+            return UUID.randomUUID().toString() + "." + fileManager.extractExtension(dto.getImage()[0].getOriginalFilename());
+        }
+
+        return "";
+    }
+
+    public void savePrevImage(ArtWorkEditRequestDto dto, ArtWork artWork) {
+
+        for (String image : dto.getPrevImage()) {
+            artWorkImageRepository.save(ArtWorkImage.builder().artWork(artWork).image(fileManager.extractImageDB(image)).build());
+        }
+    }
+
+    public void checkEditArtWork(Member member, ArtWork artWork) {
+
+        if (!artWork.getMember().getId().equals(member.getId())) {
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
+        }
+
+        if (!artWork.getSaleStatus().equals(ArtWorkStatus.REGISTERED.getType())) {
+            throw new CustomException(ErrorCode.SHOULD_BE_REGISTERED);
         }
     }
 }

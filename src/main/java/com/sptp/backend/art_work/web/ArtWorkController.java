@@ -2,11 +2,9 @@ package com.sptp.backend.art_work.web;
 
 import com.sptp.backend.art_work.service.ArtWorkService;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkBidRequest;
+import com.sptp.backend.art_work.web.dto.request.ArtWorkEditRequestDto;
 import com.sptp.backend.art_work.web.dto.request.ArtWorkSaveRequestDto;
-import com.sptp.backend.art_work.web.dto.response.ArtWorkInfoResponseDto;
-import com.sptp.backend.art_work.web.dto.response.ArtWorkMyListResponseDto;
-import com.sptp.backend.art_work.web.dto.response.ArtWorkPurchasedListResponseDto;
-import com.sptp.backend.art_work.web.dto.response.BiddingListResponse;
+import com.sptp.backend.art_work.web.dto.response.*;
 import com.sptp.backend.jwt.service.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -84,6 +82,27 @@ public class ArtWorkController {
         ArtWorkPurchasedListResponseDto artWorkPurchasedListResponseDto = artWorkService.getMyBidding(userDetails.getMember());
 
         return ResponseEntity.status(HttpStatus.OK).body(artWorkPurchasedListResponseDto);
+    }
+
+    // 작품 수정 폼
+    @GetMapping("/edit/{artWorkId}")
+    public ResponseEntity<ArtWorkEditFormResponse> getEditForm(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                               @PathVariable("artWorkId") Long artWorkId) {
+
+        ArtWorkEditFormResponse artWorkEditFormResponse = artWorkService.getEditForm(userDetails.getMember(), artWorkId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(artWorkEditFormResponse);
+    }
+
+    // 작품 수정
+    @PostMapping("/edit/{artWorkId}")
+    public ResponseEntity<Void> editArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                            @PathVariable("artWorkId") Long artWorkId,
+                                            ArtWorkEditRequestDto artWorkEditRequestDto) throws IOException {
+
+        artWorkService.editArtWork(userDetails.getMember(), artWorkId, artWorkEditRequestDto);
+
+        return ResponseEntity.ok().build();
     }
 
 }

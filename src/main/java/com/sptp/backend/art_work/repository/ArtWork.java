@@ -1,5 +1,6 @@
 package com.sptp.backend.art_work.repository;
 
+import com.sptp.backend.art_work.web.dto.request.ArtWorkEditRequestDto;
 import com.sptp.backend.auction.repository.Auction;
 import com.sptp.backend.auction.repository.AuctionStatus;
 import com.sptp.backend.bidding.repository.Bidding;
@@ -91,5 +92,26 @@ public class ArtWork extends BaseEntity {
 
     public void minusLikeCount() {
         this.likeCount--;
+    }
+
+    public void updateArtWork(ArtWorkEditRequestDto dto, ArtWorkSize artWorkSize, String mainImageUrl, String guaranteeImageUrl) {
+
+        this.title = dto.getTitle();
+        this.productionYear = dto.getProductionYear();
+        this.material = dto.getMaterial();
+        this.status = dto.getStatus();
+        this.statusDescription = dto.getStatusDescription();
+        this.artWorkSize = artWorkSize;
+        this.frame = dto.isFrame();
+        this.genre = dto.getGenre();
+        this.price = dto.getPrice();
+        this.description = dto.getDescription();
+        this.mainImage = mainImageUrl;
+        this.guaranteeImage = guaranteeImageUrl;
+    }
+
+    public void updateMainImage(String imageUrl) {
+
+        this.mainImage = imageUrl;
     }
 }

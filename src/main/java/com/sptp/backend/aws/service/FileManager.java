@@ -26,6 +26,10 @@ public class FileManager {
         return originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
     }
 
+    public String extractImageDB(String imageUrl) {
+        return imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+    }
+
     public String getFullPath(String url) {
         if (Strings.isBlank(url)) {
             return null;

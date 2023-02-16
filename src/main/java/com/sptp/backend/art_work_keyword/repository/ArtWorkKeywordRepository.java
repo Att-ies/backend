@@ -7,4 +7,6 @@ import java.util.List;
 public interface ArtWorkKeywordRepository extends JpaRepository<ArtWorkKeyword, Long> {
 
     List<ArtWorkKeyword> findByArtWorkId(Long artWorkId);
+
+    void deleteByArtWorkId(Long artWorkId);
 }
