@@ -19,5 +19,6 @@ public class ArtistUpdateRequest {
     private String instagram;
     private String behance;
     private String address;
+    private String telephone;
     private Boolean isChanged;
 }

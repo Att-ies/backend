@@ -63,6 +63,7 @@ public class Member extends BaseEntity {
         this.email = dto.getEmail();
         this.nickname = dto.getNickname();
         this.address = dto.getAddress();
+        this.telephone = dto.getTelephone();
         if(dto.getIsChanged()) { // image 수정 여부 체크. null 값으로 들어올 수도 있어서 null로 체크하면 안됨
             this.image=image;
         }
@@ -78,6 +79,7 @@ public class Member extends BaseEntity {
         this.instagram = dto.getInstagram();
         this.behance = dto.getBehance();
         this.address = dto.getAddress();
+        this.telephone = dto.getTelephone();
         if(dto.getIsChanged()) {
             this.image=image;
         }

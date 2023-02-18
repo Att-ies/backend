@@ -95,7 +95,7 @@ public class ArtWorkController {
     }
 
     // 작품 수정
-    @PostMapping("/edit/{artWorkId}")
+    @PatchMapping("/edit/{artWorkId}")
     public ResponseEntity<Void> editArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @PathVariable("artWorkId") Long artWorkId,
                                             ArtWorkEditRequestDto artWorkEditRequestDto) throws IOException {
