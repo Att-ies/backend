@@ -592,4 +592,68 @@ public class ArtWorkService extends BaseEntity {
 
         artWorkRepository.deleteById(artWorkId);
     }
+
+    public void reRegisterArtWork(Member member, Long artWorkId) {
+
+        // 작품 존재하는지 체크
+        ArtWork findArtWork = artWorkRepository.findById(artWorkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ARTWORK));
+
+        // 글쓴 당사자가 맞는지 체크
+        if (!findArtWork.getMember().getId().equals(member.getId())) {
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
+        }
+
+        // 예정된 경매가 있는지 체크
+        List<Auction> latestScheduledAuction = auctionRepository.findLatestScheduledAuction();
+        if (latestScheduledAuction.size() == 0) {
+            throw new CustomException(ErrorCode.NOT_FOUND_AUCTION_SCHEDULED);
+        }
+
+        List<ArtWorkImage> findArtWorkImages = artWorkImageRepository.findByArtWorkId(artWorkId);
+        List<ArtWorkKeyword> findArtWorkKeywords = artWorkKeywordRepository.findByArtWorkId(artWorkId);
+
+        // 기존 작품과 동일한 작품 객체 생성(현재 예정된 경매 정보만 새로 반영)
+        ArtWork newArtWork = reBuildNewArtWork(findArtWork, member, latestScheduledAuction);
+
+        artWorkRepository.save(newArtWork);
+        reRegisterArtWorkImages(findArtWorkImages, newArtWork);
+        reRegisterArtWorkKeywords(findArtWorkKeywords, newArtWork);
+    }
+
+    private void reRegisterArtWorkImages(List<ArtWorkImage> findArtWorkImages, ArtWork artWork) {
+
+        for (ArtWorkImage artWorkImage : findArtWorkImages) {
+            artWorkImageRepository.save(ArtWorkImage.builder().image(artWorkImage.getImage()).artWork(artWork).build());
+        }
+    }
+
+    private void reRegisterArtWorkKeywords(List<ArtWorkKeyword> findArtWorkKeywords, ArtWork artWork) {
+
+        for (ArtWorkKeyword artWorkKeyword : findArtWorkKeywords) {
+            artWorkKeywordRepository.save(ArtWorkKeyword.builder().keywordId(artWorkKeyword.getKeywordId()).artWork(artWork).build());
+        }
+    }
+
+    private ArtWork reBuildNewArtWork(ArtWork findArtWork, Member member, List<Auction> latestScheduledAuction) {
+
+        return ArtWork.builder()
+                .member(member)
+                .title(findArtWork.getTitle())
+                .material(findArtWork.getMaterial())
+                .price(findArtWork.getPrice())
+                .status(findArtWork.getStatus())
+                .statusDescription(findArtWork.getStatusDescription())
+                .guaranteeImage(findArtWork.getGuaranteeImage())
+                .mainImage(findArtWork.getMainImage())
+                .genre(findArtWork.getGenre())
+                .artWorkSize(findArtWork.getArtWorkSize())
+                .frame(findArtWork.isFrame())
+                .description(findArtWork.getDescription())
+                .productionYear(findArtWork.getProductionYear())
+                .auction(latestScheduledAuction.get(0))
+                .saleStatus(ArtWorkStatus.REGISTERED.getType())
+                .biddingList(new ArrayList<>())
+                .build();
+    }
 }

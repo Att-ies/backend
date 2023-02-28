@@ -114,4 +114,14 @@ public class ArtWorkController {
 
         return ResponseEntity.ok().build();
     }
+
+    // 작품 재등록
+    @PostMapping("/{artWorkId}")
+    public ResponseEntity<Void> reRegisterArtWork(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                  @PathVariable("artWorkId") Long artWorkId) {
+
+        artWorkService.reRegisterArtWork(userDetails.getMember(), artWorkId);
+
+        return ResponseEntity.ok().build();
+    }
 }
