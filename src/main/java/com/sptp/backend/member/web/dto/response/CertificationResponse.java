@@ -16,4 +16,5 @@ public class CertificationResponse {
     private Long id;
     private String certificationImage;
     private String roles;
+    private String telephone;
 }
