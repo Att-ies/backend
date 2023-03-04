@@ -53,6 +53,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PATCH, "/artists").hasAnyRole("ARTIST", "ADMIN")
                 .antMatchers(HttpMethod.POST, "/art-works").hasAnyRole("ARTIST", "ADMIN")
                 .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/swagger-ui/**").permitAll() // TODO : 추후에 따로 권한 설정 논의 필요
+                .antMatchers("/swagger-ui.html").permitAll() // TODO : 추후에 따로 권한 설정 논의 필요
+                .antMatchers("/api/v2/**").permitAll() // TODO : 추후에 따로 권한 설정 논의 필요
+                .antMatchers("/v2/api-docs/**").permitAll() // TODO : 추후에 따로 권한 설정 논의 필요
+                .antMatchers("/swagger/**").permitAll() // TODO : 추후에 따로 권한 설정 논의 필요
+                .antMatchers("/swagger-resources/**").permitAll() // TODO : 추후에 따로 권한 설정 논의 필요
+                .antMatchers("/webjars/**").permitAll() // TODO : 추후에 따로 권한 설정 논의 필요
+
                 .anyRequest().authenticated(); // 그외 나머지 요청은 인증 필요
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -76,6 +84,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("http://localhost:8080");
         configuration.addAllowedOrigin("https://atties.vercel.app");
         configuration.addAllowedOrigin("https://attiess.netlify.app");
         configuration.addAllowedHeader("*");
