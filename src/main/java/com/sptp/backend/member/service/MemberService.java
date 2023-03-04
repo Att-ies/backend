@@ -309,7 +309,7 @@ public class MemberService {
         List<Member> findCertificationList = memberPreferredArtistRepository.findCertificationList();
 
         List<CertificationResponse> certificationResponses = findCertificationList.stream()
-                .map(m -> new CertificationResponse(m.getId(), processImage(m.getCertificationImage()), m.getRoles().get(0)))
+                .map(m -> new CertificationResponse(m.getId(), processImage(m.getCertificationImage()), m.getRoles().get(0), m.getTelephone()))
                 .collect(Collectors.toList());
 
         return certificationResponses;
