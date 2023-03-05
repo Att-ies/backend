@@ -30,7 +30,7 @@ jobs:
       run: |
         cd ./src/main/resources
         touch ./env.properties
-        echo "${{ secrets.ENV }}" > ./env.properties
+        echo "${{ secrets.ENV_DEVELOP }}" > ./env.properties
       shell: bash
     # Gradle build (Test 제외)
     - name: Build with Gradle
