@@ -4,8 +4,8 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +19,8 @@ public class AwsService {
 
     private final AmazonS3Client amazonS3Client;
 
-    private final String S3Bucket = "atties-bucket";
+    @Value("${aws.storage.name}")
+    private String S3Bucket; // develop "atties-dev-storage", main "atties-bucket"
 
     public void uploadImage(MultipartFile image, String uuid) throws IOException {
 
