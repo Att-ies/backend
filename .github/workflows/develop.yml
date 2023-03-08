@@ -40,22 +40,22 @@ jobs:
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
         arguments: clean build -x test
-#    # Docker build
-#    - name: Docker build
-#      run: |
-#        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-#        docker build -t atties_spring .
-#        docker tag atties_spring choo000407/atties_spring:${GITHUB_SHA::7}
-#        docker push choo000407/atties_spring:${GITHUB_SHA::7}
-#    # Deploy
-#    - name: Deploy
-#      uses: appleboy/ssh-action@master
-#      with:
-#        host: ec2-44-193-163-114.compute-1.amazonaws.com
-#        username: ec2-user
-#        password: ${{ secrets.SSH_PASSWORD }}
-#        envs: GITHUB_SHA
-#        script: |
-#          docker pull choo000407/atties_spring:${GITHUB_SHA::7}
-#          docker tag choo000407/atties_spring:${GITHUB_SHA::7} atties_spring
-#          docker-compose up -d
+    # Docker build
+    - name: Docker build
+      run: |
+        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+        docker build -t atties_dev_spring .
+        docker tag atties_dev_spring choo000407/atties_dev_spring:${GITHUB_SHA::7}
+        docker push choo000407/atties_dev_spring:${GITHUB_SHA::7}
+    # Deploy
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: 43.200.100.183
+        username: ubuntu
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        envs: GITHUB_SHA
+        script: |
+          sudo docker pull choo000407/atties_dev_spring:${GITHUB_SHA::7}
+          sudo docker tag choo000407/atties_dev_spring:${GITHUB_SHA::7} atties_dev_spring
+          sudo docker-compose up -d
