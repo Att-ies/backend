@@ -53,7 +53,7 @@ jobs:
       with:
         host: 43.200.100.183
         username: ubuntu
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        key: ${{ secrets.SSH_PRIVATE_KEY_DEVELOP }}
         envs: GITHUB_SHA
         script: |
           sudo docker pull choo000407/atties_dev_spring:${GITHUB_SHA::7}
