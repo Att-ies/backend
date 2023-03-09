@@ -55,6 +55,7 @@ jobs:
         username: ubuntu
         key: ${{ secrets.SSH_PRIVATE_KEY_DEVELOP }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        port: 22
         envs: GITHUB_SHA
         script: |
           sudo docker pull choo000407/atties_dev_spring:${GITHUB_SHA::7}
