@@ -2,7 +2,10 @@ name: Develop
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
 
 permissions:
   contents: read
@@ -30,7 +33,7 @@ jobs:
       run: |
         cd ./src/main/resources
         touch ./env.properties
-        echo "${{ secrets.ENV }}" > ./env.properties
+        echo "${{ secrets.ENV_DEVELOP }}" > ./env.properties
       shell: bash
     # Gradle build (Test 제외)
     - name: Build with Gradle
@@ -41,18 +44,20 @@ jobs:
     - name: Docker build
       run: |
         docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-        docker build -t atties_spring .
-        docker tag atties_spring choo000407/atties_spring:${GITHUB_SHA::7}
-        docker push choo000407/atties_spring:${GITHUB_SHA::7}
+        docker build -t atties_dev_spring .
+        docker tag atties_dev_spring choo000407/atties_dev_spring:${GITHUB_SHA::7}
+        docker push choo000407/atties_dev_spring:${GITHUB_SHA::7}
     # Deploy
     - name: Deploy
       uses: appleboy/ssh-action@master
       with:
-        host: ec2-44-193-163-114.compute-1.amazonaws.com
-        username: ec2-user
-        password: ${{ secrets.SSH_PASSWORD }}
+        host: 43.200.100.183
+        username: ubuntu
+        key: ${{ secrets.SSH_PRIVATE_KEY_DEVELOP }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        port: 22
         envs: GITHUB_SHA
         script: |
-          docker pull choo000407/atties_spring:${GITHUB_SHA::7}
-          docker tag choo000407/atties_spring:${GITHUB_SHA::7} atties_spring
-          docker-compose up -d
+          sudo docker pull choo000407/atties_dev_spring:${GITHUB_SHA::7}
+          sudo docker tag choo000407/atties_dev_spring:${GITHUB_SHA::7} atties_dev_spring
+          sudo docker-compose up -d
